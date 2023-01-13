@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Authorize } from './src/modules/Authorize';
 import { Send } from './src/modules/Send';
 import { Profile } from './src/modules/Profile';
+import { NavScreen } from './src/common/navigation';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,22 +14,22 @@ export default function App(): JSX.Element {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="LogIn"
+          name={NavScreen.AUTHORIZE}
           component={Authorize}
           options={{title: 'Log In'}}
         />
         <Stack.Screen
-          name="Home"
+          name={NavScreen.HOME}
           component={Home}
           options={{title: 'Home'}}
         />
         <Stack.Screen
-          name="Send"
+          name={NavScreen.SEND}
           component={Send}
           options={{title: 'Send'}}
         />
         <Stack.Screen
-          name="Profile"
+          name={NavScreen.PROFILE}
           component={Profile}
           options={{title: 'Profile'}}
         />
