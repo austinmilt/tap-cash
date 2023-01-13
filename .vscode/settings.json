@@ -3,7 +3,8 @@
         "source.fixAll.eslint": true
     },
     "eslint.validate": [
-        "javascript"
+        "javascript",
+        "react"
     ],
     "css.lint.validProperties": [
         "composes"

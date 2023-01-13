@@ -1,4 +1,4 @@
-package com.MoCash;
+package com.mocash;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
