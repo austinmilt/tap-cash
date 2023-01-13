@@ -1,4 +1,4 @@
-# mo-money
+# Mo Cash
 It's like Venmo, but Solana, but USDC
 
 ## Getting Started
