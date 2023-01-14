@@ -1,5 +1,5 @@
 # Mo Cash
-It's like Venmo, but Solana, but USDC
+It's like Cash App, but Solana, but USDC
 
 ## Getting Started
 
