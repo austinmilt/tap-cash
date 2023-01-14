@@ -1,8 +1,13 @@
 import { Button, Text, View } from "react-native";
-import { NavScreen } from "../../common/navigation";
+import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useEffect, useState } from "react";
 
-export function Sending({ route, navigation }): JSX.Element {
+interface Props {
+    route: Route;
+    navigation: Navigation;
+}
+
+export function Sending({ route, navigation }: Props): JSX.Element {
     const [sending, setSending] = useState<boolean>(true);
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import { Button, FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
-import { NavScreen } from "../../common/navigation";
+import { NavScreen, Navigation } from "../../common/navigation";
 import { useState } from "react";
 
 
@@ -16,9 +16,13 @@ const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
         id: "sack",
         address: 'john@doe.mary',
     },
-  ];
+];
 
-export function RecipientInput({ navigation }): JSX.Element {
+interface Props {
+    navigation: Navigation;
+}
+
+export function RecipientInput({ navigation }: Props): JSX.Element {
     const [recipient, setRecipient] = useState<string | undefined>();
 
     //TODO validation, suggested recipients, and error messages

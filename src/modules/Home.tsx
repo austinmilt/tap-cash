@@ -1,7 +1,11 @@
 import { Button, View } from "react-native";
-import { NavScreen } from "../common/navigation";
+import { NavScreen, Navigation } from "../common/navigation";
 
-export function Home({ navigation }): JSX.Element {
+interface Props {
+    navigation: Navigation;
+}
+
+export function Home({ navigation }: Props): JSX.Element {
     return (
         <View>
             <Button

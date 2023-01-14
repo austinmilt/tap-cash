@@ -1,8 +1,13 @@
 import { Button, TextInput, View } from "react-native";
-import { NavScreen } from "../../common/navigation";
+import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useState } from "react";
 
-export function AmountInput({ route, navigation }): JSX.Element {
+interface Props {
+    route: Route;
+    navigation: Navigation;
+}
+
+export function AmountInput({ route, navigation }: Props): JSX.Element {
     const [amountString, setAmountString] = useState<string | undefined>();
 
     //TODO validation and error messages

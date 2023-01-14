@@ -1,11 +1,15 @@
 import { Button, View } from "react-native";
-import { NavScreen } from "../common/navigation";
+import { NavScreen, Navigation } from "../common/navigation";
 
-export function Profile({ navigation }): JSX.Element {
+interface Props {
+    navigation: Navigation;
+}
+
+export function Profile({ navigation }: Props): JSX.Element {
     return (
         <View>
             <Button
-                title="Go to Home"
+                title="Home"
                 onPress={() => navigation.navigate(NavScreen.HOME)}
             />
         </View>

@@ -9,28 +9,27 @@ const Stack = createNativeStackNavigator();
 
 //TODO https://reactnavigation.org/docs/typescript
 
-export function Send({ navigation }): JSX.Element {
+export function Send(): JSX.Element {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator  initialRouteName={NavScreen.AUTHORIZE} screenOptions={{headerShown: false}}>
             <Stack.Screen
                 name={NavScreen.SEND_RECIPIENT_INPUT}
                 component={RecipientInput}
-                options={{headerShown: false}}
             />
             <Stack.Screen
                 name={NavScreen.SEND_AMOUNT_INPUT}
+                //@ts-ignore fuck shitty implicit prop drilling
                 component={AmountInput}
-                options={{headerShown: false}}
             />
             <Stack.Screen
                 name={NavScreen.SEND_CONFIRM}
+                //@ts-ignore fuck shitty implicit prop drilling
                 component={ConfirmSend}
-                options={{headerShown: false}}
-            />
+                />
             <Stack.Screen
                 name={NavScreen.SEND_SENDING}
+                //@ts-ignore fuck shitty implicit prop drilling
                 component={Sending}
-                options={{headerShown: false}}
             />
         </Stack.Navigator>
 
