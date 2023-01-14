@@ -1,6 +1,8 @@
-import { Button, FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
+import { FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
 import { NavScreen, Navigation } from "../../common/navigation";
 import { useState } from "react";
+import { Button } from "../../components/Button";
+import { StyleSheet } from "react-native/Libraries/StyleSheet/StyleSheet";
 
 
 const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
@@ -48,14 +50,16 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                 )}
                 keyExtractor={item => item.id}
             />
-            <Button
-                title="Amount"
-                onPress={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
-            />
-            <Button
-                title="Cancel"
-                onPress={() => navigation.navigate(NavScreen.HOME)}
-            />
+            <View style={STYLES.buttonView}>
+                <Button.Primary
+                    title="Amount"
+                    onPress={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
+                />
+                <Button.Secondary
+                    title="Cancel"
+                    onPress={() => navigation.navigate(NavScreen.HOME)}
+                />
+            </View>
         </SafeAreaView>
     )
 }
@@ -80,3 +84,16 @@ function SuggestedRecipientItem(props: SuggestedRecipientItemProps): JSX.Element
         </View>
     )
 }
+
+
+const STYLES = StyleSheet.create({
+    buttonView: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "flex-end",
+        borderColor: "white",
+        borderWidth: 3,
+        borderStyle: "solid"
+    }
+})

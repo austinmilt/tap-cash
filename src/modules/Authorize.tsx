@@ -1,5 +1,6 @@
-import { Button, View } from "react-native";
+import { View } from "react-native";
 import { NavScreen, Navigation } from "../common/navigation";
+import { Button } from "../components/Button";
 
 interface Props {
     navigation: Navigation;
@@ -8,7 +9,7 @@ interface Props {
 export function Authorize({ navigation }: Props): JSX.Element {
     return (
         <View>
-            <Button
+            <Button.Primary
                 title="Log In"
                 onPress={() => navigation.navigate(NavScreen.HOME)}
             />

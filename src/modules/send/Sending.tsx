@@ -1,6 +1,7 @@
-import { Button, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useEffect, useState } from "react";
+import { Button } from "../../components/Button";
 
 interface Props {
     route: Route;
@@ -30,7 +31,7 @@ export function Sending({ route, navigation }: Props): JSX.Element {
                         <Text>${route.params.amount}</Text>
                         <Text>to</Text>
                         <Text>{route.params.recipient}</Text>
-                        <Button
+                        <Button.Primary
                             title="Home"
                             onPress={() => navigation.navigate(NavScreen.HOME)}
                         />

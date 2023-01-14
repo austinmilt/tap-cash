@@ -1,5 +1,6 @@
-import { Button, View } from "react-native";
+import { View } from "react-native";
 import { NavScreen, Navigation } from "../common/navigation";
+import { Button } from "../components/Button";
 
 interface Props {
     navigation: Navigation;
@@ -8,11 +9,11 @@ interface Props {
 export function Home({ navigation }: Props): JSX.Element {
     return (
         <View>
-            <Button
+            <Button.Primary
                 title="Send"
                 onPress={() => navigation.navigate(NavScreen.SEND)}
             />
-            <Button
+            <Button.Primary
                 title="Profile"
                 onPress={() => navigation.navigate(NavScreen.PROFILE)}
             />

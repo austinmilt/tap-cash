@@ -1,6 +1,7 @@
-import { Button, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useState } from "react";
+import { Button } from "../../components/Button";
 
 interface Props {
     route: Route;
@@ -28,7 +29,7 @@ export function AmountInput({ route, navigation }: Props): JSX.Element {
                     }
                 )}
             />
-            <Button
+            <Button.Secondary
                 title="Cancel"
                 onPress={() => navigation.navigate(NavScreen.SEND_RECIPIENT_INPUT)}
             />

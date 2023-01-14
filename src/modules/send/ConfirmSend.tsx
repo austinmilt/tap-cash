@@ -1,5 +1,6 @@
-import { Button, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { NavScreen, Navigation, Route } from "../../common/navigation";
+import { Button } from "../../components/Button";
 
 interface Props {
     route: Route;
@@ -15,11 +16,11 @@ export function ConfirmSend({ route, navigation }: Props): JSX.Element {
             <Text>to</Text>
             <Text>{route?.params.recipient}</Text>
             <Text>and they're gonna be so happy about it.</Text>
-            <Button
+            <Button.Primary
                 title="Confirm"
                 onPress={() => navigation.navigate(NavScreen.SEND_SENDING, {...route.params})}
             />
-            <Button
+            <Button.Secondary
                 title="Cancel"
                 onPress={() => navigation.navigate(NavScreen.HOME)}
             />
