@@ -2,7 +2,13 @@
 It's like Venmo, but Solana, but USDC
 
 ## Getting Started
-Follow these directions https://reactnative.dev/docs/environment-setup but skip Creating a new application
+
+### Install Dependencies
+Follow these directions https://reactnative.dev/docs/environment-setup but skip Creating a new application.
+
+In a terminal in the project directory run `npm install`
+
+Set your environment `JAVA_HOME` to the location of the JRE, e.g. `"C:\Program Files\Android\Android Studio\jre"`
 
 ### Starting the App (Windows)
 You must have run the setup steps already.
