@@ -5,11 +5,11 @@ export function Home({ navigation }): JSX.Element {
     return (
         <View>
             <Button
-                title="Go to Send"
+                title="Send"
                 onPress={() => navigation.navigate(NavScreen.SEND)}
             />
             <Button
-                title="Go to Profile"
+                title="Profile"
                 onPress={() => navigation.navigate(NavScreen.PROFILE)}
             />
         </View>
