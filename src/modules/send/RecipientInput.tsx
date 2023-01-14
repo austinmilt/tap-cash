@@ -2,7 +2,7 @@ import { FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-
 import { NavScreen, Navigation } from "../../common/navigation";
 import { useState } from "react";
 import { Button } from "../../components/Button";
-import { StyleSheet } from "react-native/Libraries/StyleSheet/StyleSheet";
+import { StyleSheet } from "react-native";
 
 
 const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
@@ -30,7 +30,7 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
     //TODO validation, suggested recipients, and error messages
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={STYLES.screen}>
             <TextInput
                 onChangeText={setRecipient}
                 value={recipient}
@@ -40,6 +40,7 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                 autoFocus={true}
                 keyboardType="email-address"
                 onSubmitEditing={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
+                style={STYLES.input}
             />
             <FlatList
                 data={PLACEHOLDER_RECIPIENTS}
@@ -49,15 +50,16 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                         onPress={(recipient) => setRecipient(recipient?.address)}/>
                 )}
                 keyExtractor={item => item.id}
+                contentContainerStyle={STYLES.suggestions}
             />
             <View style={STYLES.buttonView}>
-                <Button.Primary
-                    title="Amount"
-                    onPress={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
-                />
                 <Button.Secondary
                     title="Cancel"
                     onPress={() => navigation.navigate(NavScreen.HOME)}
+                />
+                <Button.Primary
+                    title="Amount"
+                    onPress={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
                 />
             </View>
         </SafeAreaView>
@@ -77,23 +79,41 @@ interface SuggestedRecipientItemProps {
 
 function SuggestedRecipientItem(props: SuggestedRecipientItemProps): JSX.Element {
     return (
-        <View>
-            <Pressable onPress={() => props.onPress(props.recipient)}>
-                <Text>{props.recipient.address}</Text>
-            </Pressable>
-        </View>
+        <Pressable onPress={() => props.onPress(props.recipient)}>
+            <Text style={STYLES.suggestion}>{props.recipient.address}</Text>
+        </Pressable>
     )
 }
 
 
 const STYLES = StyleSheet.create({
+    screen: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "center",
+        height: "100%",
+        gap: 24
+    },
+
     buttonView: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "flex-end",
-        borderColor: "white",
-        borderWidth: 3,
-        borderStyle: "solid"
+        justifyContent: "space-evenly",
+        width: "100%"
+    },
+
+    input: {
+        fontSize: 24,
+    },
+
+    suggestions: {
+        fontSize: 18,
+        gap: 25,
+        justifyContent: "center"
+    },
+
+    suggestion: {
+        fontSize: 18
     }
 })

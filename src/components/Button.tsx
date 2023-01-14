@@ -1,9 +1,11 @@
 import AwesomeButton from "react-native-really-awesome-button";
 import { COLORS } from "../common/styles";
+import { StyleProp, ViewStyle } from "react-native/types";
 
 interface Props {
     title: string;
     onPress: () => void;
+    style?: StyleProp<ViewStyle>;
 }
 
 export function Button(): void {
@@ -18,6 +20,7 @@ function PrimaryButton(props: Props): JSX.Element {
             onPress={props.onPress}
             textColor={COLORS.secondaryDark}
             backgroundColor={COLORS.secondaryLight}
+            style={props.style}
         >
             {props.title}
         </AwesomeButton>
@@ -32,6 +35,7 @@ function SecondaryButton(props: Props): JSX.Element {
             onPress={props.onPress}
             textColor={COLORS.primaryMedium}
             backgroundColor={COLORS.primaryLight}
+            style={props.style}
         >
             {props.title}
         </AwesomeButton>
