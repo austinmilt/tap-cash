@@ -1,8 +1,12 @@
-import { FlatList, Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
+import { FlatList, Pressable} from "react-native";
 import { NavScreen, Navigation } from "../../common/navigation";
 import { useState } from "react";
 import { Button } from "../../components/Button";
 import { StyleSheet } from "react-native";
+import { Screen } from "../../components/Screen";
+import { TextInput } from "../../components/TextInput";
+import { Text } from "../../components/Text";
+import { View } from "../../components/View";
 
 
 const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
@@ -27,10 +31,10 @@ interface Props {
 export function RecipientInput({ navigation }: Props): JSX.Element {
     const [recipient, setRecipient] = useState<string | undefined>();
 
-    //TODO validation, suggested recipients, and error messages
+    //TODO validation, and error messages
 
     return (
-        <SafeAreaView style={STYLES.screen}>
+        <Screen style={STYLES.screen}>
             <TextInput
                 onChangeText={setRecipient}
                 value={recipient}
@@ -40,7 +44,6 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                 autoFocus={true}
                 keyboardType="email-address"
                 onSubmitEditing={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
-                style={STYLES.input}
             />
             <FlatList
                 data={PLACEHOLDER_RECIPIENTS}
@@ -52,7 +55,7 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                 keyExtractor={item => item.id}
                 contentContainerStyle={STYLES.suggestions}
             />
-            <View style={STYLES.buttonView}>
+            <View direction="row">
                 <Button.Secondary
                     title="Cancel"
                     onPress={() => navigation.navigate(NavScreen.HOME)}
@@ -62,7 +65,7 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
                 />
             </View>
-        </SafeAreaView>
+        </Screen>
     )
 }
 
@@ -88,23 +91,7 @@ function SuggestedRecipientItem(props: SuggestedRecipientItemProps): JSX.Element
 
 const STYLES = StyleSheet.create({
     screen: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: "100%",
-        gap: 24
-    },
-
-    buttonView: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        width: "100%"
-    },
-
-    input: {
-        fontSize: 24,
+        gap: 24,
     },
 
     suggestions: {

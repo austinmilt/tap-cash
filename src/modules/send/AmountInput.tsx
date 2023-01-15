@@ -1,7 +1,8 @@
-import { TextInput, View } from "react-native";
 import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useState } from "react";
 import { Button } from "../../components/Button";
+import { TextInput } from "../../components/TextInput";
+import { Screen } from "../../components/Screen";
 
 interface Props {
     route: Route;
@@ -14,7 +15,7 @@ export function AmountInput({ route, navigation }: Props): JSX.Element {
     //TODO validation and error messages
 
     return (
-        <View>
+        <Screen>
             <TextInput
                 onChangeText={setAmountString}
                 value={amountString}
@@ -31,8 +32,8 @@ export function AmountInput({ route, navigation }: Props): JSX.Element {
             />
             <Button.Secondary
                 title="Cancel"
-                onPress={() => navigation.navigate(NavScreen.SEND_RECIPIENT_INPUT)}
+                onPress={() => navigation.navigate(NavScreen.HOME)}
             />
-        </View>
+        </Screen>
     )
 }
