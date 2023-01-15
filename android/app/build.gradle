@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.momoney"
+    namespace "com.mocash"
     defaultConfig {
-        applicationId "com.momoney"
+        applicationId "com.mocash"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
