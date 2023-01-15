@@ -4,7 +4,7 @@ import { COLORS } from "../common/styles";
 export function TextInput(props: TextInputProps): JSX.Element {
     return (
         <NativeTextInput
-            placeholderTextColor={STYLE.color}
+            placeholderTextColor={COLORS.primaryMedium}
             {...props}
             style={[STYLE, props.style]}
         >
@@ -17,5 +17,5 @@ const STYLE = StyleSheet.create({
     style: {
         fontSize: 24,
         color: COLORS.primaryLight
-    }
+    },
 }).style;

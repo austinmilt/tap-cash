@@ -55,7 +55,7 @@ export function RecipientInput({ navigation }: Props): JSX.Element {
                 keyExtractor={item => item.id}
                 contentContainerStyle={STYLES.suggestions}
             />
-            <View direction="row">
+            <View direction="row" align="end">
                 <Button.Secondary
                     title="Cancel"
                     onPress={() => navigation.navigate(NavScreen.HOME)}

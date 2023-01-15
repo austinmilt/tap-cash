@@ -3,9 +3,10 @@ import { View as NativeView, ViewProps, StyleSheet, ViewStyle } from "react-nati
 
 
 interface Props extends ViewProps {
+    direction: "row" | "column";
     justify?: "center" | "start" | "end";
     align?: "center" | "start" | "end";
-    direction: "row" | "column"
+    debug?: boolean;
 }
 
 
@@ -45,28 +46,21 @@ export function View(props: Props): JSX.Element {
 
 
     return (
-        <NativeView style={[BASE, dynamicStyle, props.style]}>
+        <NativeView style={[STYLES.base, dynamicStyle, props.debug && STYLES.debug, props.style]}>
             {props.children}
         </NativeView>
     )
 }
 
-const BASE = StyleSheet.create({
-    style: {
+const STYLES = StyleSheet.create({
+    base: {
         display: "flex",
         flex: 1
-    }
-}).style;
-
-
-const { ROW, COLUMN } = StyleSheet.create({
-    ROW: {
-        ...BASE,
-        flexDirection: "row",
     },
 
-    COLUMN: {
-        ...BASE,
-        flexDirection: "column"
+    debug: {
+        borderWidth: 1,
+        borderColor: "red",
+        borderStyle: "solid"
     }
 });

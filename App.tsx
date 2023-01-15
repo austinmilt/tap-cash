@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Home } from './src/modules/Home';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Authorize } from './src/modules/Authorize';
+import { Authenticate } from './src/modules/Authenticate';
 import { Send } from "./src/modules/send/Send";
 import { Profile } from './src/modules/Profile';
 import { NavScreen } from './src/common/navigation';
@@ -15,7 +15,7 @@ export default function App(): JSX.Element {
       <Stack.Navigator initialRouteName={NavScreen.AUTHORIZE} screenOptions={{headerShown: false}}>
         <Stack.Screen
           name={NavScreen.AUTHORIZE}
-          component={Authorize}
+          component={Authenticate}
         />
         <Stack.Screen
           name={NavScreen.HOME}

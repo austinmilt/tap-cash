@@ -29,14 +29,18 @@ export function Sending({ route, navigation }: Props): JSX.Element {
                     </View>
                 ) : (
                     <View direction="column">
-                        <Text>Sent ✅</Text>
-                        <Text>${route.params.amount}</Text>
-                        <Text>to</Text>
-                        <Text>{route.params.recipient}</Text>
-                        <Button.Primary
-                            title="Home"
-                            onPress={() => navigation.navigate(NavScreen.HOME)}
-                        />
+                        <View direction="column">
+                            <Text size="lg">Sent ✅</Text>
+                            <Text size="lg">${route.params.amount}</Text>
+                            <Text size="lg">to</Text>
+                            <Text size="lg">{route.params.recipient}</Text>
+                        </View>
+                        <View direction="column" justify="end">
+                            <Button.Primary
+                                title="Home"
+                                onPress={() => navigation.navigate(NavScreen.HOME)}
+                            />
+                        </View>
                     </View>
                 )
             }

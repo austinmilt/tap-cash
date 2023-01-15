@@ -7,12 +7,12 @@ interface Props {
     navigation: Navigation;
 }
 
-export function Profile({ navigation }: Props): JSX.Element {
+export function Authenticate({ navigation }: Props): JSX.Element {
     return (
         <Screen>
             <View direction="column" justify="end">
                 <Button.Primary
-                    title="Home"
+                    title="Log In"
                     onPress={() => navigation.navigate(NavScreen.HOME)}
                 />
             </View>
