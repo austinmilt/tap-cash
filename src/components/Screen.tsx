@@ -1,14 +1,17 @@
 import { SafeAreaView, StyleSheet, ViewProps } from "react-native";
+import { CircleProvider } from "../api/circle/CircleProvider";
 import { COLORS } from "../common/styles";
 
 export function Screen(props: ViewProps): JSX.Element {
     return (
-        <SafeAreaView
-            {...props}
-            style={[STYLE, props.style]}
-        >
-            {props.children}
-        </SafeAreaView>
+        <CircleProvider>
+            <SafeAreaView
+                {...props}
+                style={[STYLE, props.style]}
+            >
+                {props.children}
+            </SafeAreaView>
+        </CircleProvider>
     )
 }
 
