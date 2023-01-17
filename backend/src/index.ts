@@ -1,3 +1,5 @@
+// Google Cloud Functions Framework main entrypoint
+
 import * as ff from '@google-cloud/functions-framework';
 import { CircleClient } from './circle/client';
 
