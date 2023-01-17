@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "functions-framework --target=hello-world",
+    "start": "functions-framework --target=list-channels",
     "prestart": "npm run build",
     "gcp-build": "npm run build",
     "deploy-hello-world": "gcloud functions deploy hello-world --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
@@ -17,7 +17,8 @@
   "license": "ISC",
   "dependencies": {
     "@circle-fin/circle-sdk": "^1.3.0",
-    "@google-cloud/functions-framework": "^3.1.3"
+    "@google-cloud/functions-framework": "^3.1.3",
+    "yamlenv": "^1.0.0"
   },
   "devDependencies": {
     "typescript": "^4.9.4"
