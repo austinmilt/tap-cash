@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "functions-framework --target=hello-world",
+    "prestart": "npm run build",
+    "gcp-build": "npm run build",
+    "deploy-hello-world": "gcloud functions deploy hello-world --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
+    "deploy-list-channels": "gcloud functions deploy list-channels --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
+    "deploy-all": "npm run deploy-hello-world && npm run deploy-list-channels"
+  },
+  "keywords": [],
+  "author": "austin.w.milt@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "@circle-fin/circle-sdk": "^1.3.0",
+    "@google-cloud/functions-framework": "^3.1.3"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
+}
