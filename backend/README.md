@@ -23,3 +23,10 @@ everything.
 
 The output of the script will tell you the URL of the new/updated function to use for the app to call, e.g.
 https://hello-world-7pi36k236a-uc.a.run.app
+
+
+## Running Functions locally
+`npm run start` and see the console output for a URL to hit to try it out
+
+Note it only "deploys" one function locally, so either change the script args or run what's in the script
+with your custom function.
