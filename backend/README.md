@@ -20,3 +20,6 @@ the name after `deploy` (in both the script name and script command) based on wh
 ## Deploy Functions
 Use the appropriate script in `package.json`, e.g. `npm run deploy-hello-world`, or `npm run deploy-all` to deploy
 everything.
+
+The output of the script will tell you the URL of the new/updated function to use for the app to call, e.g.
+https://hello-world-7pi36k236a-uc.a.run.app
