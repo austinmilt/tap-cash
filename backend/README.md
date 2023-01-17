@@ -5,6 +5,9 @@ based on https://github.com/GoogleCloudPlatform/functions-framework-nodejs/blob/
 Install Google Cloud CLI https://cloud.google.com/sdk/docs/install. When asked if you want to set up your account,
 do so and follow the steps. Select `wgmi-cc` as the organization/project when prompted.
 
+Copy `.env.example.yml` to `.env.local.yml` (and `.env.prod.yml` if you are deploying functions) and fill
+out the environment variables for the correct environment(s).
+
 ## Contributing
 ### Adding a function
 1. Create the function code where appropriate inside `src`.
