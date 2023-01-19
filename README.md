@@ -1,5 +1,5 @@
 # Mo Cash
-It's like Cash App, but Solana, but USDC
+Simple USDC transfers using Solana.
 
 ## Getting Started
 
