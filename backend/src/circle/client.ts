@@ -1,5 +1,5 @@
-import { ChannelResponse, Circle, CircleEnvironments } from "@circle-fin/circle-sdk";
-import { CIRCLE_API_KEY } from "../constants";
+import { ChannelResponse, Circle } from "@circle-fin/circle-sdk";
+import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT } from "../constants";
 
 export class CircleClient {
     private readonly sdk: Circle;
@@ -10,7 +10,7 @@ export class CircleClient {
 
 
     public static ofDefaults(): CircleClient {
-        return new CircleClient(new Circle(CIRCLE_API_KEY, CircleEnvironments.sandbox));
+        return new CircleClient(new Circle(CIRCLE_API_KEY, CIRCLE_ENVIRONMENT));
     }
 
 
