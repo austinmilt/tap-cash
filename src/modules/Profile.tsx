@@ -10,7 +10,7 @@ interface Props {
 export function Profile({ navigation }: Props): JSX.Element {
     return (
         <Screen>
-            <View direction="column" justify="end">
+            <View flex bottom>
                 <Button.Primary
                     title="Home"
                     onPress={() => navigation.navigate(NavScreen.HOME)}

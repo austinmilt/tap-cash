@@ -1,16 +1,15 @@
-import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/Button";
-import { Screen } from "../../components/Screen";
 import { Text } from "../../components/Text";
 import { View } from "../../components/View";
 
 interface Props {
-    route: Route;
-    navigation: Navigation;
+    recipient: string;
+    amount: number;
+    onClose: () => void;
 }
 
-export function Sending({ route, navigation }: Props): JSX.Element {
+export function Sending(props: Props): JSX.Element {
     const [sending, setSending] = useState<boolean>(true);
 
     useEffect(() => {
@@ -18,32 +17,32 @@ export function Sending({ route, navigation }: Props): JSX.Element {
     }, []);
 
     return (
-        <Screen>
+        <View>
             {
                 sending ? (
-                    <View direction="column">
+                    <View flex center>
                         <Text>Sending...</Text>
-                        <Text>${route.params.amount}</Text>
+                        <Text>${props.amount}</Text>
                         <Text>to</Text>
-                        <Text>{route.params.recipient}</Text>
+                        <Text>{props.recipient}</Text>
                     </View>
                 ) : (
-                    <View direction="column">
-                        <View direction="column">
+                    <View flex center>
+                        <View flex center>
                             <Text size="lg">Sent ✅</Text>
-                            <Text size="lg">${route.params.amount}</Text>
+                            <Text size="lg">${props.amount}</Text>
                             <Text size="lg">to</Text>
-                            <Text size="lg">{route.params.recipient}</Text>
+                            <Text size="lg">{props.recipient}</Text>
                         </View>
-                        <View direction="column" justify="end">
+                        <View flex bottom>
                             <Button.Primary
                                 title="Home"
-                                onPress={() => navigation.navigate(NavScreen.HOME)}
+                                onPress={props.onClose}
                             />
                         </View>
                     </View>
                 )
             }
-        </Screen>
+        </View>
     )
 }

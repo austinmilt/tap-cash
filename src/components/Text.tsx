@@ -1,6 +1,7 @@
-import { StyleSheet, Text as NativeText, TextProps, TextStyle } from "react-native";
+import { StyleSheet, TextProps, TextStyle } from "react-native";
 import { COLORS } from "../common/styles";
 import { useMemo } from "react";
+import { Text as RNUIText } from "react-native-ui-lib";
 
 interface Props extends TextProps {
     size?: "sm" | "md" | "lg";
@@ -16,18 +17,20 @@ export function Text(props: Props): JSX.Element {
         }
     }, [props.size])
 
+    const style = [
+        {fontSize: fontSize},
+        STYLE
+    ]
+
     return (
-        <NativeText
-            {...props}
-            style={[STYLE, {fontSize: fontSize}, props.style]}
-        >
+        <RNUIText {...props} style={style} >
             {props.children}
-        </NativeText>
+        </RNUIText>
     )
 }
 
 const STYLE = StyleSheet.create({
     style: {
-        color: COLORS.primaryLight
+        color: COLORS.secondaryLight
     }
 }).style;

@@ -1,21 +1,30 @@
-import { StyleSheet, TextInput as NativeTextInput, TextInputProps } from "react-native";
+import { StyleSheet } from "react-native";
 import { COLORS } from "../common/styles";
+import { Incubator, TextFieldProps } from "react-native-ui-lib";
 
-export function TextInput(props: TextInputProps): JSX.Element {
+export function TextInput(props: TextFieldProps): JSX.Element {
     return (
-        <NativeTextInput
-            placeholderTextColor={COLORS.primaryMedium}
+        <Incubator.TextField
+            placeholderTextColor={COLORS.secondaryMedium}
+            containerStyle={STYLE.container}
             {...props}
-            style={[STYLE, props.style]}
+            style={[STYLE.text, props.style]}
         >
             {props.children}
-        </NativeTextInput>
+        </Incubator.TextField>
     )
 }
 
 const STYLE = StyleSheet.create({
-    style: {
+    text: {
         fontSize: 24,
-        color: COLORS.primaryLight
+        color: COLORS.secondaryLight
     },
-}).style;
+    container: {
+        borderColor: COLORS.secondaryDark,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderStyle: "solid",
+        paddingHorizontal: 10,
+    }
+});

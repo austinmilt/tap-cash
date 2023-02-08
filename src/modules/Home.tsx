@@ -14,7 +14,12 @@ interface Props {
 export function Home({ navigation }: Props): JSX.Element {
     return (
         <Screen>
-            <View direction="row" align="end">
+            <SayHello/>
+            <ListChannels/>
+            <Text>
+                $420.69
+            </Text>
+            <View flex row centerH bottom spread paddingH-30 width="80%" gap={10}>
                 <Button.Primary
                     title="Profile"
                     onPress={() => navigation.navigate(NavScreen.PROFILE)}
@@ -24,8 +29,6 @@ export function Home({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(NavScreen.SEND)}
                 />
             </View>
-            <SayHello/>
-            <ListChannels/>
         </Screen>
     )
 }
@@ -41,7 +44,7 @@ function SayHello(): JSX.Element {
     }, [name, queryContext.submit]);
 
     return (
-        <View direction="column">
+        <View flex>
             <TextInput
                 onChangeText={setName}
                 value={name}
@@ -66,7 +69,7 @@ function ListChannels(): JSX.Element {
     const queryContext = useListChannels();
 
     return (
-        <View direction="column">
+        <View flex>
             <Button.Primary title={queryContext.loading ? "Loading..." : "Channels"} onPress={queryContext.submit}/>
             {
                 !queryContext.loading && (queryContext.data != null) && (

@@ -1,12 +1,11 @@
 import { FlatList, Pressable} from "react-native";
-import { NavScreen, Navigation } from "../../common/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "../../components/Button";
 import { StyleSheet } from "react-native";
-import { Screen } from "../../components/Screen";
 import { TextInput } from "../../components/TextInput";
 import { Text } from "../../components/Text";
 import { View } from "../../components/View";
+import { COLORS } from "../../common/styles";
 
 
 const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
@@ -25,47 +24,58 @@ const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
 ];
 
 interface Props {
-    navigation: Navigation;
+    onCompleted: (recipient: string) => void;
+    onCancel: () => void;
 }
 
-export function RecipientInput({ navigation }: Props): JSX.Element {
+export function RecipientInput(props: Props): JSX.Element {
     const [recipient, setRecipient] = useState<string | undefined>();
 
     //TODO validation, and error messages
 
+    const onSubmit = useCallback(() => {
+        if (recipient === undefined) {
+            //TODO improve with error message instead of throw
+            throw new Error("Must fill out recipient.");
+        }
+        props.onCompleted(recipient);
+    }, [props.onCompleted, recipient]);
+
     return (
-        <Screen style={STYLES.screen}>
-            <TextInput
-                onChangeText={setRecipient}
-                value={recipient}
-                placeholder="a@milz.com"
-                autoCapitalize="none"
-                autoComplete="email"
-                autoFocus={true}
-                keyboardType="email-address"
-                onSubmitEditing={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
-            />
-            <FlatList
-                data={PLACEHOLDER_RECIPIENTS}
-                renderItem={({item}) => (
-                    <SuggestedRecipientItem
-                        recipient={item}
-                        onPress={(recipient) => setRecipient(recipient?.address)}/>
-                )}
-                keyExtractor={item => item.id}
-                contentContainerStyle={STYLES.suggestions}
-            />
-            <View direction="row" align="end">
-                <Button.Secondary
-                    title="Cancel"
-                    onPress={() => navigation.navigate(NavScreen.HOME)}
+        <View center flexG>
+            <View flex flexG padding-30 width="100%" gap={30}>
+                <TextInput
+                    onChangeText={setRecipient}
+                    value={recipient}
+                    placeholder="a@milz.com"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    keyboardType="email-address"
+                    onSubmitEditing={onSubmit}
+                    autoFocus
                 />
-                <Button.Primary
-                    title="Amount"
-                    onPress={() => navigation.navigate(NavScreen.SEND_AMOUNT_INPUT, {recipient: recipient})}
+                <FlatList
+                    data={PLACEHOLDER_RECIPIENTS}
+                    renderItem={({item}) => (
+                        <SuggestedRecipientItem
+                            recipient={item}
+                            onPress={(recipient) => setRecipient(recipient?.address)}/>
+                    )}
+                    keyExtractor={item => item.id}
+                    contentContainerStyle={STYLES.suggestions}
                 />
             </View>
-        </Screen>
+            <View flex flexS row centerH bottom spread paddingH-30 width="80%" gap={10}>
+                <Button.Secondary
+                    title="Cancel"
+                    onPress={props.onCancel}
+                />
+                <Button.Primary
+                    title="Confirm"
+                    onPress={onSubmit}
+                />
+            </View>
+        </View>
     )
 }
 
@@ -97,10 +107,11 @@ const STYLES = StyleSheet.create({
     suggestions: {
         fontSize: 18,
         gap: 25,
-        justifyContent: "center"
+        justifyContent: "center",
     },
 
     suggestion: {
-        fontSize: 18
+        fontSize: 18,
+        color: COLORS.secondaryLight
     }
 })
