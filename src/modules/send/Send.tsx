@@ -13,6 +13,8 @@ interface Props {
     navigation: Navigation
 }
 
+
+//TODO implement theming so the wizard has the correct color scheme.
 export function Send(props: Props): JSX.Element {
     const [activeStep, setActiveStep] = useState<number>(0);
     //TODO change to useReducer

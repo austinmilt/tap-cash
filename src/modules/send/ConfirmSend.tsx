@@ -1,3 +1,4 @@
+import { COLORS } from "../../common/styles";
 import { Button } from "../../components/Button";
 import { Text } from "../../components/Text";
 import { View } from "../../components/View";
@@ -13,12 +14,12 @@ interface Props {
 export function ConfirmSend(props: Props): JSX.Element {
     return (
         <View center>
-            <View flex center>
+            <View flex center gap={20}>
                 <Text size="lg">You're about to send</Text>
-                <Text size="lg">${props.amount}</Text>
+                <Text size="xl" color={COLORS.primaryLight}>${props.amount}</Text>
                 <Text size="lg">to</Text>
-                <Text size="lg">{props.recipient}</Text>
-                <Text size="sm">and they're gonna be so happy about it.</Text>
+                <Text size="xl" color={COLORS.primaryLight}>{props.recipient}</Text>
+                <Text size="md">and they're gonna be so happy about it.</Text>
             </View>
             <View flex row centerH bottom spread paddingH-30 width="80%" gap={10}>
                 <Button.Secondary
