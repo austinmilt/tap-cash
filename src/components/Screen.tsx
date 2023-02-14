@@ -1,14 +1,16 @@
-import { SafeAreaView, StyleSheet, ViewProps } from "react-native";
+import { StyleSheet, ViewProps } from "react-native";
 import { COLORS } from "../common/styles";
+import { View } from "react-native-ui-lib";
 
 export function Screen(props: ViewProps): JSX.Element {
     return (
-        <SafeAreaView
+        <View
             {...props}
             style={[STYLE, props.style]}
+            useSafeArea
         >
             {props.children}
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -19,6 +21,6 @@ const STYLE = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: COLORS.primaryDark,
+        backgroundColor: COLORS.secondaryDark,
     }
 }).style;

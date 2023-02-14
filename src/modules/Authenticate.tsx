@@ -10,7 +10,7 @@ interface Props {
 export function Authenticate({ navigation }: Props): JSX.Element {
     return (
         <Screen>
-            <View direction="column" justify="end">
+            <View flex center>
                 <Button.Primary
                     title="Log In"
                     onPress={() => navigation.navigate(NavScreen.HOME)}

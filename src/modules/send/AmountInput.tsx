@@ -1,39 +1,48 @@
-import { NavScreen, Navigation, Route } from "../../common/navigation";
 import { useState } from "react";
 import { Button } from "../../components/Button";
-import { TextInput } from "../../components/TextInput";
-import { Screen } from "../../components/Screen";
+import { View } from "../../components/View";
+import { NumberInput } from "react-native-ui-lib";
+import { COLORS } from "../../common/styles";
+import { StyleSheet } from "react-native";
 
 interface Props {
-    route: Route;
-    navigation: Navigation;
+    onCompleted: (amount: number) => void;
+    onCancel: () => void;
 }
 
-export function AmountInput({ route, navigation }: Props): JSX.Element {
-    const [amountString, setAmountString] = useState<string | undefined>();
+export function AmountInput(props: Props): JSX.Element {
+    const [amount, setAmount] = useState<number>(0);
 
-    //TODO validation and error messages
+    // TODO validation and error messages
+    // TODO https://github.com/wix/react-native-ui-lib/blob/master/demo/src/screens/componentScreens/NumberInputScreen.tsx
 
     return (
-        <Screen>
-            <TextInput
-                onChangeText={setAmountString}
-                value={amountString}
-                autoCapitalize="none"
-                autoFocus={true}
-                keyboardType="decimal-pad"
-                onSubmitEditing={() => navigation.navigate(
-                    NavScreen.SEND_CONFIRM,
-                    {
-                        ...route.params,
-                        amount: Number.parseFloat(amountString ?? '0')
-                    }
-                )}
-            />
+        <View paddingT-30 paddingH-30 spread flexG>
+            <View flexG centerV>
+                {/* @ts-ignore this component's type validation is fucked up*/}
+                <NumberInput
+                    onChangeNumber={(v: {number: number}) => setAmount(v.number)}
+                    onSubmitEditing={() => props.onCompleted(amount)}
+                    leadingText="$"
+                    fractionDigits={2}
+                    style={STYLES.text}
+                    leadingTextStyle={STYLES.text}
+                    centered
+                    autoFocus
+                />
+            </View>
             <Button.Secondary
                 title="Cancel"
-                onPress={() => navigation.navigate(NavScreen.HOME)}
+                onPress={props.onCancel}
             />
-        </Screen>
+        </View>
     )
 }
+
+
+const STYLES = StyleSheet.create({
+    text: {
+        fontSize: 48,
+        color: COLORS.secondaryLight
+    }
+})

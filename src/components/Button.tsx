@@ -1,6 +1,6 @@
-import AwesomeButton from "react-native-really-awesome-button";
-import { COLORS } from "../common/styles";
 import { StyleProp, ViewStyle } from "react-native/types";
+import { Button as RNUIButton } from "react-native-ui-lib"
+import { COLORS } from "../common/styles";
 
 interface Props {
     title: string;
@@ -16,14 +16,16 @@ export function Button(): void {
 // https://www.npmjs.com/package/react-native-really-awesome-button
 function PrimaryButton(props: Props): JSX.Element {
     return (
-        <AwesomeButton
+        <RNUIButton
             onPress={props.onPress}
-            textColor={COLORS.secondaryDark}
-            backgroundColor={COLORS.secondaryLight}
+            color={COLORS.primaryDark}
+            backgroundColor={COLORS.primaryLight}
             style={props.style}
-        >
-            {props.title}
-        </AwesomeButton>
+            label={props.title}
+            labelStyle={{fontWeight: "900", fontSize: 21}}
+            borderRadius={5}
+            size="large"
+        />
     )
 }
 Button.Primary = PrimaryButton;
@@ -31,14 +33,16 @@ Button.Primary = PrimaryButton;
 
 function SecondaryButton(props: Props): JSX.Element {
     return (
-        <AwesomeButton
+        <RNUIButton
             onPress={props.onPress}
-            textColor={COLORS.primaryMedium}
-            backgroundColor={COLORS.primaryLight}
+            color={COLORS.secondaryDark}
+            backgroundColor={COLORS.secondaryLight}
             style={props.style}
-        >
-            {props.title}
-        </AwesomeButton>
+            label={props.title}
+            labelStyle={{fontWeight: "900", fontSize: 21}}
+            borderRadius={5}
+            size="large"
+        />
     )
 }
 Button.Secondary = SecondaryButton;
