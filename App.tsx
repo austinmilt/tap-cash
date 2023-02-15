@@ -6,16 +6,17 @@ import { Authenticate } from './src/modules/Authenticate';
 import { Send } from "./src/modules/send/Send";
 import { Profile } from './src/modules/Profile';
 import { NavScreen } from './src/common/navigation';
+import { Authenticate2 } from './src/modules/Authenticate2';
 
 const Stack = createNativeStackNavigator();
 
 export default function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={NavScreen.AUTHORIZE} screenOptions={{headerShown: false}}>
+      <Stack.Navigator initialRouteName={NavScreen.AUTHORIZE} screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name={NavScreen.AUTHORIZE}
-          component={Authenticate}
+          component={Authenticate2}
         />
         <Stack.Screen
           name={NavScreen.HOME}

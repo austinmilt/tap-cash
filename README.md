@@ -18,3 +18,7 @@ testing on a physical device, get your physical device connected to `abd`.
 2. In a second terminal, start Metro: `npx react-native start`. Ignore the shortcut
 options that pop up.
 3. In a third terminal, deploy the app to the device `npx react-native run-android`.
+
+
+### Future Work
+iOS setup for Google oAuth signin https://github.com/react-native-google-signin/google-signin
