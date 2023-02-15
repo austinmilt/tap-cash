@@ -12,6 +12,9 @@
   "dependencies": {
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
+    "@toruslabs/react-native-web-browser": "^1.1.0",
+    "@web3auth/react-native-sdk": "^3.5.0",
+    "buffer": "^6.0.3",
     "react": "18.2.0",
     "react-native": "0.71.0",
     "react-native-gesture-handler": "^2.9.0",
