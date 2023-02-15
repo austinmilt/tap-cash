@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface MoCashTests : XCTestCase
+@interface TapCashTests : XCTestCase
 
 @end
 
-@implementation MoCashTests
+@implementation TapCashTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
