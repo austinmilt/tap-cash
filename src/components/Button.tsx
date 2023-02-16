@@ -6,6 +6,7 @@ interface Props {
     title: string;
     onPress: () => void;
     style?: StyleProp<ViewStyle>;
+    disabled?: boolean;
 }
 
 export function Button(): void {
@@ -13,16 +14,21 @@ export function Button(): void {
 }
 
 
-// https://www.npmjs.com/package/react-native-really-awesome-button
+const PRIMARY_ENABLED_TEXT_COLOR: string = COLORS.primaryDark;
+const PRIMARY_DISABLED_TEXT_COLOR: string = COLORS.primaryDarkDeemphasized;
+const PRIMARY_ENABLED_BACKGROUND_COLOR: string = COLORS.primaryLight;
+const PRIMARY_DISABLED_BACKGROUND_COLOR: string = COLORS.primaryLightDeemphasized;
+
+
 function PrimaryButton(props: Props): JSX.Element {
     return (
         <RNUIButton
             onPress={props.onPress}
-            color={COLORS.primaryDark}
-            backgroundColor={COLORS.primaryLight}
+            color={props.disabled ? COLORS.primaryDarkDeemphasized : COLORS.primaryDark}
+            backgroundColor={props.disabled ? COLORS.primaryLightDeemphasized : COLORS.primaryLight}
             style={props.style}
             label={props.title}
-            labelStyle={{fontWeight: "900", fontSize: 21}}
+            labelStyle={{ fontWeight: "900", fontSize: 21 }}
             borderRadius={5}
             size="large"
         />
@@ -39,7 +45,7 @@ function SecondaryButton(props: Props): JSX.Element {
             backgroundColor={COLORS.secondaryLight}
             style={props.style}
             label={props.title}
-            labelStyle={{fontWeight: "900", fontSize: 21}}
+            labelStyle={{ fontWeight: "900", fontSize: 21 }}
             borderRadius={5}
             size="large"
         />

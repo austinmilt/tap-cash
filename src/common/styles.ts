@@ -3,6 +3,8 @@ import { Colors, Typography, Spacings } from 'react-native-ui-lib';
 export const COLORS = {
     primaryDark: "#38761d",
     primaryLight: "#b6d7a8ff",
+    primaryDarkDeemphasized: "#627559",
+    primaryLightDeemphasized: "#c6d9bf",
     secondaryDark: "#303030ff",
     secondaryMedium: "#666666ff",
     secondaryLight: "#c9d1d9"
@@ -21,9 +23,9 @@ Colors.loadColors({
 });
 
 Typography.loadTypographies({
-    heading: {fontSize: 36, fontWeight: '600'},
-    subheading: {fontSize: 28, fontWeight: '500'},
-    body: {fontSize: 18, fontWeight: '400'}
+    heading: { fontSize: 36, fontWeight: '600' },
+    subheading: { fontSize: 28, fontWeight: '500' },
+    body: { fontSize: 18, fontWeight: '400' }
 });
 
 Spacings.loadSpacings({
