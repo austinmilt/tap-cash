@@ -10,11 +10,13 @@
     "test": "jest"
   },
   "dependencies": {
+    "@project-serum/anchor": "^0.26.0",
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
     "@solana/web3.js": "^1.73.2",
     "@toruslabs/react-native-web-browser": "^1.1.0",
     "@web3auth/react-native-sdk": "^3.5.0",
+    "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "react": "18.2.0",
     "react-native": "0.71.0",

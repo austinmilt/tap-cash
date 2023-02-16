@@ -6,19 +6,32 @@ import { TextInput } from "../components/TextInput";
 import { View } from "../components/View";
 import { useHelloWorld, useListChannels } from "../api/client";
 import { Text } from "../components/Text";
+import { useUserProfile } from "../components/profile-provider";
+import { Image } from "react-native-ui-lib";
 
 interface Props {
     navigation: Navigation;
 }
 
 export function Home({ navigation }: Props): JSX.Element {
+    const { name, imageUrl, usdcBalance } = useUserProfile();
+
+    //TODO use number formatter for usdc balance
     return (
         <Screen>
-            <SayHello/>
-            <ListChannels/>
-            <Text>
-                $420.69
-            </Text>
+            <SayHello />
+            <ListChannels />
+            <View>
+                {imageUrl && (
+                    <Image source={{ uri: imageUrl }} />
+                )}
+                <Text>
+                    {name}
+                </Text>
+                <Text>
+                    ${usdcBalance ? usdcBalance.toFixed(2) : "0"}
+                </Text>
+            </View>
             <View flex row centerH bottom spread paddingH-30 width="80%" gap={10}>
                 <Button.Primary
                     title="Profile"
@@ -53,7 +66,7 @@ function SayHello(): JSX.Element {
                 keyboardType="default"
                 onSubmitEditing={onSubmit}
             />
-            <Button.Primary title={queryContext.loading ? "Saying hello..." : "Say Hello"} onPress={onSubmit}/>
+            <Button.Primary title={queryContext.loading ? "Saying hello..." : "Say Hello"} onPress={onSubmit} />
             {
                 !queryContext.loading && (queryContext.data != null) && (
                     <Text>{queryContext.data}</Text>
@@ -70,7 +83,7 @@ function ListChannels(): JSX.Element {
 
     return (
         <View flex>
-            <Button.Primary title={queryContext.loading ? "Loading..." : "Channels"} onPress={queryContext.submit}/>
+            <Button.Primary title={queryContext.loading ? "Loading..." : "Channels"} onPress={queryContext.submit} />
             {
                 !queryContext.loading && (queryContext.data != null) && (
                     <Text>{queryContext.data}</Text>

@@ -1,6 +1,9 @@
 import Web3Auth, { OPENLOGIN_NETWORK, LOGIN_PROVIDER, MFA_LEVELS, MfaLevelType, State } from "@web3auth/react-native-sdk";
 import * as WebBrowser from '@toruslabs/react-native-web-browser';
 import { SolanaWallet } from "../solana/solana";
+import { Buffer } from "buffer";
+
+global.Buffer = global.Buffer || Buffer
 
 // https://web3auth.io/docs/integration-builder?lang=REACT_NATIVE&chain=ETH&evmFramework=WEB3&customAuth=NONE&mfa=DEFAULT&whitelabel=NO&useModal=YES&web3AuthNetwork=TESTNET&rnMode=BARE_RN&stepIndex=6
 const scheme = 'tapcash';
@@ -13,12 +16,13 @@ interface LogInResult {
     logOut: () => Promise<void>;
 }
 
-export async function logIn(): Promise<LogInResult> {
+//TODO set network based on environment
+const web3auth: Web3Auth = new Web3Auth(WebBrowser, {
+    clientId,
+    network: OPENLOGIN_NETWORK.TESTNET,
+});
 
-    const web3auth: Web3Auth = new Web3Auth(WebBrowser, {
-        clientId,
-        network: OPENLOGIN_NETWORK.TESTNET,
-    });
+export async function logIn(): Promise<LogInResult> {
 
     const info: State = await web3auth.login({
         redirectUrl: resolvedRedirectUrl,
@@ -30,7 +34,7 @@ export async function logIn(): Promise<LogInResult> {
         throw new Error("Missing required ed25519 private key for login.");
     }
     //TODO set RPC based on env
-    const wallet: SolanaWallet = SolanaWallet.devnet(info.ed25519PrivKey);
+    const wallet: SolanaWallet = SolanaWallet.testnet(info.ed25519PrivKey);
 
     return {
         user: info,
