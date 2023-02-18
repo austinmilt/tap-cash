@@ -19,7 +19,7 @@ impl Bank {
          1   // bump
     }
     pub fn log_init(&self){
-        msg!("Init new bank v., {}", self.version);
+        msg!("Init new bank v.{}", self.version);
     }
 }
 //https://book.anchor-lang.com/anchor_references/space.html

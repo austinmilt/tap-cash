@@ -6,13 +6,17 @@ pub mod model;
 use anchor_lang::prelude::*;
 use instructions::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz");
 
 #[program]
-pub mod mo_cash {
+pub mod tap_cash {
     use super::*;
 
     pub fn initialize_bank(ctx: Context<InitializeBank>) -> Result<()> {
         instructions::init_bank(ctx)
+    }
+
+    pub fn initialize_member(ctx: Context<InitializeMember>) -> Result<()> {
+        instructions::init_member(ctx)
     }
 }

@@ -8,7 +8,10 @@ use crate::{
 
 #[derive(Accounts)]
 pub struct InitializeBank<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        owner = system_program.key() @ BankError::InvalidAuthority
+    )]
     pub bank_authority: Signer<'info>,
     #[account(
         init,
@@ -27,12 +30,13 @@ pub fn init_bank(
 ) -> Result<()> { 
     let bank = &mut ctx.accounts.bank;
 
-    require!(bank.initialized, BankError::AlreadyInitialized);
+    require!(!bank.initialized, BankError::AlreadyInitialized);
 
     bank.initialized = true;
     bank.version = 1;
     bank.authority = ctx.accounts.bank_authority.key();
+    bank.fee_payer = ctx.accounts.bank_authority.key();
     bank.bump = *ctx.bumps.get("bank").unwrap();
-
+    bank.log_init();
     Ok(()) 
 }
