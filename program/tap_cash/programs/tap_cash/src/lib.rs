@@ -2,11 +2,12 @@ pub mod state;
 pub mod constants;
 pub mod instructions;
 pub mod model;
+pub mod id;
 
 use anchor_lang::prelude::*;
 use instructions::*;
 
-declare_id!("TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz");
+pub use id::ID;
 
 #[program]
 pub mod tap_cash {

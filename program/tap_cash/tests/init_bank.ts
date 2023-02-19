@@ -220,6 +220,9 @@ describe("tap_cash", async () => {
         step: "Init USDC Account",
         url: `https://explorer.solana.com/tx/${tx}?cluster=custom&customUrl=http%3A%2F%2Flocalhost%3A8899`
       });
+
+      const usdcAcct = await program.account.memberAccount.fetch(accountPda);
+      console.log(usdcAcct);
       assert(true, 'account iniated')
 
     }
