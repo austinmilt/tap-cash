@@ -6,7 +6,8 @@ pub struct Member {
     pub version: u8,
     pub bank: Pubkey,
     pub user_id: Pubkey,        // PubKey received on enrollment 
-    pub bump: u8
+    pub bump: u8,
+    pub num_accounts: u8 // should this be a vec that has all?
 }
 
 impl Member {
@@ -16,6 +17,7 @@ impl Member {
          1 + // version
         32 + // bank pda
         32 + // user id
+         1 + // num_accounts
          1   // bump
     }
     pub fn log_init(&self){

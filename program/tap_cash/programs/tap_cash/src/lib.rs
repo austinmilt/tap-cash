@@ -19,4 +19,8 @@ pub mod tap_cash {
     pub fn initialize_member(ctx: Context<InitializeMember>) -> Result<()> {
         instructions::init_member(ctx)
     }
+
+    pub fn initialize_account(ctx: Context<InitializeMemberAccount>) -> Result<()>{
+        instructions::init_account(ctx)
+    }
 }
