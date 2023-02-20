@@ -14,13 +14,15 @@ use crate::{
 pub struct SendSpl<'info> {
 
     #[account(
-        mut
-        // TO DO constraint that this is bank.feepayer
+        mut,
+        constraint = payer.to_account_info().key() == bank.fee_payer.key()
     )]
     pub payer: Signer<'info>,
 
     #[account(
         mut,
+        owner = crate::ID,
+        has_one = bank,
         seeds = [
             MEMBER_SEED.as_ref(), 
             bank.to_account_info().key().as_ref(), 
@@ -28,13 +30,14 @@ pub struct SendSpl<'info> {
         ],
         bump = member.bump
     )]
-    // TO DO constraint member.bank = bank
     pub member: Account<'info, Member>,
     pub user_id: Signer<'info>,
 
+    #[account(owner = crate::ID)]
     pub bank: Account<'info, Bank>,
 
     #[account(
+        owner = crate::ID,
         seeds = [
             member.to_account_info().key().as_ref(), 
             CHECKING_SEED.as_ref(), 
@@ -45,9 +48,16 @@ pub struct SendSpl<'info> {
     )]
     pub account_pda: Account<'info,MemberAccount>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = account_ata.mint == token_mint.key(),
+        constraint = account_ata.owner == account_pda.key()
+    )]
     pub account_ata: Account<'info, TokenAccount>,
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = destination_ata.mint == token_mint.key()
+    )]
     pub destination_ata: Account<'info, TokenAccount>,
 
     pub token_mint: Account<'info, Mint>,
@@ -64,7 +74,6 @@ pub fn send_spl(ctx: Context<SendSpl>, withdraw_amount: u64) -> Result<()> {
     let token_program = &mut ctx.accounts.token_program;
     let mint = &mut ctx.accounts.token_mint;
 
-    // Transfer tokens from taker to defined destination
     let cpi_accounts = SplTransfer {
         from: source.to_account_info().clone(),
         to: destination.to_account_info().clone(),
