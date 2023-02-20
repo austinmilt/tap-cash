@@ -8,8 +8,7 @@ pub struct MemberAccount {
     pub ata: Pubkey,
     pub bump: u8,
     pub acct_no: u8,
-    pub acct_type: u8 // 0 -> checking; else error
-    // DO I NEED BANK HERE?
+    pub acct_type: u8
 }
 
 impl MemberAccount {

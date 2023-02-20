@@ -4,9 +4,9 @@ use anchor_lang::prelude::*;
 pub struct Member {
     pub version: u8,
     pub bank: Pubkey,
-    pub user_id: Pubkey,        // PubKey received on enrollment 
+    pub user_id: Pubkey,  // PubKey received on enrollment 
     pub bump: u8,
-    pub num_accounts: u8 // should this be a vec that has all?
+    pub num_accounts: u8
 }
 
 impl Member {

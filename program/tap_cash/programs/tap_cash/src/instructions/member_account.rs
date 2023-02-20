@@ -72,8 +72,6 @@ pub fn init_account(
     let member = &mut ctx.accounts.member;
     let account_number = member.num_accounts + 1;
 
-    // Add checks (member init, etc)
-
     new_account.set_inner(MemberAccount{
         version: 1,
         member: member.key(),
