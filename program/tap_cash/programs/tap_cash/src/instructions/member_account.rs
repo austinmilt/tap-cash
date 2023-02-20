@@ -14,8 +14,8 @@ use crate::{
 pub struct InitializeMemberAccount<'info> {
 
     #[account(
-        mut
-        // constraint that this is bank.feepayer
+        mut,
+        constraint = payer.to_account_info().key() == bank.fee_payer.key()
     )]
     pub payer: Signer<'info>,
 
@@ -28,7 +28,8 @@ pub struct InitializeMemberAccount<'info> {
         ],
         bump = member.bump
     )]
-    // constraint member.bank = bank
+    
+    #[account(has_one = bank)]
     pub member: Account<'info, Member>,
     pub user_id: SystemAccount<'info>,
     pub bank: Account<'info, Bank>,
