@@ -42,7 +42,7 @@ pub struct SendSpl<'info> {
             member.to_account_info().key().as_ref(), 
             CHECKING_SEED.as_ref(), 
             token_mint.key().as_ref(), 
-            &(member.num_accounts).to_le_bytes(),
+            &(account_pda.acct_no).to_le_bytes(),
         ],
         bump = account_pda.bump
     )]
@@ -80,7 +80,7 @@ pub fn send_spl(ctx: Context<SendSpl>, withdraw_amount: u64) -> Result<()> {
         authority: account.to_account_info().clone(),
     };
 
-    let num_accts_bytes = &(member.num_accounts).to_le_bytes();
+    let num_accts_bytes = &(account.acct_no).to_le_bytes();
     let member_key = member.to_account_info().key();
 
     let seeds = &[
