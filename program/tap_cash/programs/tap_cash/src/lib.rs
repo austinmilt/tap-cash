@@ -24,4 +24,8 @@ pub mod tap_cash {
     pub fn initialize_account(ctx: Context<InitializeMemberAccount>) -> Result<()>{
         instructions::init_account(ctx)
     }
+
+    pub fn send_spl(ctx: Context<SendSpl>, withdraw_amount: u64) -> Result<()>{
+        instructions::send_spl(ctx, withdraw_amount)
+    }
 }
