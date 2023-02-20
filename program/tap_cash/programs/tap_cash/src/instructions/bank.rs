@@ -25,18 +25,19 @@ pub struct InitializeBank<'info> {
     pub rent: Sysvar<'info, Rent>
 }
 
-pub fn init_bank(
+pub fn initialize_bank(
     ctx: Context<InitializeBank>
 ) -> Result<()> { 
     let bank = &mut ctx.accounts.bank;
 
     require!(!bank.initialized, BankError::AlreadyInitialized);
-
-    bank.initialized = true;
-    bank.version = 1;
-    bank.authority = ctx.accounts.bank_authority.key();
-    bank.fee_payer = ctx.accounts.bank_authority.key();
-    bank.bump = *ctx.bumps.get("bank").unwrap();
+    bank.set_inner(Bank {
+        initialized: true,
+        version: 1,
+        authority: ctx.accounts.bank_authority.key(),
+        fee_payer: ctx.accounts.bank_authority.key(),
+        bump: *ctx.bumps.get("bank").unwrap()
+    });
     bank.log_init();
     Ok(()) 
 }

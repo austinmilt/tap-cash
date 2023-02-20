@@ -22,4 +22,3 @@ impl Bank {
         msg!("Init new bank v.{}", self.version);
     }
 }
-//https://book.anchor-lang.com/anchor_references/space.html

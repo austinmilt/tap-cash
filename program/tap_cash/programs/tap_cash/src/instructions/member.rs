@@ -24,26 +24,27 @@ pub struct InitializeMember<'info> {
         ], //(1 membership per pax per bank)
         bump
     )]
-    pub member_pda: Account<'info,Member>,
+    pub member_pda: Account<'info, Member>,
     pub user_id: SystemAccount<'info>,
     pub bank: Account<'info, Bank>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn init_member(
+pub fn initialize_member(
     ctx: Context<InitializeMember>
 ) -> Result<()> { 
     let new_member = &mut ctx.accounts.member_pda;
 
     require!(!new_member.initialized, MemberError::AlreadyInitialized);
-
-    new_member.initialized = true;
-    new_member.version = 1;
-    new_member.bank = ctx.accounts.bank.key();
-    new_member.user_id = ctx.accounts.user_id.key();
-    new_member.bump = *ctx.bumps.get("member_pda").unwrap();
-    new_member.num_accounts = 0;
+    new_member.set_inner(Member {
+        initialized: true, 
+        version: 1,
+        bank: ctx.accounts.bank.key(),
+        user_id: ctx.accounts.user_id.key(),
+        bump: *ctx.bumps.get("member_pda").unwrap(),
+        num_accounts: 0
+    });
     new_member.log_init();
     Ok(()) 
 }

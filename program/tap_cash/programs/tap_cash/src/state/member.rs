@@ -24,4 +24,3 @@ impl Member {
         msg!("Init new member:{}", self.user_id);
     }
 }
-//https://book.anchor-lang.com/anchor_references/space.html

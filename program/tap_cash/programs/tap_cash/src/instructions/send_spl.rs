@@ -29,7 +29,7 @@ pub struct SendSpl<'info> {
         bump = member.bump
     )]
     // TO DO constraint member.bank = bank
-    pub member: Account<'info,Member>,
+    pub member: Account<'info, Member>,
     pub user_id: Signer<'info>,
 
     pub bank: Account<'info, Bank>,

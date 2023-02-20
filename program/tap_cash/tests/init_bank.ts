@@ -27,9 +27,7 @@ async function createOrFetchUsdc(program, auth) {
       // if it's already init, we just use it: 
       MINT_KEY = USDC.publicKey;
   }
-  finally {
-      return MINT_KEY;
-  }    
+  return MINT_KEY;
 }
 
 describe("tap_cash", async () => {
@@ -186,7 +184,7 @@ describe("tap_cash", async () => {
       ],
       program.programId
     );
-    let user_ata = await getAssociatedTokenAddress(USDC, accountPda, true);
+    let userAta = await getAssociatedTokenAddress(USDC, accountPda, true);
     try {
       let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
       const tx = await program.methods.initializeAccount()
@@ -196,7 +194,7 @@ describe("tap_cash", async () => {
           userId: memberId.publicKey,
           bank: bankPda,
           accountPda: accountPda,
-          accountAta: user_ata,
+          accountAta: userAta,
           tokenMint: USDC,
           tokenProgram: TOKEN_PROGRAM_ID,
           associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -242,8 +240,8 @@ describe("tap_cash", async () => {
       ],
       program.programId
     );
-    let user_ata = await getAssociatedTokenAddress(USDC, accountPda, true);
-    let ix = await createMintToCheckedInstruction(USDC, user_ata, bankAuth.publicKey, 100e6, 6);
+    let userAta = await getAssociatedTokenAddress(USDC, accountPda, true);
+    let ix = await createMintToCheckedInstruction(USDC, userAta, bankAuth.publicKey, 100e6, 6);
     let transaction = new anchor.web3.Transaction().add(ix);
     
     try {
@@ -270,7 +268,7 @@ describe("tap_cash", async () => {
           userId: memberId.publicKey,
           bank: bankPda,
           accountPda: accountPda,
-          accountAta: user_ata,
+          accountAta: userAta,
           destinationAta: friendUsdcAta.address,
           tokenMint: USDC,
           tokenProgram: TOKEN_PROGRAM_ID,

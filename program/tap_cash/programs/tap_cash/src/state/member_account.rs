@@ -29,5 +29,3 @@ impl MemberAccount {
         msg!("Init new acct for:{}", self.member);
     }
 }
-//https://book.anchor-lang.com/anchor_references/space.html
-

@@ -64,9 +64,4 @@ yarn-error.log
 
 .env*
 !.env.example
-program/yarn.lock
-program/.gitignore
-program/.prettierignore
-program/Cargo.lock
 program2
-program/tap_cash/yarn.lock

@@ -11,7 +11,6 @@ use crate::{
 
 
 #[derive(Accounts)]
-//#[instruction(account_no: u8)]
 pub struct InitializeMemberAccount<'info> {
 
     #[account(
@@ -30,7 +29,7 @@ pub struct InitializeMemberAccount<'info> {
         bump = member.bump
     )]
     // constraint member.bank = bank
-    pub member: Account<'info,Member>,
+    pub member: Account<'info, Member>,
     pub user_id: SystemAccount<'info>,
     pub bank: Account<'info, Bank>,
 
@@ -42,6 +41,8 @@ pub struct InitializeMemberAccount<'info> {
             member.to_account_info().key().as_ref(), 
             CHECKING_SEED.as_ref(), 
             token_mint.key().as_ref(), 
+            // Account is initiated at 0. Will be incremented in the function
+            // so we want our seed to match the new state (not the old)
             &(member.num_accounts+1).to_le_bytes(),
         ],
         bump
@@ -69,17 +70,18 @@ pub fn init_account(
     let member = &mut ctx.accounts.member;
     let account_number = member.num_accounts + 1;
 
-    // check member init
-    // check account not init
+    // Add checks (member init, etc)
 
-    new_account.initialized = true;
-    new_account.version = 1;
-    new_account.member = member.key();
-    new_account.token_mint = ctx.accounts.token_mint.key();
-    new_account.ata = ctx.accounts.account_ata.key();
-    new_account.bump = *ctx.bumps.get("account_pda").unwrap();
-    new_account.acct_no = account_number;
-    new_account.acct_type = 0;
+    new_account.set_inner(MemberAccount{
+        initialized: true,
+        version: 1,
+        member: member.key(),
+        token_mint: ctx.accounts.token_mint.key(),
+        ata: ctx.accounts.account_ata.key(),
+        bump: *ctx.bumps.get("account_pda").unwrap(),
+        acct_no: account_number,
+        acct_type: 0
+    });
     
     member.num_accounts = account_number;
 
