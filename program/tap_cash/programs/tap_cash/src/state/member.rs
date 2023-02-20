@@ -2,7 +2,6 @@ use anchor_lang::prelude::*;
 
 #[account]
 pub struct Member {
-    pub initialized: bool,
     pub version: u8,
     pub bank: Pubkey,
     pub user_id: Pubkey,        // PubKey received on enrollment 
@@ -13,7 +12,6 @@ pub struct Member {
 impl Member {
     pub fn get_space() -> usize {
          8 + // account discriminator
-         1 + // initialized
          1 + // version
         32 + // bank pda
         32 + // user id

@@ -30,9 +30,7 @@ pub fn initialize_bank(
 ) -> Result<()> { 
     let bank = &mut ctx.accounts.bank;
 
-    require!(!bank.initialized, BankError::AlreadyInitialized);
     bank.set_inner(Bank {
-        initialized: true,
         version: 1,
         authority: ctx.accounts.bank_authority.key(),
         fee_payer: ctx.accounts.bank_authority.key(),

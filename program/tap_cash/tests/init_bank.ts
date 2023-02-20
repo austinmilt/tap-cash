@@ -6,7 +6,7 @@ import { assert } from "chai";
 import { TapCash } from "../target/types/tap_cash";
 import { requestAirdrops } from "./helpers/airdrop";
 
-const logAllTx = true;
+const logAllTx = false;
 const { SystemProgram, SYSVAR_RENT_PUBKEY, PublicKey, Keypair } = web3;
 
 async function createOrFetchUsdc(program, auth) {
@@ -89,7 +89,6 @@ describe("tap_cash", async () => {
 
       assert(bank.authority.toBase58() === bankAuth.publicKey.toBase58(), "The bank auth should be the user.");
       assert(bankBump == bank.bump, "Bank bump as expected.");
-      assert(bank.initialized, "Bank is initialized");
     };
 
 
@@ -129,7 +128,6 @@ describe("tap_cash", async () => {
         console.error("Error while fetching the vault account:", error);
       }
 
-      assert(member.initialized, "Member is initialized");
       assert(member.bank.toBase58() == bankPda.toBase58());
       assert(member.bump == memberBump, "Bumps equal")
     };

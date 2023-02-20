@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 use crate::{
     constants::{MEMBER_SEED},
     state::{Member, Bank},
-    model::error::{MemberError}
 };
 
 #[derive(Accounts)]
@@ -36,9 +35,7 @@ pub fn initialize_member(
 ) -> Result<()> { 
     let new_member = &mut ctx.accounts.member_pda;
 
-    require!(!new_member.initialized, MemberError::AlreadyInitialized);
     new_member.set_inner(Member {
-        initialized: true, 
         version: 1,
         bank: ctx.accounts.bank.key(),
         user_id: ctx.accounts.user_id.key(),

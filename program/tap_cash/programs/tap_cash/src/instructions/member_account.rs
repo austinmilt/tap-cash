@@ -73,7 +73,6 @@ pub fn init_account(
     // Add checks (member init, etc)
 
     new_account.set_inner(MemberAccount{
-        initialized: true,
         version: 1,
         member: member.key(),
         token_mint: ctx.accounts.token_mint.key(),
