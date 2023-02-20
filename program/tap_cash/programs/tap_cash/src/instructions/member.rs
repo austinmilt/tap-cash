@@ -9,7 +9,7 @@ use crate::{
 pub struct InitializeMember<'info> {
     #[account(
         mut,
-        // should be bank.feepayer
+        constraint = payer.to_account_info().key() == bank.fee_payer.key()
     )]
     pub payer: Signer<'info>,
     #[account(
@@ -25,6 +25,7 @@ pub struct InitializeMember<'info> {
     )]
     pub member_pda: Account<'info, Member>,
     pub user_id: SystemAccount<'info>,
+    #[account(owner = crate::ID)]
     pub bank: Account<'info, Bank>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,

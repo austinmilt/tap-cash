@@ -21,6 +21,8 @@ pub struct InitializeMemberAccount<'info> {
 
     #[account(
         mut,
+        owner = crate::ID,
+        has_one = bank,
         seeds = [
             MEMBER_SEED.as_ref(), 
             bank.to_account_info().key().as_ref(), 
@@ -28,10 +30,9 @@ pub struct InitializeMemberAccount<'info> {
         ],
         bump = member.bump
     )]
-    
-    #[account(has_one = bank)]
     pub member: Account<'info, Member>,
     pub user_id: SystemAccount<'info>,
+    #[account(owner = crate::ID)]
     pub bank: Account<'info, Bank>,
 
     #[account(
