@@ -13,12 +13,14 @@ use crate::{
 #[derive(Accounts)]
 pub struct SendSpl<'info> {
 
+    /// Fee payer is the Bank's defined payer (not the user)
     #[account(
         mut,
         constraint = payer.to_account_info().key() == bank.fee_payer.key()
     )]
     pub payer: Signer<'info>,
 
+    /// The member for is transferring a token
     #[account(
         mut,
         owner = crate::ID,
@@ -31,11 +33,15 @@ pub struct SendSpl<'info> {
         bump = member.bump
     )]
     pub member: Account<'info, Member>,
+
+    /// User ID is the Public Key the user recieved when enrolling via Web3 auth (local device wallet for signing)
     pub user_id: Signer<'info>,
 
+    /// The bank the member is enrolled in
     #[account(owner = crate::ID)]
     pub bank: Account<'info, Bank>,
 
+    /// The Member Account PDA that will authorize the token transfer 
     #[account(
         owner = crate::ID,
         seeds = [
@@ -48,21 +54,31 @@ pub struct SendSpl<'info> {
     )]
     pub account_pda: Account<'info,MemberAccount>,
 
+    /// Token account sending SPL tokens; it is owned by the MemberAccount (derived off path between token_mint and account_pda) 
     #[account(
         mut,
         constraint = account_ata.mint == token_mint.key(),
         constraint = account_ata.owner == account_pda.key()
     )]
     pub account_ata: Account<'info, TokenAccount>,
+
+    /// Token account receiving SPL tokens (mint must match the defined mint). Assumes the account exists.
     #[account(
         mut,
         constraint = destination_ata.mint == token_mint.key()
     )]
     pub destination_ata: Account<'info, TokenAccount>,
 
+    /// Mint address of the Token (for now, this will be limited to USDC)
     pub token_mint: Account<'info, Mint>,
+
+    /// Standard Token Program 
     pub token_program: Program<'info, Token>,
+
+    /// Standard Associated Token Program (for init new ATA)
     pub associated_token_program: Program<'info, AssociatedToken>,
+
+    /// Standard system program, for creating accounts
     pub system_program: Program<'info, System>,
 }
 
@@ -74,15 +90,19 @@ pub fn send_spl(ctx: Context<SendSpl>, withdraw_amount: u64) -> Result<()> {
     let token_program = &mut ctx.accounts.token_program;
     let mint = &mut ctx.accounts.token_mint;
 
+    // Define CPI Accounts for SPL transfer
     let cpi_accounts = SplTransfer {
         from: source.to_account_info().clone(),
         to: destination.to_account_info().clone(),
         authority: account.to_account_info().clone(),
     };
 
+    // Derive bytes needed for our signer based on the account no
     let num_accts_bytes = &(account.acct_no).to_le_bytes();
+
     let member_key = member.to_account_info().key();
 
+    // Seeds should match the MemberAccount PDA
     let seeds = &[
         member_key.as_ref(),
         b"checking",
@@ -90,6 +110,8 @@ pub fn send_spl(ctx: Context<SendSpl>, withdraw_amount: u64) -> Result<()> {
         num_accts_bytes,
         &[account.bump]
     ];
+
+    // Sign and execute transfer
     let signer = &[&seeds[..]];
     let cpi = CpiContext::new_with_signer(
         token_program.to_account_info(),

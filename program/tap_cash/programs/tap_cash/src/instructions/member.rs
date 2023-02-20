@@ -1,17 +1,21 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    constants::{MEMBER_SEED},
+    constants::{MEMBER_SEED, MEMBER_VERSION},
     state::{Member, Bank},
 };
 
 #[derive(Accounts)]
 pub struct InitializeMember<'info> {
+
+    /// Fee payer is the Bank's defined payer (not the user)
     #[account(
         mut,
         constraint = payer.to_account_info().key() == bank.fee_payer.key()
     )]
     pub payer: Signer<'info>,
+
+    /// Member PDA - 1 member per person per bank
     #[account(
         init,
         payer = payer,
@@ -20,15 +24,23 @@ pub struct InitializeMember<'info> {
             MEMBER_SEED.as_ref(), 
             bank.to_account_info().key().as_ref(), 
             user_id.key().as_ref()
-        ], //(1 membership per pax per bank)
+        ],
         bump
     )]
     pub member_pda: Account<'info, Member>,
+
+    /// User ID is the Public Key the user recieved when enrolling via Web3 auth (local device wallet for signing)
     pub user_id: SystemAccount<'info>,
+
+    /// The bank the member is enrolling to (for now, just 1 Bank)
     #[account(owner = crate::ID)]
     pub bank: Account<'info, Bank>,
+
+    /// Standard system program, for creating accounts
     pub system_program: Program<'info, System>,
-    pub rent: Sysvar<'info, Rent>,
+    
+    /// Standard rent sysvar, for determining rent for created accounts
+    pub rent: Sysvar<'info, Rent>
 }
 
 pub fn initialize_member(
@@ -36,8 +48,9 @@ pub fn initialize_member(
 ) -> Result<()> { 
     let new_member = &mut ctx.accounts.member_pda;
 
+    // Create a new member state account 
     new_member.set_inner(Member {
-        version: 1,
+        version: MEMBER_VERSION,
         bank: ctx.accounts.bank.key(),
         user_id: ctx.accounts.user_id.key(),
         bump: *ctx.bumps.get("member_pda").unwrap(),
