@@ -1,7 +1,5 @@
 import { ChannelResponse, Circle, PaymentCreationRequest } from "@circle-fin/circle-sdk";
-import { PaymentsApiFactory } from "@circle-fin/circle-sdk/dist/generated/api";
 import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT } from "../constants";
-import fetch from 'node-fetch';
 
 export class CircleClient {
     private readonly sdk: Circle;
@@ -19,7 +17,7 @@ export class CircleClient {
         let payementResponse = await this.sdk.payments.createPayment(paymentDetail);
         return payementResponse.data.data?.id;
     }
-    
+
     /**
      * Dunno what this is for, just an example.
      *
