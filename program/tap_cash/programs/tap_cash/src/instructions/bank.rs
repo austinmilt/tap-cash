@@ -15,7 +15,7 @@ pub struct InitializeBank<'info> {
     )]
     pub bank_authority: Signer<'info>,
 
-    // The Bank (for now, there will only be 1 bank) - only allowing 1 per authority key
+    /// The Bank (for now, there will only be 1 bank) - only allowing 1 per authority key
     #[account(
         init,
         payer = bank_authority,
