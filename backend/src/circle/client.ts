@@ -1,5 +1,7 @@
-import { Circle, PaymentCreationRequest, CardCreationRequest, Card } from "@circle-fin/circle-sdk";
+import { Circle, PaymentCreationRequest, CardCreationRequest, Card, TransferCreationRequest, Transfer, BusinessRecipientAddressCreationRequest, BusinessRecipientAddressObject } from "@circle-fin/circle-sdk";
 import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT } from "../constants";
+import { CardDetails, EncryptedValue } from "../types/cirlce";
+import { createMessage, encrypt, readKey } from 'openpgp'
 
 export class CircleClient {
     private readonly sdk: Circle;
@@ -41,6 +43,17 @@ export class CircleClient {
     public async tryFetchCard(id: string): Promise<Card | undefined> {
         let card = await this.sdk.cards.getCard(id);
         return card.data?.data;
+    }
+
+
+    public async transferUsdc(transferDetail: TransferCreationRequest): Promise<Transfer | undefined> {
+        let transfer = await this.sdk.transfers.createTransfer();
+        return transfer.data.data;
+    }
+
+    public async createDestinationAddress(destination: BusinessRecipientAddressCreationRequest): Promise<BusinessRecipientAddressObject | undefined> {
+        let response = await this.sdk.addresses.createBusinessRecipientAddress();
+        return response.data.data;
     }
 
 }
