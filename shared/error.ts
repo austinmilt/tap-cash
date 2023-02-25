@@ -65,6 +65,15 @@ export class ApiError extends Error {
         );
     }
 
+    public static solanaTxError(): ApiError {
+        return new ApiError(
+            ApiErrorCode.SOLANA_TX_ERROR,
+            "Solana transaction Error",
+            ApiResponseStatus.SERVER_ERROR,
+            500
+        )
+    }
+
 
     public static isErrorResponse(response: ApiResponse<unknown>): boolean {
         return (response.error !== undefined);
@@ -87,5 +96,6 @@ export class ApiError extends Error {
 export enum ApiErrorCode {
     GENERAL_SERVER_ERROR = 0,
     GENERAL_CLIENT_ERROR = 1,
-    MISSING_PARAMETER = 2
+    MISSING_PARAMETER = 2,
+    SOLANA_TX_ERROR = 3,
 }

@@ -1,5 +1,9 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
+import * as anchor from "@project-serum/anchor";
+import { web3, Program, workspace } from '@project-serum/anchor';
+import { TapCash } from "./types/tap-cash";
+
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
 // during deployment
@@ -42,3 +46,26 @@ function parseEnv<T>(
 function castString<T>(value: string): T {
     return value as T;
 }
+
+export interface WorkSpace {
+    connection: web3.Connection;
+    provider: anchor.AnchorProvider;
+    program: Program<TapCash>;
+}
+
+export const getWorkspace = async(): Promise<WorkSpace> => {
+    const program = await workspace.TapCash as Program<TapCash>;
+    //TODO add endpoint logic
+    const connection = new web3.Connection(''); 
+    // TODO FIX .env
+    const anchorWallet = new anchor.Wallet(web3.Keypair.fromSecretKey(new Uint8Array(process.env.BANK_KEY))); 
+    const provider: anchor.AnchorProvider = new anchor.AnchorProvider(
+        connection,
+        // fallback value allows querying the program without having a wallet connected
+        anchorWallet,
+        anchor.AnchorProvider.defaultOptions()
+    );
+
+    return {connection, provider, program};
+}
+
