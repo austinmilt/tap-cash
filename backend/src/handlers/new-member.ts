@@ -6,7 +6,7 @@ import { BigTableClient } from "../db/bigtable";
 import { BANK_SEED, CHECKING_SEED, getWorkspace, MEMBER_SEED, WorkSpace } from "../constants";
 import { ApiError, SolanaTxType } from "../../../shared/error";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
-import { createAccountNoBuffer, createOrFetchUsdc } from "../helpers/solana";
+import { createAccountNoBuffer, getOrCreateUsdc } from "../helpers/solana";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 const { SystemProgram, SYSVAR_RENT_PUBKEY, PublicKey } = anchor.web3;
@@ -72,7 +72,7 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
 
     // Create USDC Associated Token Account
 
-    const usdc = await createOrFetchUsdc(program, bankSigner);
+    const usdc = await getOrCreateUsdc(connection, bankSigner);
     if (!usdc) throw ApiError.solanaTxError(SolanaTxType.CREATE_MINT);
 
     const numAccountsBuffer = createAccountNoBuffer(1); // Always 1 for Init (1st account)
