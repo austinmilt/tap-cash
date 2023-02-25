@@ -1,11 +1,10 @@
-import { EmailAddress } from "../../../shared/member";
-import { Currency } from "../../../shared/currency";
+import { AccountId, EmailAddress } from "../../../shared/member";
 
 //TODO tests
 
 export interface DepositArgs {
     emailAddress: EmailAddress;
-    currency: Currency;
+    destinationAccountId: AccountId;
     amount: number;
     //TODO something about handling credit card info
     //TODO probably the user's private key

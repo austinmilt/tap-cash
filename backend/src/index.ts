@@ -6,10 +6,10 @@ import { ApiError } from '../../shared/error';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
-import { ApiDepositRequest, ApiResponseStatus } from '../../shared/api';
+import { ApiDepositRequest, ApiInitializeMemberRequest, ApiResponseStatus, ApiSendRequest } from '../../shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
-import { send, sendArgs as SendArgs } from './handlers/send';
-import { Currency } from '../../shared/currency';
+import { send, SendArgs } from './handlers/send';
+import { AccountId, EmailAddress } from '../../shared/member';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
@@ -46,8 +46,8 @@ ff.http('new-member', (req: ff.Request, res: ff.Response) => {
 function transformInitializeMemberRequest(req: ff.Request): InitializeMemberArgs {
   Arg.notNullish(req.body, "req.body");
   return {
-    emailAddress: getRequiredParam(req.body, "emailAddress"),
-    walletAddress: getPublicKeyParam(req.body, "walletAddressBase58")
+    emailAddress: getRequiredParam<ApiInitializeMemberRequest, EmailAddress>(req.body, "emailAddress"),
+    walletAddress: getPublicKeyParam<ApiInitializeMemberRequest>(req.body, "walletAddressBase58")
   };
 }
 
@@ -65,7 +65,7 @@ function transformDepositRequest(req: ff.Request): DepositArgs {
   Arg.notNullish(req.body, "req.body");
   return {
     emailAddress: getRequiredParam<ApiDepositRequest, string>(req.body, "emailAddress"),
-    currency: getRequiredParam<ApiDepositRequest, Currency>(req.body, "currency"),
+    destinationAccountId: getRequiredParam<ApiDepositRequest, AccountId>(req.body, "destinationAccountId"),
     amount: getRequiredParam<ApiDepositRequest, number>(req.body, "amount", Number.parseFloat)
   };
 }
@@ -83,10 +83,10 @@ ff.http('send', (req: ff.Request, res: ff.Response) => {
 function transformSendRequest(req: ff.Request): SendArgs {
   Arg.notNullish(req.body, "req.body");
   return {
-    senderEmailAddress: getRequiredParam(req.body, "senderEmail"),
-    recipientEmailAddress: getRequiredParam(req.body, "recipientEmail"),
-    currency: getRequiredParam(req.body, "currency"),
-    amount: getRequiredParam(req.body, "amount", Number.parseFloat)
+    senderEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(req.body, "senderEmailAddress"),
+    recipientEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(req.body, "recipientEmailAddress"),
+    senderAccountId: getRequiredParam<ApiSendRequest, AccountId>(req.body, "senderAccountId"),
+    amount: getRequiredParam<ApiSendRequest, number>(req.body, "amount", Number.parseFloat)
   };
 }
 

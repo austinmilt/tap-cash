@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, SEND_URI } from "../common/constants";
 import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse, ApiSendRequest, ApiSendResponse } from "../../shared/api";
-import { EmailAddress } from "../../shared/member";
+import { AccountId, EmailAddress } from "../../shared/member";
 import { Currency } from "../../shared/currency";
 import * as anchor from "@project-serum/anchor";
 
@@ -62,7 +62,7 @@ export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> 
 
 interface DepositArgs {
     email: EmailAddress;
-    currency: Currency;
+    destination: AccountId;
     amount: number;
     //TODO something about handling credit card info
     //TODO probably the user's private key
@@ -75,7 +75,7 @@ export function useDeposit(): QueryContext<DepositArgs, void> {
     const submit = useCallback((req: DepositArgs) => {
         queryContext.submit({
             emailAddress: req.email,
-            currency: req.currency,
+            destinationAccountId: req.destination,
             amount: req.amount
         });
 
@@ -92,7 +92,7 @@ export function useDeposit(): QueryContext<DepositArgs, void> {
 interface SendArgs {
     sender: EmailAddress;
     recipeient: EmailAddress;
-    currency: Currency;
+    senderAccount: AccountId;
     amount: number;
     //TODO probably the sender's private key
 }
@@ -105,7 +105,7 @@ export function useSend(): QueryContext<SendArgs, void> {
         queryContext.submit({
             senderEmailAddress: req.sender,
             recipientEmailAddress: req.recipeient,
-            currency: req.currency,
+            senderAccountId: req.senderAccount,
             amount: req.amount
         });
 

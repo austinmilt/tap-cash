@@ -28,7 +28,7 @@ export interface ApiIntializeMemberResponse extends ApiResponse<void> { }
 
 export interface ApiDepositRequest {
     emailAddress: string;
-    currency: string;
+    destinationAccountId: string;
     amount: number;
     //TODO
 }
@@ -40,7 +40,7 @@ export interface ApiDepositResponse extends ApiResponse<void> { }
 export interface ApiSendRequest {
     senderEmailAddress: string;
     recipientEmailAddress: string;
-    currency: string;
+    senderAccountId: string;
     amount: number;
     //TODO
 }
