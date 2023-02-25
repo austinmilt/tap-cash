@@ -29,7 +29,6 @@ export interface InitializeMemberResult {
 const DB_CLIENT: DatabaseClient = BigTableClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
-    // TODO: make sure bank has SOL (local and devnet)
 
     const workspace: WorkSpace = await getWorkspace();
     const bankAuth = workspace.provider;
@@ -37,10 +36,10 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
     const memberId = request.walletAddress;
     const { connection, program } = workspace;
 
+    // Make sure payer wallet has SOL
     await airdropIfNeeded(workspace);
 
     const bankPda = await getOrInitBank(workspace);
-    
     if (!bankPda) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
     const [memberPda] = await PublicKey.findProgramAddressSync(
@@ -71,18 +70,15 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
     }
 
     // Create USDC Associated Token Account
-
     const usdc = await getOrCreateUsdc(connection, bankSigner);
     if (!usdc) throw ApiError.solanaTxError(SolanaTxType.CREATE_MINT);
-
-    const numAccountsBuffer = createAccountNoBuffer(1); // Always 1 for Init (1st account)
 
     const [accountPda] = await PublicKey.findProgramAddressSync(
         [
             memberPda.toBuffer(),
             Buffer.from(CHECKING_SEED),
             usdc.toBuffer(),
-            numAccountsBuffer
+            createAccountNoBuffer(1)
         ],
         program.programId
     );

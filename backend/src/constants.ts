@@ -6,7 +6,7 @@ import { TapCash } from "./types/tap-cash";
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
 // during deployment
-yamlenv.config({path: ".env.local.yml"});
+yamlenv.config({ path: ".env.local.yml" });
 
 export const CIRCLE_API_KEY: string = parseEnv("CIRCLE_API_KEY", process.env.CIRCLE_API_KEY);
 
@@ -52,12 +52,12 @@ export interface WorkSpace {
     program: anchor.Program<TapCash>;
 }
 
-export const getWorkspace = async(): Promise<WorkSpace> => {
+export const getWorkspace = async (): Promise<WorkSpace> => {
     const program = await anchor.workspace.TapCash as anchor.Program<TapCash>;
     //TODO add endpoint logic
-    const connection = new anchor.web3.Connection(''); 
+    const connection = new anchor.web3.Connection('');
     // TODO FIX .env
-    const anchorWallet = new anchor.Wallet(BANK_AUTH); 
+    const anchorWallet = new anchor.Wallet(BANK_AUTH);
     const provider: anchor.AnchorProvider = new anchor.AnchorProvider(
         connection,
         // fallback value allows querying the program without having a wallet connected
@@ -65,7 +65,7 @@ export const getWorkspace = async(): Promise<WorkSpace> => {
         anchor.AnchorProvider.defaultOptions()
     );
 
-    return {connection, provider, program};
+    return { connection, provider, program };
 }
 
 export const FAKE_USDC = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.USDC_KEY));

@@ -110,6 +110,6 @@ export async function airdropIfNeeded(workspace: WorkSpace, lamports = (anchor.w
         blockhash: blockhash,
         lastValidBlockHeight: lastValidBlockHeight
     });
-    
+
     return;
 }
