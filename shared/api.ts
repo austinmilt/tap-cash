@@ -47,3 +47,14 @@ export interface ApiSendRequest {
 
 
 export interface ApiSendResponse extends ApiResponse<void> { }
+
+
+export interface ApiWithdrawRequest {
+    emailAddress: string;
+    sourceAccount: string;
+    amount: number;
+    //TODO
+}
+
+
+export interface ApiWithdrawResponse extends ApiResponse<void> { }

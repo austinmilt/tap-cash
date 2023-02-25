@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, SEND_URI } from "../common/constants";
-import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse, ApiSendRequest, ApiSendResponse } from "../../shared/api";
+import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, SEND_URI, WITHDRAW_URI } from "../common/constants";
+import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse, ApiSendRequest, ApiSendResponse, ApiWithdrawRequest, ApiWithdrawResponse } from "../../shared/api";
 import { AccountId, EmailAddress } from "../../shared/member";
 import { Currency } from "../../shared/currency";
 import * as anchor from "@project-serum/anchor";
@@ -106,6 +106,35 @@ export function useSend(): QueryContext<SendArgs, void> {
             senderEmailAddress: req.sender,
             recipientEmailAddress: req.recipeient,
             senderAccountId: req.senderAccount,
+            amount: req.amount
+        });
+
+    }, [queryContext.submit]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: undefined
+    };
+}
+
+
+interface WithdrawArgs {
+    email: EmailAddress;
+    source: AccountId;
+    amount: number;
+    //TODO probably the user's private key
+    //TODO something about destination bank account
+}
+
+
+export function useWithdraw(): QueryContext<WithdrawArgs, void> {
+    const queryContext = usePostQuery<ApiWithdrawRequest, ApiWithdrawResponse>(WITHDRAW_URI);
+
+    const submit = useCallback((req: WithdrawArgs) => {
+        queryContext.submit({
+            emailAddress: req.email,
+            sourceAccount: req.source,
             amount: req.amount
         });
 

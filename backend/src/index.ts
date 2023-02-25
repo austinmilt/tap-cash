@@ -6,10 +6,11 @@ import { ApiError } from '../../shared/error';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
-import { ApiDepositRequest, ApiInitializeMemberRequest, ApiResponseStatus, ApiSendRequest } from '../../shared/api';
+import { ApiDepositRequest, ApiInitializeMemberRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
 import { send, SendArgs } from './handlers/send';
 import { AccountId, EmailAddress } from '../../shared/member';
+import { WithdrawArgs, withdraw } from './handlers/withdraw';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
@@ -64,7 +65,7 @@ ff.http('deposit', (req: ff.Request, res: ff.Response) => {
 function transformDepositRequest(req: ff.Request): DepositArgs {
   Arg.notNullish(req.body, "req.body");
   return {
-    emailAddress: getRequiredParam<ApiDepositRequest, string>(req.body, "emailAddress"),
+    emailAddress: getRequiredParam<ApiDepositRequest, EmailAddress>(req.body, "emailAddress"),
     destinationAccountId: getRequiredParam<ApiDepositRequest, AccountId>(req.body, "destinationAccountId"),
     amount: getRequiredParam<ApiDepositRequest, number>(req.body, "amount", Number.parseFloat)
   };
@@ -87,6 +88,25 @@ function transformSendRequest(req: ff.Request): SendArgs {
     recipientEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(req.body, "recipientEmailAddress"),
     senderAccountId: getRequiredParam<ApiSendRequest, AccountId>(req.body, "senderAccountId"),
     amount: getRequiredParam<ApiSendRequest, number>(req.body, "amount", Number.parseFloat)
+  };
+}
+
+
+ff.http('withdraw', (req: ff.Request, res: ff.Response) => {
+  withdraw(transformWithdrawRequest(req))
+    .then(() => {
+      respondOK(res);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformWithdrawRequest(req: ff.Request): WithdrawArgs {
+  Arg.notNullish(req.body, "req.body");
+  return {
+    emailAddress: getRequiredParam<ApiWithdrawRequest, EmailAddress>(req.body, "emailAddress"),
+    sourceAccount: getRequiredParam<ApiWithdrawRequest, AccountId>(req.body, "sourceAccount"),
+    amount: getRequiredParam<ApiWithdrawRequest, number>(req.body, "amount", Number.parseFloat)
   };
 }
 
