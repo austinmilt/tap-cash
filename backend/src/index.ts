@@ -6,11 +6,12 @@ import { ApiError } from '../../shared/error';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
-import { ApiDepositRequest, ApiInitializeMemberRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
+import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
 import { send, SendArgs } from './handlers/send';
 import { AccountId, EmailAddress } from '../../shared/member';
 import { WithdrawArgs, withdraw } from './handlers/withdraw';
+import { QueryRecipientsArgs, queryRecipients } from './handlers/query-recipients';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
@@ -111,8 +112,31 @@ function transformWithdrawRequest(req: ff.Request): WithdrawArgs {
 }
 
 
+ff.http('query-recipients', (req: ff.Request, res: ff.Response) => {
+  queryRecipients(transformQueryRecipientsRequest(req))
+    .then(() => {
+      respondOK(res);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformQueryRecipientsRequest(req: ff.Request): QueryRecipientsArgs {
+  Arg.notNullish(req.body, "req.body");
+  return {
+    emailQuery: getRequiredParam<ApiQueryRecipientsRequest, string>(req.body, "emailQuery"),
+    limit: getRequiredIntegerParam<ApiQueryRecipientsRequest>(req.body, "limit"),
+  };
+}
+
+
+function getRequiredIntegerParam<R>(body: ff.Request['body'], key: keyof R): number {
+  return getRequiredParam<R, number>(body, key, Number.parseInt);
+}
+
+
 function getPublicKeyParam<R>(body: ff.Request['body'], key: keyof R): anchor.web3.PublicKey {
-  return getRequiredParam(body, key, v => new anchor.web3.PublicKey(v));
+  return getRequiredParam<R, anchor.web3.PublicKey>(body, key, v => new anchor.web3.PublicKey(v));
 }
 
 

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, SEND_URI, WITHDRAW_URI } from "../common/constants";
-import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse, ApiSendRequest, ApiSendResponse, ApiWithdrawRequest, ApiWithdrawResponse } from "../../shared/api";
-import { AccountId, EmailAddress } from "../../shared/member";
+import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, QUERY_RECIPIENTS_URI, SEND_URI, WITHDRAW_URI } from "../common/constants";
+import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiQueryRecipientsRequest, ApiQueryRecipientsResponse, ApiResponse, ApiSendRequest, ApiSendResponse, ApiWithdrawRequest, ApiWithdrawResponse, GetQueryParams } from "../../shared/api";
+import { AccountId, EmailAddress, ProfilePicture } from "../../shared/member";
 import { Currency } from "../../shared/currency";
 import * as anchor from "@project-serum/anchor";
 
@@ -148,9 +148,46 @@ export function useWithdraw(): QueryContext<WithdrawArgs, void> {
 }
 
 
-interface GetQueryParams {
-    [param: string]: string;
+interface QueryRecipientsArgs {
+    emailQuery: string;
+    limit: number;
 }
+
+
+type QueryRecipientsData = {
+    email: EmailAddress;
+    profile: ProfilePicture;
+    name: string;
+}[];
+
+
+export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, QueryRecipientsData> {
+    const queryContext = useGetQuery<ApiQueryRecipientsRequest, ApiQueryRecipientsResponse>(QUERY_RECIPIENTS_URI);
+
+    const submit = useCallback(({ emailQuery, limit }: QueryRecipientsArgs) => {
+        queryContext.submit({
+            emailQuery: emailQuery,
+            limit: limit.toString()
+        });
+    }, [queryContext.submit]);
+
+
+    const data: QueryRecipientsData | undefined = useMemo(() => {
+        if (queryContext.data?.result === undefined) return undefined;
+        return queryContext.data.result.map(v => ({
+            email: v.emailAddress,
+            profile: v.profilePicture,
+            name: v.name
+        }));
+    }, [queryContext.data]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: data
+    };
+}
+
 
 
 function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): QueryContext<Req, Res> {

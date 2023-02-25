@@ -1,5 +1,9 @@
 import { ApiErrorCode } from "./error";
 
+export interface GetQueryParams {
+    [param: string]: string;
+}
+
 export interface ApiResponse<T> {
     result?: T;
     error?: {
@@ -58,3 +62,19 @@ export interface ApiWithdrawRequest {
 
 
 export interface ApiWithdrawResponse extends ApiResponse<void> { }
+
+
+export interface ApiQueryRecipientsRequest extends GetQueryParams {
+    emailQuery: string;
+    limit: string;
+}
+
+
+export type ApiQueryRecipientsData = {
+    emailAddress: string;
+    profilePicture: string;
+    name: string;
+}[];
+
+
+export interface ApiQueryRecipientsResponse extends ApiResponse<ApiQueryRecipientsData> { }
