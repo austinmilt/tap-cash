@@ -65,10 +65,10 @@ export class ApiError extends Error {
         );
     }
 
-    public static solanaTxError(): ApiError {
+    public static solanaTxError(txType: SolanaTxType): ApiError {
         return new ApiError(
             ApiErrorCode.SOLANA_TX_ERROR,
-            "Solana transaction Error",
+            `Solana transaction Error: ${txType}`,
             ApiResponseStatus.SERVER_ERROR,
             500
         )
@@ -98,4 +98,12 @@ export enum ApiErrorCode {
     GENERAL_CLIENT_ERROR = 1,
     MISSING_PARAMETER = 2,
     SOLANA_TX_ERROR = 3,
+}
+
+export enum SolanaTxType {
+    INITIALIZE_BANK = 0,
+    INITIALIZE_MEMBER = 1,
+    INITIALIZE_ACCOUNT = 2,
+    TRANSFER_TOKEN = 3,
+    CREATE_MINT = 4
 }
