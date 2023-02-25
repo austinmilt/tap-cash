@@ -67,7 +67,7 @@ export async function getOrInitBank(workspace: WorkSpace): Promise<anchor.web3.P
         tx.recentBlockhash = blockhash;
         tx.lastValidBlockHeight = lastValidBlockHeight;
         await provider.sendAndConfirm(tx);
-        
+
     }
     catch {
         return;
@@ -102,6 +102,14 @@ export async function airdropIfNeeded(workspace: WorkSpace, lamports = (anchor.w
     const { connection, program, provider } = workspace;
     let balance = await connection.getBalance(provider.wallet.publicKey);
     if (balance > 1) return;
-    await connection.requestAirdrop(provider.wallet.publicKey, lamports);
+
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
+    const airdrop = await connection.requestAirdrop(provider.wallet.publicKey, lamports);
+    await connection.confirmTransaction({
+        signature: airdrop,
+        blockhash: blockhash,
+        lastValidBlockHeight: lastValidBlockHeight
+    });
+    
     return;
 }
