@@ -11,11 +11,11 @@ out the environment variables for the correct environment(s).
 ## Contributing
 ### Adding a function
 1. Create the function code where appropriate inside `src`.
-1. Add the function to the set of function definitions/handlers in `src/index.ts`
-1. Add the function's deploy script to `package.json` by copying one of the lines named `deploy-xxx` and changing
+2. Add the function to the set of function definitions/handlers in `src/index.ts`
+3. Add the function's deploy script to `package.json` by copying one of the lines named `deploy-xxx` and changing
 the name after `deploy` (in both the script name and script command) based on what you put in `src/index.ts`.
-1. Add that script to `deploy-all`.
-1. Follow instructions below on deploying a function.
+4. Add that script to `deploy-all`.
+5. Follow instructions below on deploying a function.
 
 ## Deploy Functions
 Use the appropriate script in `package.json`, e.g. `npm run deploy-hello-world`, or `npm run deploy-all` to deploy
