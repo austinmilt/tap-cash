@@ -126,7 +126,6 @@ function transformWithdrawRequest(req: ff.Request): WithdrawArgs {
 
 
 ff.http('query-recipients', (req: ff.Request, res: ff.Response) => {
-  console.log("query-recipients", req.query);
   queryRecipients(transformQueryRecipientsRequest(req))
     .then((result) => {
       const apiData: ApiQueryRecipientsData = result.map(v => ({
