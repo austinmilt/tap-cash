@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI } from "../common/constants";
-import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse } from "../../shared/api";
+import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, SEND_URI } from "../common/constants";
+import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse, ApiSendRequest, ApiSendResponse } from "../../shared/api";
 import { EmailAddress } from "../../shared/member";
 import { Currency } from "../../shared/currency";
 import * as anchor from "@project-serum/anchor";
@@ -75,6 +75,36 @@ export function useDeposit(): QueryContext<DepositArgs, void> {
     const submit = useCallback((req: DepositArgs) => {
         queryContext.submit({
             emailAddress: req.email,
+            currency: req.currency,
+            amount: req.amount
+        });
+
+    }, [queryContext.submit]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: undefined
+    };
+}
+
+
+interface SendArgs {
+    sender: EmailAddress;
+    recipeient: EmailAddress;
+    currency: Currency;
+    amount: number;
+    //TODO probably the sender's private key
+}
+
+
+export function useSend(): QueryContext<SendArgs, void> {
+    const queryContext = usePostQuery<ApiSendRequest, ApiSendResponse>(SEND_URI);
+
+    const submit = useCallback((req: SendArgs) => {
+        queryContext.submit({
+            senderEmailAddress: req.sender,
+            recipientEmailAddress: req.recipeient,
             currency: req.currency,
             amount: req.amount
         });

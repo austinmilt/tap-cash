@@ -6,8 +6,10 @@ import { ApiError } from '../../shared/error';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
-import { ApiResponseStatus } from '../../shared/api';
+import { ApiDepositRequest, ApiResponseStatus } from '../../shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
+import { send, sendArgs as SendArgs } from './handlers/send';
+import { Currency } from '../../shared/currency';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
@@ -62,46 +64,58 @@ ff.http('deposit', (req: ff.Request, res: ff.Response) => {
 function transformDepositRequest(req: ff.Request): DepositArgs {
   Arg.notNullish(req.body, "req.body");
   return {
-    emailAddress: getRequiredParam(req.body, "emailAddress"),
+    emailAddress: getRequiredParam<ApiDepositRequest, string>(req.body, "emailAddress"),
+    currency: getRequiredParam<ApiDepositRequest, Currency>(req.body, "currency"),
+    amount: getRequiredParam<ApiDepositRequest, number>(req.body, "amount", Number.parseFloat)
+  };
+}
+
+
+ff.http('send', (req: ff.Request, res: ff.Response) => {
+  send(transformSendRequest(req))
+    .then(() => {
+      respondOK(res);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformSendRequest(req: ff.Request): SendArgs {
+  Arg.notNullish(req.body, "req.body");
+  return {
+    senderEmailAddress: getRequiredParam(req.body, "senderEmail"),
+    recipientEmailAddress: getRequiredParam(req.body, "recipientEmail"),
     currency: getRequiredParam(req.body, "currency"),
     amount: getRequiredParam(req.body, "amount", Number.parseFloat)
   };
 }
 
 
-function getPublicKeyParam(
-  body: ff.Request['body'],
-  key: string,
-): anchor.web3.PublicKey {
-  return getRequiredParam(body, key, parsePublicKey);
+function getPublicKeyParam<R>(body: ff.Request['body'], key: keyof R): anchor.web3.PublicKey {
+  return getRequiredParam(body, key, v => new anchor.web3.PublicKey(v));
 }
 
 
-function parsePublicKey(base58PublicKey: string): anchor.web3.PublicKey {
-  return new anchor.web3.PublicKey(base58PublicKey);
-}
-
-
-function getRequiredParam<T>(
+function getRequiredParam<R, T>(
   body: ff.Request['body'],
-  key: string,
+  key: keyof R,
   parse?: (value: any) => T
 ): T {
-  const candidate: T | undefined = getParam(body, key, parse);
+  const candidate: T | undefined = getParam<R, T>(body, key, parse);
   if (candidate === undefined) {
-    throw ApiError.missingParameter(key);
+    throw ApiError.missingParameter(key as string);
   }
   return candidate;
 }
 
 
-function getOptionalParam<T>(
+function getOptionalParam<R, T>(
   body: ff.Request['body'],
-  key: string,
+  key: keyof R,
   fallbackValue?: T,
   parse?: (value: any) => T
 ): T | undefined {
-  const candidate: T | undefined = getParam(body, key, parse);
+  const candidate: T | undefined = getParam<R, T>(body, key, parse);
   if (candidate === undefined) {
     return fallbackValue;
   }
@@ -109,9 +123,9 @@ function getOptionalParam<T>(
 }
 
 
-function getParam<T>(
+function getParam<R, T>(
   body: any,
-  key: string,
+  key: keyof R,
   parse: (value: any) => T = value => value as T
 ): T | undefined {
   const unparsed: any | undefined = body[key];

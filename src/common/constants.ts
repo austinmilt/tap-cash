@@ -6,3 +6,4 @@ export const LIST_CHANNELS_URI: string = "https://list-channels-7pi36k236a-uc.a.
 //TODO
 export const NEW_MEMBER_URI: string = "https://list-channels-7pi36k236a-uc.a.run.app";
 export const DEPOSIT_URI: string = "https://list-channels-7pi36k236a-uc.a.run.app";
+export const SEND_URI: string = "https://list-channels-7pi36k236a-uc.a.run.app";

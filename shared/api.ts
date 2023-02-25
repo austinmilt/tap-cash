@@ -35,3 +35,15 @@ export interface ApiDepositRequest {
 
 
 export interface ApiDepositResponse extends ApiResponse<void> { }
+
+
+export interface ApiSendRequest {
+    senderEmailAddress: string;
+    recipientEmailAddress: string;
+    currency: string;
+    amount: number;
+    //TODO
+}
+
+
+export interface ApiSendResponse extends ApiResponse<void> { }
