@@ -1,8 +1,8 @@
 
 //TODO tests
 
-import { MemberActivity } from "../../../shared/activity";
-import { EmailAddress } from "../../../shared/member";
+import { MemberActivity } from "@tap/shared/activity";
+import { EmailAddress } from "@tap/shared/member";
 
 export interface RecentActivityArgs {
     memberEmail: EmailAddress;

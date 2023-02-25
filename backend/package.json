@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "functions-framework --target=list-channels",
+    "start": "functions-framework --target=query-recipients",
     "prestart": "npm run build",
     "gcp-build": "npm run build",
+    "deploy-query-recipients": "gcloud functions deploy query-recipients --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
     "deploy-hello-world": "gcloud functions deploy hello-world --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
     "deploy-list-channels": "gcloud functions deploy list-channels --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
     "deploy-all": "npm run deploy-hello-world && npm run deploy-list-channels"
@@ -24,6 +25,8 @@
     "yamlenv": "^1.0.0"
   },
   "devDependencies": {
+    "@types/bn.js": "^5.1.1",
+    "@types/node-fetch": "^2.6.2",
     "@types/uuid": "^9.0.1",
     "typescript": "^4.9.4"
   }

@@ -1,18 +1,18 @@
 // Google Cloud Functions Framework main entrypoint
 
 import * as ff from '@google-cloud/functions-framework';
-import { CircleClient } from './circle/client';
-import { ApiError } from '../../shared/error';
-import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
-import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
-import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiRecentActivityRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
+import { CircleClient } from './circle/client';
+import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
+import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiRecentActivityRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from './shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
 import { send, SendArgs } from './handlers/send';
-import { AccountId, EmailAddress, ProfilePicture } from '../../shared/member';
 import { WithdrawArgs, withdraw } from './handlers/withdraw';
 import { QueryRecipientsArgs, queryRecipients } from './handlers/query-recipients';
 import { RecentActivityArgs, getRecentActivity } from './handlers/recent-activity';
+import { Arg } from './shared/arg';
+import { ApiError } from './shared/error';
+import { EmailAddress, ProfilePicture, AccountId } from './shared/member';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {

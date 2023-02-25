@@ -1,7 +1,7 @@
 
 //TODO tests
 
-import { MemberPublicProfile } from "../../../shared/member";
+import { MemberPublicProfile } from "@tap/shared/member";
 
 export interface QueryRecipientsArgs {
     emailQuery: string;

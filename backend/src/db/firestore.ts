@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
-import { EmailAddress, MemberPublicProfile } from "../../../shared/member";
 import { DatabaseClient } from "./client";
 import { CollectionReference, DocumentData, Firestore, QueryDocumentSnapshot, QuerySnapshot } from "@google-cloud/firestore";
 import { FIRESTORE_MEMBERS_COLLECTION } from "../constants";
+import { MemberPublicProfile, EmailAddress } from "@tap/shared/member";
 
 export class FirestoreClient implements DatabaseClient {
     private readonly membersRef: CollectionReference;

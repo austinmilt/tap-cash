@@ -1,4 +1,3 @@
-import { ApiMemberActivity } from "./api";
 import { Currency } from "./currency";
 import { AccountId, MemberPublicProfile } from "./member";
 

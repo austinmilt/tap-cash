@@ -1,8 +1,8 @@
 import * as anchor from "@project-serum/anchor";
-import { EmailAddress, MemberId, ProfilePicture } from "../../../shared/member";
 import { v4 as uuid } from "uuid";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
+import { EmailAddress, ProfilePicture, MemberId } from "@tap/shared/member";
 
 //TODO tests
 
