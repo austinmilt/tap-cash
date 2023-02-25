@@ -1,7 +1,7 @@
 
 //TODO tests
 
-import { EmailAddress, ProfilePicture } from "../../../shared/member";
+import { MemberPublicProfile } from "../../../shared/member";
 
 export interface QueryRecipientsArgs {
     emailQuery: string;
@@ -9,11 +9,7 @@ export interface QueryRecipientsArgs {
 }
 
 
-export type QueryRecipientsResult = {
-    emailAddress: EmailAddress;
-    profilePicture: ProfilePicture;
-    name: string;
-}[];
+export type QueryRecipientsResult = MemberPublicProfile[];
 
 
 export async function queryRecipients(request: QueryRecipientsArgs): Promise<QueryRecipientsResult> {

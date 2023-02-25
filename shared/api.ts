@@ -78,3 +78,55 @@ export type ApiQueryRecipientsData = {
 
 
 export interface ApiQueryRecipientsResponse extends ApiResponse<ApiQueryRecipientsData> { }
+
+
+export interface ApiRecentActivityRequest extends GetQueryParams {
+    memberEmail: string;
+    limit: string;
+}
+
+
+export interface ApiRecentActivityResponse extends ApiResponse<ApiMemberActivity[]> { }
+
+
+export interface ApiMemberActivity {
+    type: number;
+    deposit?: ApiDepositActivity;
+    send?: ApiSendActivity;
+    receive?: ApiReceiveActivity;
+    withdraw?: ApiWithdrawActivity;
+}
+
+export interface ApiDepositActivity {
+    account: string;
+    currency: string;
+    amount: number;
+}
+
+
+export interface ApiSendActivity {
+    recipient: ApiMemberPublicProfile;
+    currency: string;
+    amount: number;
+}
+
+
+export interface ApiReceiveActivity {
+    sender: ApiMemberPublicProfile;
+    currency: string;
+    amount: number;
+}
+
+
+export interface ApiWithdrawActivity {
+    source: string;
+    currency: string;
+    amount: number;
+}
+
+
+export interface ApiMemberPublicProfile {
+    email: string;
+    profile: string;
+    name: string;
+}

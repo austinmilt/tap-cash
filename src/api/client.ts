@@ -1,8 +1,23 @@
 import { useCallback, useMemo, useState } from "react";
-import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, QUERY_RECIPIENTS_URI, SEND_URI, WITHDRAW_URI } from "../common/constants";
-import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiQueryRecipientsRequest, ApiQueryRecipientsResponse, ApiResponse, ApiSendRequest, ApiSendResponse, ApiWithdrawRequest, ApiWithdrawResponse, GetQueryParams } from "../../shared/api";
-import { AccountId, EmailAddress, ProfilePicture } from "../../shared/member";
-import { Currency } from "../../shared/currency";
+import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, QUERY_RECIPIENTS_URI, RECENT_ACTIVITY_URI, SEND_URI, WITHDRAW_URI } from "../common/constants";
+import {
+    ApiDepositRequest,
+    ApiDepositResponse,
+    ApiInitializeMemberRequest,
+    ApiIntializeMemberResponse,
+    ApiQueryRecipientsRequest,
+    ApiQueryRecipientsResponse,
+    ApiRecentActivityRequest,
+    ApiRecentActivityResponse,
+    ApiResponse,
+    ApiSendRequest,
+    ApiSendResponse,
+    ApiWithdrawRequest,
+    ApiWithdrawResponse,
+    GetQueryParams
+} from "../../shared/api";
+import { AccountId, EmailAddress, MemberPublicProfile } from "../../shared/member";
+import { MemberActivity } from "../../shared/activity";
 import * as anchor from "@project-serum/anchor";
 
 interface QueryContext<Req, Res> {
@@ -154,14 +169,7 @@ interface QueryRecipientsArgs {
 }
 
 
-type QueryRecipientsData = {
-    email: EmailAddress;
-    profile: ProfilePicture;
-    name: string;
-}[];
-
-
-export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, QueryRecipientsData> {
+export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, MemberPublicProfile[]> {
     const queryContext = useGetQuery<ApiQueryRecipientsRequest, ApiQueryRecipientsResponse>(QUERY_RECIPIENTS_URI);
 
     const submit = useCallback(({ emailQuery, limit }: QueryRecipientsArgs) => {
@@ -172,13 +180,44 @@ export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, QueryRec
     }, [queryContext.submit]);
 
 
-    const data: QueryRecipientsData | undefined = useMemo(() => {
+    const data: MemberPublicProfile[] | undefined = useMemo(() => {
         if (queryContext.data?.result === undefined) return undefined;
         return queryContext.data.result.map(v => ({
             email: v.emailAddress,
             profile: v.profilePicture,
             name: v.name
         }));
+    }, [queryContext.data]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: data
+    };
+}
+
+
+
+interface RecentActivityArgs {
+    memberEmail: EmailAddress;
+    limit: number;
+}
+
+
+export function useRecentActivity(): QueryContext<RecentActivityArgs, MemberActivity[]> {
+    const queryContext = useGetQuery<ApiRecentActivityRequest, ApiRecentActivityResponse>(RECENT_ACTIVITY_URI);
+
+    const submit = useCallback(({ memberEmail, limit }: RecentActivityArgs) => {
+        queryContext.submit({
+            memberEmail: memberEmail,
+            limit: limit.toString()
+        });
+    }, [queryContext.submit]);
+
+
+    const data: MemberActivity[] | undefined = useMemo(() => {
+        if (queryContext.data?.result === undefined) return undefined;
+        return queryContext.data.result.map(v => v as MemberActivity);
     }, [queryContext.data]);
 
     return {

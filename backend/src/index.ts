@@ -6,12 +6,13 @@ import { ApiError } from '../../shared/error';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
-import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
+import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiRecentActivityRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
 import { send, SendArgs } from './handlers/send';
 import { AccountId, EmailAddress } from '../../shared/member';
 import { WithdrawArgs, withdraw } from './handlers/withdraw';
 import { QueryRecipientsArgs, queryRecipients } from './handlers/query-recipients';
+import { RecentActivityArgs, getRecentActivity } from './handlers/recent-activity';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
@@ -122,26 +123,44 @@ ff.http('query-recipients', (req: ff.Request, res: ff.Response) => {
 
 
 function transformQueryRecipientsRequest(req: ff.Request): QueryRecipientsArgs {
-  Arg.notNullish(req.body, "req.body");
+  Arg.notNullish(req.query, "req.query");
   return {
-    emailQuery: getRequiredParam<ApiQueryRecipientsRequest, string>(req.body, "emailQuery"),
-    limit: getRequiredIntegerParam<ApiQueryRecipientsRequest>(req.body, "limit"),
+    emailQuery: getRequiredParam<ApiQueryRecipientsRequest, string>(req.query, "emailQuery"),
+    limit: getRequiredIntegerParam<ApiQueryRecipientsRequest>(req.query, "limit"),
   };
 }
 
 
-function getRequiredIntegerParam<R>(body: ff.Request['body'], key: keyof R): number {
+ff.http('recent-activity', (req: ff.Request, res: ff.Response) => {
+  getRecentActivity(transformRecentActivityRequest(req))
+    .then(() => {
+      respondOK(res);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformRecentActivityRequest(req: ff.Request): RecentActivityArgs {
+  Arg.notNullish(req.query, "req.query");
+  return {
+    memberEmail: getRequiredParam<ApiRecentActivityRequest, EmailAddress>(req.query, "memberEmail"),
+    limit: getRequiredIntegerParam<ApiRecentActivityRequest>(req.query, "limit"),
+  };
+}
+
+
+function getRequiredIntegerParam<R>(body: ff.Request['body'] | ff.Request['query'], key: keyof R): number {
   return getRequiredParam<R, number>(body, key, Number.parseInt);
 }
 
 
-function getPublicKeyParam<R>(body: ff.Request['body'], key: keyof R): anchor.web3.PublicKey {
+function getPublicKeyParam<R>(body: ff.Request['body'] | ff.Request['query'], key: keyof R): anchor.web3.PublicKey {
   return getRequiredParam<R, anchor.web3.PublicKey>(body, key, v => new anchor.web3.PublicKey(v));
 }
 
 
 function getRequiredParam<R, T>(
-  body: ff.Request['body'],
+  body: ff.Request['body'] | ff.Request['query'],
   key: keyof R,
   parse?: (value: any) => T
 ): T {
@@ -154,7 +173,7 @@ function getRequiredParam<R, T>(
 
 
 function getOptionalParam<R, T>(
-  body: ff.Request['body'],
+  body: ff.Request['body'] | ff.Request['query'],
   key: keyof R,
   fallbackValue?: T,
   parse?: (value: any) => T
@@ -168,7 +187,7 @@ function getOptionalParam<R, T>(
 
 
 function getParam<R, T>(
-  body: any,
+  body: ff.Request['body'] | ff.Request['query'],
   key: keyof R,
   parse: (value: any) => T = value => value as T
 ): T | undefined {
