@@ -1,21 +1,15 @@
-import { EmailAddress, MemberId, MemberPublicProfile, ProfilePicture } from "../../../shared/member";
-import * as anchor from "@project-serum/anchor";
-
-interface AddMemberArgs {
-    profile: MemberPublicProfile;
-    wallet: anchor.web3.PublicKey;
-    usdcAccountAddress: anchor.web3.PublicKey;
-}
+import { MemberId, MemberPublicProfile } from "../../../shared/member";
+import { web3 } from "@project-serum/anchor";
 
 
 export interface DatabaseClient {
     addMember(
         profile: MemberPublicProfile,
-        wallet: anchor.web3.PublicKey,
-        usdcAccountAddress: anchor.web3.PublicKey
+        wallet: web3.PublicKey,
+        usdcAccountAddress: web3.PublicKey
     ): Promise<MemberId>;
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
 
-    queryMembersByUsdcAccountAddress(account: anchor.web3.PublicKey, limit: number): Promise<MemberPublicProfile[]>;
+    getMembersByUsdcAccountAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
 }
