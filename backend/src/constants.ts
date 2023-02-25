@@ -1,7 +1,6 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
 import * as anchor from "@project-serum/anchor";
-import { web3, Program, workspace } from '@project-serum/anchor';
 import { TapCash } from "./types/tap-cash";
 
 
@@ -48,24 +47,29 @@ function castString<T>(value: string): T {
 }
 
 export interface WorkSpace {
-    connection: web3.Connection;
+    connection: anchor.web3.Connection;
     provider: anchor.AnchorProvider;
-    program: Program<TapCash>;
+    program: anchor.Program<TapCash>;
 }
 
 export const getWorkspace = async(): Promise<WorkSpace> => {
-    const program = await workspace.TapCash as Program<TapCash>;
+    const program = await anchor.workspace.TapCash as anchor.Program<TapCash>;
     //TODO add endpoint logic
-    const connection = new web3.Connection(''); 
+    const connection = new anchor.web3.Connection(''); 
     // TODO FIX .env
-    const anchorWallet = new anchor.Wallet(web3.Keypair.fromSecretKey(new Uint8Array(process.env.BANK_KEY))); 
+    const anchorWallet = new anchor.Wallet(anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.BANK_KEY))); 
     const provider: anchor.AnchorProvider = new anchor.AnchorProvider(
         connection,
         // fallback value allows querying the program without having a wallet connected
-        anchorWallet,
+        anchorWallet ?? ({} as anchor.Wallet),
         anchor.AnchorProvider.defaultOptions()
     );
 
     return {connection, provider, program};
 }
 
+export const fakeUsdc = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.USDC));
+
+export const BANK_SEED = "tap-bank";
+export const MEMBER_SEED = "member";
+export const CHECKING_SEED = "checking";
