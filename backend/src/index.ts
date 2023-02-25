@@ -7,6 +7,7 @@ import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import { Arg } from '../../shared/arg';
 import * as anchor from "@project-serum/anchor";
 import { ApiResponseStatus } from '../../shared/api';
+import { DepositArgs, deposit } from './handlers/deposit';
 
 // e.g. http://localhost:8080?name=dave
 ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
@@ -45,7 +46,26 @@ function transformInitializeMemberRequest(req: ff.Request): InitializeMemberArgs
   return {
     emailAddress: getRequiredParam(req.body, "emailAddress"),
     walletAddress: getPublicKeyParam(req.body, "walletAddressBase58")
-  }
+  };
+}
+
+
+ff.http('deposit', (req: ff.Request, res: ff.Response) => {
+  deposit(transformDepositRequest(req))
+    .then(() => {
+      respondOK(res);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformDepositRequest(req: ff.Request): DepositArgs {
+  Arg.notNullish(req.body, "req.body");
+  return {
+    emailAddress: getRequiredParam(req.body, "emailAddress"),
+    currency: getRequiredParam(req.body, "currency"),
+    amount: getRequiredParam(req.body, "amount", Number.parseFloat)
+  };
 }
 
 

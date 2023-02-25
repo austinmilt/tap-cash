@@ -24,3 +24,14 @@ export interface ApiInitializeMemberRequest {
 
 
 export interface ApiIntializeMemberResponse extends ApiResponse<void> { }
+
+
+export interface ApiDepositRequest {
+    emailAddress: string;
+    currency: string;
+    amount: number;
+    //TODO
+}
+
+
+export interface ApiDepositResponse extends ApiResponse<void> { }

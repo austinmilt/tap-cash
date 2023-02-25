@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import { HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI } from "../common/constants";
-import { ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse } from "../../shared/api";
+import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI } from "../common/constants";
+import { ApiDepositRequest, ApiDepositResponse, ApiInitializeMemberRequest, ApiIntializeMemberResponse, ApiResponse } from "../../shared/api";
 import { EmailAddress } from "../../shared/member";
+import { Currency } from "../../shared/currency";
 import * as anchor from "@project-serum/anchor";
 
 interface QueryContext<Req, Res> {
@@ -47,6 +48,35 @@ export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> 
         queryContext.submit({
             emailAddress: req.email,
             walletAddressBase58: req.wallet.toBase58()
+        });
+
+    }, [queryContext.submit]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: undefined
+    };
+}
+
+
+interface DepositArgs {
+    email: EmailAddress;
+    currency: Currency;
+    amount: number;
+    //TODO something about handling credit card info
+    //TODO probably the user's private key
+}
+
+
+export function useDeposit(): QueryContext<DepositArgs, void> {
+    const queryContext = usePostQuery<ApiDepositRequest, ApiDepositResponse>(DEPOSIT_URI);
+
+    const submit = useCallback((req: DepositArgs) => {
+        queryContext.submit({
+            emailAddress: req.email,
+            currency: req.currency,
+            amount: req.amount
         });
 
     }, [queryContext.submit]);
