@@ -4,7 +4,17 @@ import * as ff from '@google-cloud/functions-framework';
 import * as anchor from "@project-serum/anchor";
 import { CircleClient } from './circle/client';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
-import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiRecentActivityRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from './shared/api';
+import {
+  ApiDepositRequest,
+  ApiInitializeMemberRequest,
+  ApiMemberActivity,
+  ApiQueryRecipientsData,
+  ApiQueryRecipientsRequest,
+  ApiRecentActivityRequest,
+  ApiResponseStatus,
+  ApiSendRequest,
+  ApiWithdrawRequest
+} from './shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
 import { send, SendArgs } from './handlers/send';
 import { WithdrawArgs, withdraw } from './handlers/withdraw';
@@ -116,9 +126,15 @@ function transformWithdrawRequest(req: ff.Request): WithdrawArgs {
 
 
 ff.http('query-recipients', (req: ff.Request, res: ff.Response) => {
+  console.log("query-recipients", req.query);
   queryRecipients(transformQueryRecipientsRequest(req))
-    .then(() => {
-      respondOK(res);
+    .then((result) => {
+      const apiData: ApiQueryRecipientsData = result.map(v => ({
+        emailAddress: v.email,
+        profilePicture: v.profile,
+        name: v.name
+      }));
+      respondOK<ApiQueryRecipientsData>(res, apiData);
     })
     .catch(e => handleError(res, e))
 });
@@ -135,8 +151,9 @@ function transformQueryRecipientsRequest(req: ff.Request): QueryRecipientsArgs {
 
 ff.http('recent-activity', (req: ff.Request, res: ff.Response) => {
   getRecentActivity(transformRecentActivityRequest(req))
-    .then(() => {
-      respondOK(res);
+    .then((result) => {
+      const apiData: ApiMemberActivity[] = result.map(v => v as ApiMemberActivity);
+      respondOK<ApiMemberActivity[]>(res, apiData);
     })
     .catch(e => handleError(res, e))
 });
