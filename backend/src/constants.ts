@@ -20,7 +20,8 @@ export const CIRCLE_ENVIRONMENT: CircleEnvironments = parseEnv(
 
 export const FIRESTORE_MEMBERS_COLLECTION: string = parseEnv(
     "FIRESTORE_MEMBERS_COLLECTION",
-    process.env.FIRESTORE_MEMBERS_COLLECTION
+    process.env.FIRESTORE_MEMBERS_COLLECTION,
+    "tap-members-dev"
 );
 
 function parseEnv<T>(
