@@ -9,7 +9,7 @@ import * as anchor from "@project-serum/anchor";
 import { ApiDepositRequest, ApiInitializeMemberRequest, ApiQueryRecipientsRequest, ApiRecentActivityRequest, ApiResponseStatus, ApiSendRequest, ApiWithdrawRequest } from '../../shared/api';
 import { DepositArgs, deposit } from './handlers/deposit';
 import { send, SendArgs } from './handlers/send';
-import { AccountId, EmailAddress } from '../../shared/member';
+import { AccountId, EmailAddress, ProfilePicture } from '../../shared/member';
 import { WithdrawArgs, withdraw } from './handlers/withdraw';
 import { QueryRecipientsArgs, queryRecipients } from './handlers/query-recipients';
 import { RecentActivityArgs, getRecentActivity } from './handlers/recent-activity';
@@ -49,7 +49,9 @@ ff.http('new-member', (req: ff.Request, res: ff.Response) => {
 function transformInitializeMemberRequest(req: ff.Request): InitializeMemberArgs {
   Arg.notNullish(req.body, "req.body");
   return {
-    emailAddress: getRequiredParam<ApiInitializeMemberRequest, EmailAddress>(req.body, "emailAddress"),
+    email: getRequiredParam<ApiInitializeMemberRequest, EmailAddress>(req.body, "emailAddress"),
+    profile: getRequiredParam<ApiInitializeMemberRequest, ProfilePicture>(req.body, "profilePictureUrl"),
+    name: getRequiredParam<ApiInitializeMemberRequest, string>(req.body, "name"),
     walletAddress: getPublicKeyParam<ApiInitializeMemberRequest>(req.body, "walletAddressBase58")
   };
 }

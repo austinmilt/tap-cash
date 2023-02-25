@@ -11,5 +11,8 @@ export interface RecentActivityArgs {
 
 
 export async function getRecentActivity(request: RecentActivityArgs): Promise<MemberActivity[]> {
+    //TODO query chain for user's activity
+    //TODO transform member public profile accounts from chain query based on ATA
+
     return [];
 }

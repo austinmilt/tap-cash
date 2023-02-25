@@ -23,6 +23,8 @@ export enum ApiResponseStatus {
 
 export interface ApiInitializeMemberRequest {
     emailAddress: string;
+    profilePictureUrl: string;
+    name: string;
     walletAddressBase58: string;
 }
 

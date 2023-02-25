@@ -16,7 +16,7 @@ import {
     ApiWithdrawResponse,
     GetQueryParams
 } from "../../shared/api";
-import { AccountId, EmailAddress, MemberPublicProfile } from "../../shared/member";
+import { AccountId, EmailAddress, MemberPublicProfile, ProfilePicture } from "../../shared/member";
 import { MemberActivity } from "../../shared/activity";
 import * as anchor from "@project-serum/anchor";
 
@@ -52,6 +52,8 @@ export function useListChannels(): QueryContext<void, string> {
 
 interface InitializeMemberArgs {
     email: EmailAddress;
+    profile: ProfilePicture;
+    name: string;
     wallet: anchor.web3.PublicKey;
 }
 
@@ -62,6 +64,8 @@ export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> 
     const submit = useCallback((req: InitializeMemberArgs) => {
         queryContext.submit({
             emailAddress: req.email,
+            profilePictureUrl: req.profile,
+            name: req.name,
             walletAddressBase58: req.wallet.toBase58()
         });
 

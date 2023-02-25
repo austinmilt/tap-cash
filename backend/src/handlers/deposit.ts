@@ -18,11 +18,6 @@ export interface DepositResult {
 export async function deposit(request: DepositArgs): Promise<DepositResult> {
     // TODO: delegate the credit card retrieval and processing to Circle client
 
-    // TODO: do we store the info about the transaction in a db so we can show
-    // that in the user's Recent Activity? Alternative is to have the frontend
-    // query the chain and then have frontend ask the backend to expand stuff
-    // by getting user info by their USDC ATA
-
     return {
         //TODO
     }
