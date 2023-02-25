@@ -57,7 +57,7 @@ export const getWorkspace = async(): Promise<WorkSpace> => {
     //TODO add endpoint logic
     const connection = new anchor.web3.Connection(''); 
     // TODO FIX .env
-    const anchorWallet = new anchor.Wallet(anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.BANK_KEY))); 
+    const anchorWallet = new anchor.Wallet(BANK_AUTH); 
     const provider: anchor.AnchorProvider = new anchor.AnchorProvider(
         connection,
         // fallback value allows querying the program without having a wallet connected
@@ -68,7 +68,8 @@ export const getWorkspace = async(): Promise<WorkSpace> => {
     return {connection, provider, program};
 }
 
-export const fakeUsdc = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.USDC));
+export const FAKE_USDC = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.USDC_KEY));
+export const BANK_AUTH = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.BANK_KEY));
 
 export const BANK_SEED = "tap-bank";
 export const MEMBER_SEED = "member";
