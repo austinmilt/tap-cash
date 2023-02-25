@@ -6,7 +6,7 @@ import { BigTableClient } from "../db/bigtable";
 import { BANK_SEED, CHECKING_SEED, getWorkspace, MEMBER_SEED, WorkSpace } from "../constants";
 import { ApiError, SolanaTxType } from "../../../shared/error";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
-import { createAccountNoBuffer, getOrCreateUsdc } from "../helpers/solana";
+import { airdropIfNeeded, createAccountNoBuffer, getOrCreateUsdc, getOrInitBank } from "../helpers/solana";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 const { SystemProgram, SYSVAR_RENT_PUBKEY, PublicKey } = anchor.web3;
@@ -34,14 +34,14 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
     const workspace: WorkSpace = await getWorkspace();
     const bankAuth = workspace.provider;
     const bankSigner = (bankAuth.wallet as NodeWallet).payer;
-
     const memberId = request.walletAddress;
     const { connection, program } = workspace;
 
-    const [bankPda] = await PublicKey.findProgramAddressSync(
-        [Buffer.from(BANK_SEED), bankAuth.publicKey.toBuffer()],
-        program.programId
-    );
+    await airdropIfNeeded(workspace);
+
+    const bankPda = await getOrInitBank(workspace);
+    
+    if (!bankPda) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
     const [memberPda] = await PublicKey.findProgramAddressSync(
         [Buffer.from(MEMBER_SEED), bankPda.toBuffer(), memberId.toBuffer()],

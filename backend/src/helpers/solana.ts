@@ -36,13 +36,12 @@ export async function getOrCreateUsdc(connection: anchor.web3.Connection, auth: 
 
 /**
  * 
- * Gets USDC Public Key (or creates USDC Mint if one does not exist)
+ * Gets Bank PDA if initiated (initiates it if needed)
  * 
- * @param connection
- * @param auth 
- * @returns 
+ * @param workspace
+ * @returns Bank PDA as PublicKey
  */
-export async function getOrInitBank(workspace: WorkSpace, auth: anchor.web3.Keypair): Promise<anchor.web3.PublicKey | undefined> {
+export async function getOrInitBank(workspace: WorkSpace): Promise<anchor.web3.PublicKey | undefined> {
     const { connection, program, provider } = workspace;
     const bankAuth = provider.wallet;
     const [bankPda] = await anchor.web3.PublicKey.findProgramAddressSync(
@@ -89,4 +88,20 @@ export function createAccountNoBuffer(acctNumber: number) {
     view.setUint8(0, acctNumber); // write the number to the buffer
     const numAccountsBuffer = new Uint8Array(buffer); // get the byte representation as a Uint8Array
     return numAccountsBuffer;
+}
+
+/**
+ * 
+ * Airdrops 2 SOL if Balance is below 1 SOL 
+ * 
+ * @param workspace 
+ * @param lamports 
+ * @returns 
+ */
+export async function airdropIfNeeded(workspace: WorkSpace, lamports = (anchor.web3.LAMPORTS_PER_SOL * 2)): Promise<void> {
+    const { connection, program, provider } = workspace;
+    let balance = await connection.getBalance(provider.wallet.publicKey);
+    if (balance > 1) return;
+    await connection.requestAirdrop(provider.wallet.publicKey, lamports);
+    return;
 }
