@@ -3,13 +3,17 @@ import { v4 as uuid } from "uuid";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { EmailAddress, ProfilePicture, MemberId } from "@tap/shared/member";
-import { BANK_SEED, CHECKING_SEED, getWorkspace, MEMBER_SEED, WorkSpace } from "../constants";
-import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
-import { airdropIfNeeded, createAccountNoBuffer, getOrCreateUsdc, getOrInitBank } from "../helpers/solana";
+import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED } from "../program/constants";
+import { getMemberPda, getOrInitBank } from "../program/sdk-non";
+import { getWorkspace, WorkSpace } from "../program/workspace";
+import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { ApiError, SolanaTxType } from "@tap/shared/error";
+import { ApiError, ApiErrorCode, SolanaTxType } from "@tap/shared/error";
+import { TapCashClient } from "../program/sdk";
+import { RPC_URL } from "../constants";
 
-const { SystemProgram, SYSVAR_RENT_PUBKEY, PublicKey } = anchor.web3;
+const { SystemProgram, SYSVAR_RENT_PUBKEY } = anchor.web3;
+
 //TODO tests
 
 export interface InitializeMemberArgs {
@@ -28,84 +32,31 @@ export interface InitializeMemberResult {
 const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
+    const workspace: WorkSpace = await getWorkspace({
+        endpoint: RPC_URL,
+        bankAuth: BANK_AUTH
+    });
+    const { connection, program: {programId} } = workspace;
 
-    const workspace: WorkSpace = await getWorkspace();
-    const bankAuth = workspace.provider;
-    const bankSigner = (bankAuth.wallet as NodeWallet).payer;
-    const memberId = request.walletAddress;
-    const { connection, program } = workspace;
+    const bankSigner: anchor.web3.Keypair = BANK_AUTH;
 
+
+    // TO DO Move this to some type of devnet script
     // Make sure payer wallet has SOL
     await airdropIfNeeded(workspace);
 
-    const bankPda = await getOrInitBank(workspace);
-    if (!bankPda) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
-
-    const [memberPda] = await PublicKey.findProgramAddressSync(
-        [Buffer.from(MEMBER_SEED), bankPda.toBuffer(), memberId.toBuffer()],
-        program.programId
-    );
-
-    // Create Member 
-    try {
-        let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
-        const tx = await program.methods.initializeMember()
-            .accountsStrict({
-                payer: bankAuth.wallet,
-                memberPda: memberPda,
-                userId: memberId,
-                bank: bankPda,
-                systemProgram: SystemProgram.programId,
-                rent: SYSVAR_RENT_PUBKEY
-            })
-            .transaction();
-        tx.feePayer = bankAuth.wallet.publicKey;
-        tx.recentBlockhash = blockhash;
-        tx.lastValidBlockHeight = lastValidBlockHeight;
-        await bankAuth.sendAndConfirm(tx);
-    }
-    catch {
-        throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_MEMBER);
-    }
-
+    // TO DO Move this to some type of devnet script
     // Create USDC Associated Token Account
     const usdc = await getOrCreateUsdc(connection, bankSigner);
     if (!usdc) throw ApiError.solanaTxError(SolanaTxType.CREATE_MINT);
 
-    const [accountPda] = await PublicKey.findProgramAddressSync(
-        [
-            memberPda.toBuffer(),
-            Buffer.from(CHECKING_SEED),
-            usdc.toBuffer(),
-            createAccountNoBuffer(1)
-        ],
-        program.programId
-    );
-    let userAta = await getAssociatedTokenAddress(usdc, accountPda, true);
-    try {
-        let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
-        const tx = await program.methods.initializeAccount()
-            .accountsStrict({
-                payer: bankAuth.publicKey,
-                member: memberPda,
-                userId: memberId,
-                bank: bankPda,
-                accountPda: accountPda,
-                accountAta: userAta,
-                tokenMint: usdc,
-                tokenProgram: TOKEN_PROGRAM_ID,
-                associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-                systemProgram: SystemProgram.programId
-            })
-            .transaction();
-        tx.feePayer = bankAuth.wallet.publicKey;
-        tx.recentBlockhash = blockhash;
-        tx.lastValidBlockHeight = lastValidBlockHeight;
-        await bankAuth.sendAndConfirm(tx);
-    }
-    catch {
-        throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_ACCOUNT);
-    }
+    const client = new TapCashClient(workspace);
+
+   let userAta = await client.initializeNewMember({
+    userId: request.walletAddress,
+    programId
+   })
+   if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
     // TODO: store mapping from user's email to name, pfp, wallet, and ATA
     DB_CLIENT.addMember(
@@ -114,7 +65,7 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
             profile: request.profile,
             name: request.name
         },
-        memberId,
+        request.walletAddress,
         userAta
     );
 
