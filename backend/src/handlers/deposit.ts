@@ -25,16 +25,14 @@ export interface DepositResult {
 }
 
 const SIMULATOR_CLIENT = CircleEmulator.ofDefaults();
+const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 
 export async function deposit(request: DepositArgs): Promise<DepositResult> {
     // TODO: delegate the credit card retrieval and processing to Circle client
 
-    // TODO await DB_CLIENT.something; 
-    const destinationUser = '';
-    // TODO Update from DB Query
-    const destinationAta: anchor.web3.PublicKey = new anchor.web3.PublicKey('');
+    const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.emailAddress);
 
-    const txId = await SIMULATOR_CLIENT.transferUsdc({ destinationAta, amount: request.amount });
+    const txId = await SIMULATOR_CLIENT.transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
     if (!txId) { throw ApiError.generalServerError("Failed to deposit funds.") }
 
     return {
