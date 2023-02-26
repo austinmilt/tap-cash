@@ -1,7 +1,6 @@
 
 //TODO tests
 
-import { MemberPublicProfile } from "@tap/shared/member";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 

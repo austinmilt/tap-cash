@@ -1,11 +1,11 @@
 import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { ApiError, SolanaTxType } from "@tap/shared/error";
 import { FAKE_USDC, RPC_URL } from "../constants";
 import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
 import { createWorkspace, WorkSpace } from "./workspace";
 import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
 import { TapCash } from "../types/tap-cash";
+import { ApiError, SolanaTxType } from "../shared/error";
 
 export class TapCashClient {
     private readonly sdk: WorkSpace;
@@ -20,7 +20,7 @@ export class TapCashClient {
     }
 
     public static ofDefaults(): TapCashClient {
-        return new TapCashClient(createWorkspace(RPC_URL,BANK_AUTH));
+        return new TapCashClient(createWorkspace(RPC_URL, BANK_AUTH));
     }
 
     public static withSdk(sdk: WorkSpace) {
@@ -74,7 +74,7 @@ export class TapCashClient {
             let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
             const tx = await this.program.methods.initializeMember()
                 .accountsStrict({
-                    payer: this.provider.wallet,
+                    payer: this.provider.publicKey,
                     ...args
                 })
                 .transaction();
@@ -90,9 +90,9 @@ export class TapCashClient {
     }
 
     /**
-     * 
-     * Generates a buffer for PDA seed from a u8 number 
-     *  
+     *
+     * Generates a buffer for PDA seed from a u8 number
+     *
      * @param acctNumber number of the user's account (e.g, 1st account = 1)
      * @returns buffer of a u8 number for PDA
      */
@@ -154,9 +154,9 @@ export class TapCashClient {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
         const accountNumber: number = 1;
 
-        if (PROGRAM_ENV !== 'mainnet') { 
+        if (PROGRAM_ENV !== 'mainnet') {
             await airdropIfNeeded(this.sdk);
-            await getOrCreateUsdc(this.connection, BANK_AUTH);    
+            await getOrCreateUsdc(this.connection, BANK_AUTH);
         }
 
         const bank = await this.getOrInitBank();

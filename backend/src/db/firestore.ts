@@ -1,7 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { DatabaseClient } from "./client";
 import { FIRESTORE_MEMBERS_COLLECTION } from "../constants";
-import { MemberPublicProfile, EmailAddress } from "@tap/shared/member";
 import { initializeApp } from "firebase-admin/app";
 import { CollectionReference, DocumentData, Firestore, QueryDocumentSnapshot, QuerySnapshot, getFirestore } from "firebase-admin/firestore";
 

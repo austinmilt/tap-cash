@@ -26,6 +26,16 @@ export const FIRESTORE_MEMBERS_COLLECTION: string = parseEnv(
     "tap-members-dev"
 );
 
+
+
+export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
+
+export const RPC_URL: string = parseEnv(
+    "RPC_URL",
+    process.env.RPC_URL,
+    anchor.web3.clusterApiUrl("devnet"),
+);
+
 export function parseEnv<T>(
     name: string,
     value: string | undefined,
@@ -53,7 +63,7 @@ export function parseKeypair(
     if (envValue === undefined) {
         throw new Error(`Missing required env variable ${name}.`);
     }
-    const u8Array = envValue.split(",").map(Number);
+    const u8Array = JSON.parse(envValue);
     const keypair = anchor.web3.Keypair.fromSecretKey(new Uint8Array(u8Array));
     return keypair;
 }
@@ -63,8 +73,3 @@ export function parseKeypair(
 function castString<T>(value: string): T {
     return value as unknown as T;
 }
-
-
-export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
-
-export const RPC_URL = process.env.RPC_URL ?? anchor.web3.clusterApiUrl('devnet');

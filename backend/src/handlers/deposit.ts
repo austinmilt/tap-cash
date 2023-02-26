@@ -1,8 +1,6 @@
 
 //TODO tests
 
-import { EmailAddress, AccountId } from "@tap/shared/member";
-
 export interface DepositArgs {
     emailAddress: EmailAddress;
     destinationAccountId: AccountId;

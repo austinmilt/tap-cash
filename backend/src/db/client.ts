@@ -1,5 +1,4 @@
 import { web3 } from "@project-serum/anchor";
-import { MemberId, MemberPublicProfile } from "@tap/shared/member";
 
 export interface DatabaseClient {
     addMember(
