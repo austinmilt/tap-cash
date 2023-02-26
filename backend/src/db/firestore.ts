@@ -1,9 +1,10 @@
-import { PublicKey } from "@solana/web3.js";
 import { DatabaseClient } from "./client";
 import { FIRESTORE_MEMBERS_COLLECTION } from "../constants";
 import { MemberPublicProfile, EmailAddress } from "@tap/shared/member";
 import { initializeApp } from "firebase-admin/app";
 import { CollectionReference, DocumentData, Firestore, QueryDocumentSnapshot, QuerySnapshot, getFirestore } from "firebase-admin/firestore";
+import { web3 } from "@project-serum/anchor";
+import { ApiError } from "@tap/shared/error";
 
 initializeApp();
 
@@ -22,8 +23,8 @@ export class FirestoreClient implements DatabaseClient {
 
     public async addMember(
         profile: MemberPublicProfile,
-        wallet: PublicKey,
-        usdcAccountAddress: PublicKey
+        wallet: web3.PublicKey,
+        usdcAccountAddress: web3.PublicKey
     ): Promise<string> {
         //TODO check that the member doesnt already exist
         const memberDocData: MemberDocument = {
@@ -61,13 +62,36 @@ export class FirestoreClient implements DatabaseClient {
     }
 
 
-    public async getMembersByUsdcAccountAddress(accounts: PublicKey[]): Promise<MemberPublicProfile[]> {
+    public async getMembersByUsdcAccountAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]> {
         const responses: QuerySnapshot<DocumentData>[] = await Promise.all(
             accounts.map(account => (
-                this.membersRef.where("usdcAccount", "==", account.toBase58()).limit(1).get()
+                this.buildMemberQuery("usdcAccount", "==", account.toBase58())
+                    .limit(1)
+                    .get()
             ))
         );
         return parseMemberProfiles(responses.flatMap(r => r.docs));
+    }
+
+    public async getMemberWalletByEmail(email: EmailAddress): Promise<web3.PublicKey> {
+        const response: QuerySnapshot<DocumentData> = await this.buildMemberQuery("email", "==", email)
+            .limit(1)
+            .get()
+
+        if (response.size === 0) {
+            throw ApiError.noSuchMember(email);
+        }
+
+        return getMemberDocField(response.docs[0], "email", v => new web3.PublicKey(v));
+    }
+
+
+    private buildMemberQuery(
+        field: MemberDocumentField,
+        operation: FirebaseFirestore.WhereFilterOp,
+        value: any
+    ): FirebaseFirestore.Query {
+        return this.membersRef.where(field, operation, value);
     }
 }
 
@@ -80,6 +104,10 @@ interface MemberDocument extends DocumentData {
     wallet: string;
     usdcAccount: string;
 }
+
+
+//TODO there's gotta be a better way to do this... keyof doesnt work because DocumentData is generic
+type MemberDocumentField = "email" | "emailSearch" | "name" | "profile" | "wallet" | "usdcAccount";
 
 
 function parseMemberProfiles(docs: QueryDocumentSnapshot<DocumentData>[]): MemberPublicProfile[] {
@@ -105,7 +133,7 @@ function parseMemberProfiles(docs: QueryDocumentSnapshot<DocumentData>[]): Membe
 
 function getMemberDocField<T>(
     doc: QueryDocumentSnapshot<DocumentData>,
-    field: keyof MemberDocument,
+    field: MemberDocumentField,
     transform: (v: any) => T = (v => v as T)
 ): T {
     const candidate: any = doc.get(field as string);

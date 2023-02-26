@@ -1,4 +1,5 @@
 import { ApiResponse, ApiResponseStatus as ApiResponseStatus } from "./api";
+import { EmailAddress } from "./member";
 
 export class ApiError extends Error {
     public readonly code: ApiErrorCode;
@@ -74,6 +75,15 @@ export class ApiError extends Error {
         );
     }
 
+    public static noSuchMember(member: EmailAddress): ApiError {
+        return new ApiError(
+            ApiErrorCode.INVALID_ARGUMENT,
+            `No such member: ${member}`,
+            ApiResponseStatus.CLIENT_ERROR,
+            400
+        );
+    }
+
     public static solanaTxError(txType: SolanaTxType): ApiError {
         return new ApiError(
             ApiErrorCode.SOLANA_TX_ERROR,
@@ -117,7 +127,7 @@ export enum ApiErrorCode {
     GENERAL_CLIENT_ERROR = 1,
     MISSING_PARAMETER = 2,
     SOLANA_TX_ERROR = 3,
-    MEMBER_SEARCH_ERROR = 4, 
+    MEMBER_SEARCH_ERROR = 4,
     INVALID_ARGUMENT = 5
 }
 
