@@ -62,7 +62,7 @@ interface InitializeMemberArgs {
     email: EmailAddress;
     profile: ProfilePicture;
     name: string;
-    wallet: anchor.web3.PublicKey;
+    signerAddress: anchor.web3.PublicKey;
 }
 
 
@@ -74,7 +74,7 @@ export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> 
             emailAddress: req.email,
             profilePictureUrl: req.profile,
             name: req.name,
-            signerAddressBase58: req.wallet.toBase58()
+            signerAddressBase58: req.signerAddress.toBase58()
         });
 
     }, [queryContext.submit]);
