@@ -27,7 +27,7 @@ const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 export async function send(request: SendArgs): Promise<SendResult> {
 
     // TODO await DB_CLIENT.something; 
-    const destinationUser = '';
+    const destinationUser = ''; 
     // TODO Update from DB Query
     const destinationAta: anchor.web3.PublicKey = new anchor.web3.PublicKey('');
     // TODO Update with decryption
