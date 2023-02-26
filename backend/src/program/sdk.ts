@@ -75,11 +75,11 @@ export class TapCashClient {
             let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
             const tx = await this.program.methods.initializeMember()
                 .accountsStrict({
-                    payer: this.provider.wallet,
+                    payer: this.provider.publicKey,
                     ...args
                 })
                 .transaction();
-            tx.feePayer = this.provider.wallet.publicKey;
+            tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
             const txId = await this.provider.sendAndConfirm(tx);
@@ -208,7 +208,7 @@ export class TapCashClient {
             let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
             const tx = await this.program.methods.sendSpl(new BN(decimalAmount))
                 .accountsStrict({
-                    payer: this.provider.wallet.publicKey,
+                    payer: this.provider.publicKey,
                     member: memberPda,
                     userId: args.fromMember.publicKey,
                     accountPda,
@@ -222,7 +222,7 @@ export class TapCashClient {
                 })
                 .signers([args.fromMember])
                 .transaction();
-            tx.feePayer = this.provider.wallet.publicKey;
+            tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
             const txId = await this.provider.sendAndConfirm(tx);

@@ -8,7 +8,7 @@ export interface WorkSpace {
     payer: anchor.web3.Keypair;
 }
 
-export function createWorkspace (
+export function createWorkspace(
     endpoint: string,
     bankAuth: anchor.web3.Keypair
 ): WorkSpace {
@@ -19,7 +19,7 @@ export function createWorkspace (
         connection,
         // fallback value allows querying the program without having a wallet connected
         anchorWallet ?? ({} as anchor.Wallet),
-        anchor.AnchorProvider.defaultOptions()
+        { commitment: 'confirmed', preflightCommitment: 'confirmed' }
     );
     const payer = bankAuth;
     return { connection, provider, program, payer };
