@@ -15,7 +15,7 @@ export class FirestoreClient implements DatabaseClient {
     }
 
     public static ofDefaults(): FirestoreClient {
-        // `new Firestore()` pulls configs from environment variables
+        // `getFirestore()` pulls configs from environment variables
         const firestore: Firestore = getFirestore();
         return new FirestoreClient(firestore.collection(FIRESTORE_MEMBERS_COLLECTION));
     }
