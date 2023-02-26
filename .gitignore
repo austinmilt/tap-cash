@@ -64,4 +64,5 @@ yarn-error.log
 
 .env*
 !.env.example
-program2
+
+secrets/

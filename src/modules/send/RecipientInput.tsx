@@ -1,27 +1,16 @@
-import { FlatList, Pressable} from "react-native";
-import { useCallback, useState } from "react";
+import { FlatList, Pressable } from "react-native";
+import { useCallback } from "react";
 import { Button } from "../../components/Button";
 import { StyleSheet } from "react-native";
 import { TextInput } from "../../components/TextInput";
 import { Text } from "../../components/Text";
 import { View } from "../../components/View";
 import { COLORS } from "../../common/styles";
+import { useQueryRecipients } from "../../api/client";
+import React from "react";
+import { EmailAddress, MemberPublicProfile } from "@tap/shared/member";
+import { useStateWithDebounce } from "../../common/debounce";
 
-
-const PLACEHOLDER_RECIPIENTS: SuggestedRecipient[] = [
-    {
-        id: "quack",
-        address: 'a@milz.com',
-    },
-    {
-        id: "whack",
-        address: 'hey@dave.net',
-    },
-    {
-        id: "sack",
-        address: 'john@doe.mary',
-    },
-];
 
 interface Props {
     onCompleted: (recipient: string) => void;
@@ -29,7 +18,12 @@ interface Props {
 }
 
 export function RecipientInput(props: Props): JSX.Element {
-    const [recipient, setRecipient] = useState<string | undefined>();
+    const recipientQueryContext = useQueryRecipients();
+    const [recipient, setRecipient] = useStateWithDebounce<EmailAddress | undefined>(query => {
+        if (query !== undefined) {
+            recipientQueryContext.submit({ emailQuery: query, limit: 10 });
+        }
+    }, 250);
 
     //TODO validation, and error messages
 
@@ -55,13 +49,13 @@ export function RecipientInput(props: Props): JSX.Element {
                     autoFocus
                 />
                 <FlatList
-                    data={PLACEHOLDER_RECIPIENTS}
-                    renderItem={({item}) => (
-                        <SuggestedRecipientItem
+                    data={recipientQueryContext.data}
+                    renderItem={({ item }) => (
+                        <MemberPublicProfileItem
                             recipient={item}
-                            onPress={(recipient) => setRecipient(recipient?.address)}/>
+                            onPress={(recipient) => setRecipient(recipient?.email)} />
                     )}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.email}
                     contentContainerStyle={STYLES.suggestions}
                 />
             </View>
@@ -79,21 +73,15 @@ export function RecipientInput(props: Props): JSX.Element {
     )
 }
 
-
-interface SuggestedRecipient {
-    id: string;
-    address: string;
+interface MemberPublicProfileItemProps {
+    recipient: MemberPublicProfile;
+    onPress: (recipient: MemberPublicProfile) => void;
 }
 
-interface SuggestedRecipientItemProps {
-    recipient: SuggestedRecipient;
-    onPress: (recipient: SuggestedRecipient) => void;
-}
-
-function SuggestedRecipientItem(props: SuggestedRecipientItemProps): JSX.Element {
+function MemberPublicProfileItem(props: MemberPublicProfileItemProps): JSX.Element {
     return (
         <Pressable onPress={() => props.onPress(props.recipient)}>
-            <Text style={STYLES.suggestion}>{props.recipient.address}</Text>
+            <Text style={STYLES.suggestion}>{props.recipient.email}</Text>
         </Pressable>
     )
 }
