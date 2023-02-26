@@ -26,16 +26,14 @@ const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export async function send(request: SendArgs): Promise<SendResult> {
 
-    // TODO await DB_CLIENT.something; 
-    const destinationUser = ''; 
-    // TODO Update from DB Query
-    const destinationAta: anchor.web3.PublicKey = new anchor.web3.PublicKey('');
+    const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.recipientEmailAddress);
+
     // TODO Update with decryption
     const decryptPrivateKey: anchor.web3.Keypair = anchor.web3.Keypair.generate();
 
     const txId = await TAP_CLIENT.sendTokens({
         fromMember: decryptPrivateKey,
-        destinationAta,
+        destinationAta: usdcAddress,
         amount: request.amount
     })
 
