@@ -1,11 +1,12 @@
 import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ApiError, SolanaTxType } from "@tap/shared/error";
-import { FAKE_USDC, RPC_URL } from "../constants";
+import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
 import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
 import { createWorkspace, WorkSpace } from "./workspace";
 import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
 import { TapCash } from "../types/tap-cash";
+import { BN } from "bn.js";
 
 export class TapCashClient {
     private readonly sdk: WorkSpace;
@@ -20,7 +21,7 @@ export class TapCashClient {
     }
 
     public static ofDefaults(): TapCashClient {
-        return new TapCashClient(createWorkspace(RPC_URL,BANK_AUTH));
+        return new TapCashClient(createWorkspace(RPC_URL, BANK_AUTH));
     }
 
     public static withSdk(sdk: WorkSpace) {
@@ -154,9 +155,9 @@ export class TapCashClient {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
         const accountNumber: number = 1;
 
-        if (PROGRAM_ENV !== 'mainnet') { 
+        if (PROGRAM_ENV !== 'mainnet') {
             await airdropIfNeeded(this.sdk);
-            await getOrCreateUsdc(this.connection, BANK_AUTH);    
+            await getOrCreateUsdc(this.connection, BANK_AUTH);
         }
 
         const bank = await this.getOrInitBank();
@@ -191,6 +192,46 @@ export class TapCashClient {
         return memberTokenAccount;
 
     }
+
+    public async sendTokens(args: SendTokensArgs) {
+        const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
+        const systemProgram: anchor.web3.PublicKey = anchor.web3.SystemProgram.programId;
+        const tokenProgram = TOKEN_PROGRAM_ID;
+        const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
+        const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
+        const accountNumber: number = 1;
+        const bank = await this.getOrInitBank();
+        if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
+        const memberPda = await this.getMemberPda(args.fromMember.publicKey);
+        const { accountPda, accountAta } = await this.getMemberAta({ memberPda, tokenMint, accountNumber });
+        try {
+            let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
+            const tx = await this.program.methods.sendSpl(new BN(decimalAmount))
+                .accountsStrict({
+                    payer: this.provider.wallet.publicKey,
+                    member: memberPda,
+                    userId: args.fromMember.publicKey,
+                    accountPda,
+                    accountAta,
+                    destinationAta: args.destinationAta,
+                    bank,
+                    tokenMint,
+                    tokenProgram,
+                    associatedTokenProgram,
+                    systemProgram
+                })
+                .signers([args.fromMember])
+                .transaction();
+            tx.feePayer = this.provider.wallet.publicKey;
+            tx.recentBlockhash = blockhash;
+            tx.lastValidBlockHeight = lastValidBlockHeight;
+            const txId = await this.provider.sendAndConfirm(tx);
+            return txId
+        }
+        catch (e) {
+            ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
+        }
+    }
 }
 
 interface CreateMemberArgs {
@@ -217,4 +258,10 @@ interface CreateAccountArgs {
     tokenProgram: anchor.web3.PublicKey;
     associatedTokenProgram: anchor.web3.PublicKey;
     systemProgram: anchor.web3.PublicKey;
+}
+
+interface SendTokensArgs {
+    fromMember: anchor.web3.Keypair,
+    destinationAta: anchor.web3.PublicKey,
+    amount: number
 }
