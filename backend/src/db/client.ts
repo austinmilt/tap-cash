@@ -6,7 +6,7 @@ export interface DatabaseClient {
     addMember(
         profile: MemberPublicProfile,
         wallet: web3.PublicKey,
-        usdcAddressAddress: web3.PublicKey
+        usdcAddress: web3.PublicKey
     ): Promise<MemberId>;
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;

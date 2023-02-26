@@ -25,7 +25,7 @@ export class FirestoreClient implements DatabaseClient {
     public async addMember(
         profile: MemberPublicProfile,
         wallet: web3.PublicKey,
-        usdcAddressAddress: web3.PublicKey
+        usdcAddress: web3.PublicKey
     ): Promise<string> {
         //TODO check that the member doesnt already exist
         const memberDocData: MemberDocument = {
@@ -33,7 +33,7 @@ export class FirestoreClient implements DatabaseClient {
             emailSearch: this.createEmailSearchIndex(profile.email),
             profile: profile.profile,
             name: profile.name,
-            usdcAddress: usdcAddressAddress.toBase58(),
+            usdcAddress: usdcAddress.toBase58(),
             signerAddress: wallet.toBase58(),
         };
         const memberDoc = await this.membersRef.add(memberDocData);
