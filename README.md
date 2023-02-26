@@ -1,5 +1,5 @@
-# Mo Cash
-Simple USDC transfers using Solana.
+# Tap Cash
+Cash transfers using Solana.
 
 ## Getting Started
 
