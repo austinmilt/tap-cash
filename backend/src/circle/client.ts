@@ -1,7 +1,5 @@
 import { Circle, PaymentCreationRequest, CardCreationRequest, Card, TransferCreationRequest, Transfer, BusinessRecipientAddressCreationRequest, BusinessRecipientAddressObject } from "@circle-fin/circle-sdk";
 import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT } from "../constants";
-import { CardDetails, EncryptedValue } from "../types/cirlce";
-import { createMessage, encrypt, readKey } from 'openpgp'
 
 export class CircleClient {
     private readonly sdk: Circle;
