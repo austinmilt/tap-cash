@@ -1,12 +1,8 @@
-/* 
 export interface CircleClient {
-    addMember(
-        profile: MemberPublicProfile,
-        wallet: web3.PublicKey,
-        usdcAccountAddress: web3.PublicKey
-    ): Promise<MemberId>;
+    transferUsdc(args: CircleDepositArgs): Promise<string | undefined>;
+}
 
-    queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
-
-    getMembersByUsdcAccountAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
-} */
+export interface CircleDepositArgs {
+    destinationAtaString: string,
+    amount: number
+}

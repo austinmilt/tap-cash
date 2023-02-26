@@ -34,7 +34,7 @@ export async function deposit(request: DepositArgs): Promise<DepositResult> {
     // TODO Update from DB Query
     const destinationAta: anchor.web3.PublicKey = new anchor.web3.PublicKey('');
 
-    const txId = await SIMULATOR_CLIENT.simulateDeposit({ destinationAta, amount: request.amount });
+    const txId = await SIMULATOR_CLIENT.transferUsdc({ destinationAta, amount: request.amount });
     if (!txId) { throw ApiError.generalServerError("Failed to deposit funds.") }
 
     return {

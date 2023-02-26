@@ -4,8 +4,9 @@ import { ApiError } from "@tap/shared/error";
 import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
 import { BANK_AUTH } from "../program/constants";
 import { createWorkspace, WorkSpace } from "../program/workspace";
+import { CircleClient, CircleDepositArgs } from "./client";
 
-export class CircleEmulator {
+export class CircleEmulator implements CircleClient {
     private readonly connection: anchor.web3.Connection;
     private readonly provider: anchor.AnchorProvider;
     private readonly payer: anchor.web3.Keypair;
@@ -23,10 +24,11 @@ export class CircleEmulator {
         return new CircleEmulator(sdk);
     }
 
-    public async simulateDeposit(args: SimulateDepositArgs): Promise<string | undefined> {
+    public async transferUsdc(args: CircleDepositArgs): Promise<string | undefined> {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
+        const destination: anchor.web3.PublicKey = new anchor.web3.PublicKey(args.destinationAtaString);
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
-        let ix = await createMintToCheckedInstruction(tokenMint, args.destinationAta, this.provider.publicKey, decimalAmount, USDC_DECIMALS);
+        let ix = await createMintToCheckedInstruction(tokenMint, destination, this.provider.publicKey, decimalAmount, USDC_DECIMALS);
         let transaction = new anchor.web3.Transaction().add(ix);
 
         try {
@@ -39,7 +41,6 @@ export class CircleEmulator {
         catch {
             ApiError.generalServerError("Failed to deposit funds.");
         }
-
     }
 }
 
