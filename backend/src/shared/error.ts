@@ -126,5 +126,4 @@ export enum SolanaTxType {
     INITIALIZE_MEMBER = 1,
     INITIALIZE_ACCOUNT = 2,
     TRANSFER_TOKEN = 3,
-    CREATE_MINT = 4
 }

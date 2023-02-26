@@ -2,7 +2,6 @@ import * as anchor from "@project-serum/anchor";
 
 export interface MemberPdaProps {
     userId: anchor.web3.PublicKey;
-    programId: anchor.web3.PublicKey;
 }
 
 export interface NewMemberProps extends MemberPdaProps {

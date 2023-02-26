@@ -13,12 +13,10 @@ interface WorkSpaceProps {
     bankAuth: anchor.web3.Keypair;
 }
 
-export const getWorkspace = async (props: WorkSpaceProps): Promise<WorkSpace> => {
+export const getWorkspace = (props: WorkSpaceProps): WorkSpace => {
     const { endpoint, bankAuth } = props;
-    const program = await anchor.workspace.TapCash as anchor.Program<TapCash>;
-    //TODO add endpoint logic
+    const program = anchor.workspace.TapCash as anchor.Program<TapCash>;
     const connection = new anchor.web3.Connection(endpoint);
-    // TODO FIX .env
     const anchorWallet = new anchor.Wallet(bankAuth);
     const provider: anchor.AnchorProvider = new anchor.AnchorProvider(
         connection,
@@ -27,6 +25,5 @@ export const getWorkspace = async (props: WorkSpaceProps): Promise<WorkSpace> =>
         anchor.AnchorProvider.defaultOptions()
     );
     const payer = bankAuth;
-
     return { connection, provider, program, payer };
 }

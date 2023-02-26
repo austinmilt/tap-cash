@@ -5,21 +5,22 @@ import { FAKE_USDC, RPC_URL } from "../constants";
 import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED } from "./constants";
 import { getWorkspace, WorkSpace } from "./workspace";
 import { MemberPdaProps, NewMemberProps, MemberAccountPdaProps, NewAccountProps } from "./types";
+import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
 
 export class TapCashClient {
     private readonly sdk: WorkSpace;
-    public constructor(sdk: WorkSpace) {
+    private constructor(sdk: WorkSpace) {
         this.sdk = sdk;
     }
 
-    public static async ofDefaults(): Promise<TapCashClient> {
-        return new TapCashClient(await getWorkspace({
+    public static ofDefaults(): TapCashClient {
+        return new TapCashClient(getWorkspace({
             endpoint: RPC_URL,
             bankAuth: BANK_AUTH
         }));
     }
 
-    public async getOrInitBank(): Promise<anchor.web3.PublicKey | undefined> {
+    private async getOrInitBank(): Promise<anchor.web3.PublicKey | undefined> {
         const { connection, program, provider } = this.sdk;
         const bankAuth = provider.wallet;
         const [bankPda] = await anchor.web3.PublicKey.findProgramAddressSync(
@@ -52,17 +53,17 @@ export class TapCashClient {
         }
     }
 
-    public async getMemberPda(props: MemberPdaProps): Promise<anchor.web3.PublicKey> {
+    private async getMemberPda(props: MemberPdaProps): Promise<anchor.web3.PublicKey> {
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
         const [memberPda] = await anchor.web3.PublicKey.findProgramAddressSync(
             [Buffer.from(MEMBER_SEED), bank.toBuffer(), props.userId.toBuffer()],
-            props.programId
+            this.sdk.program.programId
         );
         return memberPda;
     }
 
-    public async createMember(props: NewMemberProps) {
+    private async createMember(props: NewMemberProps) {
         const { connection, program, provider: bankAuth } = this.sdk;
         try {
             let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
@@ -99,7 +100,7 @@ export class TapCashClient {
         return numAccountsBuffer;
     }
 
-    public async getMemberAccoutnPda(props: MemberAccountPdaProps): Promise<anchor.web3.PublicKey> {
+    private async getMemberAccountPda(props: MemberAccountPdaProps): Promise<anchor.web3.PublicKey> {
         const [accountPda] = await anchor.web3.PublicKey.findProgramAddressSync(
             [
                 props.memberPda.toBuffer(),
@@ -112,13 +113,13 @@ export class TapCashClient {
         return accountPda;
     }
 
-    public async getMemberAta(props: MemberAccountPdaProps): Promise<{ accountAta: anchor.web3.PublicKey, accountPda: anchor.web3.PublicKey }> {
-        const accountPda = await this.getMemberAccoutnPda(props);
+    private async getMemberAta(props: MemberAccountPdaProps): Promise<{ accountAta: anchor.web3.PublicKey, accountPda: anchor.web3.PublicKey }> {
+        const accountPda = await this.getMemberAccountPda(props);
         let accountAta = await getAssociatedTokenAddress(props.tokenMint, accountPda, true);
         return { accountAta, accountPda };
     }
 
-    public async createAccount(props: NewAccountProps): Promise<anchor.web3.PublicKey | undefined> {
+    private async createAccount(props: NewAccountProps): Promise<anchor.web3.PublicKey | undefined> {
         const { connection, program, provider: bankAuth } = this.sdk;
         try {
             let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
@@ -148,7 +149,13 @@ export class TapCashClient {
         tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey,
         accountNumber: number = 1
     ) {
-        const { program: { programId } } = this.sdk;
+
+        // TO DO Add some prod query here @Austin?
+        if (!false) { 
+            await airdropIfNeeded(this.sdk);
+            await getOrCreateUsdc(this.sdk.connection, BANK_AUTH);    
+        }
+
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
         const memberPda = await this.getMemberPda(memberProps);
@@ -164,7 +171,7 @@ export class TapCashClient {
             memberPda,
             tokenMint,
             accountNumber,
-            programId
+            programId: this.sdk.program.programId
         });
 
         const memberTokenAccount = await this.createAccount({
