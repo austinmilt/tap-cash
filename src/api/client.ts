@@ -74,7 +74,7 @@ export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> 
             emailAddress: req.email,
             profilePictureUrl: req.profile,
             name: req.name,
-            walletAddressBase58: req.wallet.toBase58()
+            signerAddressBase58: req.wallet.toBase58()
         });
 
     }, [queryContext.submit]);

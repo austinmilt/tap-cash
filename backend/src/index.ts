@@ -62,7 +62,7 @@ function transformInitializeMemberRequest(req: ff.Request): InitializeMemberArgs
     email: getRequiredParam<ApiInitializeMemberRequest, EmailAddress>(req.body, "emailAddress"),
     profile: getRequiredParam<ApiInitializeMemberRequest, ProfilePicture>(req.body, "profilePictureUrl"),
     name: getRequiredParam<ApiInitializeMemberRequest, string>(req.body, "name"),
-    walletAddress: getPublicKeyParam<ApiInitializeMemberRequest>(req.body, "walletAddressBase58")
+    signerAddress: getPublicKeyParam<ApiInitializeMemberRequest>(req.body, "signerAddressBase58")
   };
 }
 
