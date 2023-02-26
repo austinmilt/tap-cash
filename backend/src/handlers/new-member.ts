@@ -1,16 +1,15 @@
 import * as anchor from "@project-serum/anchor";
-import { EmailAddress, MemberId, ProfilePicture } from "../../../shared/member";
 import { v4 as uuid } from "uuid";
 import { DatabaseClient } from "../db/client";
-import { BigTableClient } from "../db/bigtable";
+import { FirestoreClient } from "../db/firestore";
+import { EmailAddress, ProfilePicture, MemberId } from "@tap/shared/member";
 import { BANK_SEED, CHECKING_SEED, getWorkspace, MEMBER_SEED, WorkSpace } from "../constants";
-import { ApiError, SolanaTxType } from "../../../shared/error";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import { airdropIfNeeded, createAccountNoBuffer, getOrCreateUsdc, getOrInitBank } from "../helpers/solana";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { ApiError, SolanaTxType } from "@tap/shared/error";
 
 const { SystemProgram, SYSVAR_RENT_PUBKEY, PublicKey } = anchor.web3;
-
 //TODO tests
 
 export interface InitializeMemberArgs {
@@ -26,7 +25,7 @@ export interface InitializeMemberResult {
 }
 
 //TODO eventually we should periodically sync users' email, name, and picture
-const DB_CLIENT: DatabaseClient = BigTableClient.ofDefaults();
+const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
 

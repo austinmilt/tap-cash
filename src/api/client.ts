@@ -1,24 +1,33 @@
 import { useCallback, useMemo, useState } from "react";
-import { DEPOSIT_URI, HELLO_WORLD_URI, LIST_CHANNELS_URI, NEW_MEMBER_URI, QUERY_RECIPIENTS_URI, RECENT_ACTIVITY_URI, SEND_URI, WITHDRAW_URI } from "../common/constants";
 import {
-    ApiDepositRequest,
-    ApiDepositResponse,
+    DEPOSIT_URI,
+    HELLO_WORLD_URI,
+    LIST_CHANNELS_URI,
+    NEW_MEMBER_URI,
+    QUERY_RECIPIENTS_URI,
+    RECENT_ACTIVITY_URI,
+    SEND_URI,
+    WITHDRAW_URI
+} from "../common/constants";
+import * as anchor from "@project-serum/anchor";
+import { MemberActivity } from "../../backend/src/shared/activity";
+import {
     ApiInitializeMemberRequest,
     ApiIntializeMemberResponse,
-    ApiQueryRecipientsRequest,
-    ApiQueryRecipientsResponse,
-    ApiRecentActivityRequest,
-    ApiRecentActivityResponse,
-    ApiResponse,
+    ApiDepositRequest,
+    ApiDepositResponse,
     ApiSendRequest,
     ApiSendResponse,
     ApiWithdrawRequest,
     ApiWithdrawResponse,
-    GetQueryParams
-} from "../../shared/api";
-import { AccountId, EmailAddress, MemberPublicProfile, ProfilePicture } from "../../shared/member";
-import { MemberActivity } from "../../shared/activity";
-import * as anchor from "@project-serum/anchor";
+    ApiQueryRecipientsRequest,
+    ApiQueryRecipientsResponse,
+    ApiRecentActivityRequest,
+    ApiRecentActivityResponse,
+    GetQueryParams,
+    ApiResponse
+} from "../../backend/src/shared/api";
+import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../../backend/src/shared/member";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;

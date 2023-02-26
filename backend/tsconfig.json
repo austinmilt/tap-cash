@@ -4,11 +4,15 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "strict": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "paths": {
+            "@tap/shared/*": [
+                "./src/shared/*"
+            ]
+        }
     },
     "include": [
-        "src/**/*",
-        "../shared/**/*"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules"
