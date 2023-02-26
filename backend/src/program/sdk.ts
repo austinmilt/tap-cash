@@ -2,39 +2,45 @@ import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ApiError, SolanaTxType } from "@tap/shared/error";
 import { FAKE_USDC, RPC_URL } from "../constants";
-import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED } from "./constants";
-import { getWorkspace, WorkSpace } from "./workspace";
-import { MemberPdaProps, NewMemberProps, MemberAccountPdaProps, NewAccountProps } from "./types";
+import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
+import { createWorkspace, WorkSpace } from "./workspace";
 import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
+import { TapCash } from "../types/tap-cash";
 
 export class TapCashClient {
     private readonly sdk: WorkSpace;
+    private readonly connection: anchor.web3.Connection;
+    private readonly program: anchor.Program<TapCash>;
+    private readonly provider: anchor.AnchorProvider;
     private constructor(sdk: WorkSpace) {
         this.sdk = sdk;
+        this.connection = sdk.connection;
+        this.program = sdk.program;
+        this.provider = sdk.provider;
     }
 
     public static ofDefaults(): TapCashClient {
-        return new TapCashClient(getWorkspace({
-            endpoint: RPC_URL,
-            bankAuth: BANK_AUTH
-        }));
+        return new TapCashClient(createWorkspace(RPC_URL,BANK_AUTH));
+    }
+
+    public static withSdk(sdk: WorkSpace) {
+        return new TapCashClient(sdk);
     }
 
     private async getOrInitBank(): Promise<anchor.web3.PublicKey | undefined> {
-        const { connection, program, provider } = this.sdk;
-        const bankAuth = provider.wallet;
+        const bankAuth = this.provider.wallet;
         const [bankPda] = await anchor.web3.PublicKey.findProgramAddressSync(
             [Buffer.from(BANK_SEED), bankAuth.publicKey.toBuffer()],
-            program.programId
+            this.program.programId
         );
 
         // If Bank is already init, use it (otherwise make it -- e.g., LocalHost session)
-        const accountInfo = await connection.getAccountInfo(bankPda);
+        const accountInfo = await this.connection.getAccountInfo(bankPda);
         if (accountInfo) return bankPda;
 
         try {
-            let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
-            const tx = await program.methods.initializeBank()
+            let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
+            const tx = await this.program.methods.initializeBank()
                 .accountsStrict({
                     bankAuthority: bankAuth.publicKey,
                     bank: bankPda,
@@ -42,10 +48,10 @@ export class TapCashClient {
                     rent: anchor.web3.SYSVAR_RENT_PUBKEY
                 })
                 .transaction();
-            tx.feePayer = provider.wallet.publicKey;
+            tx.feePayer = this.provider.wallet.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            await provider.sendAndConfirm(tx);
+            await this.provider.sendAndConfirm(tx);
 
         }
         catch {
@@ -53,31 +59,30 @@ export class TapCashClient {
         }
     }
 
-    private async getMemberPda(props: MemberPdaProps): Promise<anchor.web3.PublicKey> {
+    private async getMemberPda(userId: anchor.web3.PublicKey): Promise<anchor.web3.PublicKey> {
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
         const [memberPda] = await anchor.web3.PublicKey.findProgramAddressSync(
-            [Buffer.from(MEMBER_SEED), bank.toBuffer(), props.userId.toBuffer()],
-            this.sdk.program.programId
+            [Buffer.from(MEMBER_SEED), bank.toBuffer(), userId.toBuffer()],
+            this.program.programId
         );
         return memberPda;
     }
 
-    private async createMember(props: NewMemberProps) {
-        const { connection, program, provider: bankAuth } = this.sdk;
+    private async createMember(args: CreateMemberArgs) {
         try {
-            let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
-            const tx = await program.methods.initializeMember()
+            let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
+            const tx = await this.program.methods.initializeMember()
                 .accountsStrict({
-                    payer: bankAuth.wallet,
-                    ...props
+                    payer: this.provider.wallet,
+                    ...args
                 })
                 .transaction();
-            tx.feePayer = bankAuth.wallet.publicKey;
+            tx.feePayer = this.provider.wallet.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            const txId = await bankAuth.sendAndConfirm(tx);
-            return { memberPda: props.memberPda, txId }
+            const txId = await this.provider.sendAndConfirm(tx);
+            return { memberPda: args.memberPda, txId }
         }
         catch {
             throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_MEMBER);
@@ -100,40 +105,39 @@ export class TapCashClient {
         return numAccountsBuffer;
     }
 
-    private async getMemberAccountPda(props: MemberAccountPdaProps): Promise<anchor.web3.PublicKey> {
+    private async getMemberAccountPda(args: GetMemberAccountArgs): Promise<anchor.web3.PublicKey> {
         const [accountPda] = await anchor.web3.PublicKey.findProgramAddressSync(
             [
-                props.memberPda.toBuffer(),
+                args.memberPda.toBuffer(),
                 Buffer.from(CHECKING_SEED),
-                props.tokenMint.toBuffer(),
-                this.createAccountNoBuffer(props.accountNumber)
+                args.tokenMint.toBuffer(),
+                this.createAccountNoBuffer(args.accountNumber)
             ],
-            props.programId
+            this.program.programId
         );
         return accountPda;
     }
 
-    private async getMemberAta(props: MemberAccountPdaProps): Promise<{ accountAta: anchor.web3.PublicKey, accountPda: anchor.web3.PublicKey }> {
-        const accountPda = await this.getMemberAccountPda(props);
-        let accountAta = await getAssociatedTokenAddress(props.tokenMint, accountPda, true);
+    private async getMemberAta(args: GetMemberAccountArgs): Promise<{ accountAta: anchor.web3.PublicKey, accountPda: anchor.web3.PublicKey }> {
+        const accountPda = await this.getMemberAccountPda(args);
+        let accountAta = await getAssociatedTokenAddress(args.tokenMint, accountPda, true);
         return { accountAta, accountPda };
     }
 
-    private async createAccount(props: NewAccountProps): Promise<anchor.web3.PublicKey | undefined> {
-        const { connection, program, provider: bankAuth } = this.sdk;
+    private async createAccount(args: CreateAccountArgs): Promise<anchor.web3.PublicKey | undefined> {
         try {
-            let { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash('finalized');
-            const tx = await program.methods.initializeAccount()
+            let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
+            const tx = await this.program.methods.initializeAccount()
                 .accountsStrict({
-                    payer: bankAuth.publicKey,
-                    ...props,
+                    payer: this.provider.publicKey,
+                    ...args,
                 })
                 .transaction();
-            tx.feePayer = bankAuth.wallet.publicKey;
+            tx.feePayer = this.provider.wallet.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            await bankAuth.sendAndConfirm(tx);
-            return props.accountAta;
+            await this.provider.sendAndConfirm(tx);
+            return args.accountAta;
         }
         catch {
             throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_ACCOUNT);
@@ -141,26 +145,25 @@ export class TapCashClient {
     }
 
     public async initializeNewMember(
-        memberProps: MemberPdaProps,
-        systemProgram: anchor.web3.PublicKey = anchor.web3.SystemProgram.programId,
-        rent: anchor.web3.PublicKey = anchor.web3.SYSVAR_RENT_PUBKEY,
-        tokenProgram = TOKEN_PROGRAM_ID,
-        associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID,
-        tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey,
-        accountNumber: number = 1
+        userId: anchor.web3.PublicKey
     ) {
+        const systemProgram: anchor.web3.PublicKey = anchor.web3.SystemProgram.programId;
+        const rent: anchor.web3.PublicKey = anchor.web3.SYSVAR_RENT_PUBKEY;
+        const tokenProgram = TOKEN_PROGRAM_ID;
+        const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
+        const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
+        const accountNumber: number = 1;
 
-        // TO DO Add some prod query here @Austin?
-        if (!false) { 
+        if (PROGRAM_ENV !== 'mainnet') { 
             await airdropIfNeeded(this.sdk);
-            await getOrCreateUsdc(this.sdk.connection, BANK_AUTH);    
+            await getOrCreateUsdc(this.connection, BANK_AUTH);    
         }
 
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
-        const memberPda = await this.getMemberPda(memberProps);
+        const memberPda = await this.getMemberPda(userId);
         await this.createMember({
-            ...memberProps,
+            userId,
             bank,
             memberPda,
             systemProgram,
@@ -171,11 +174,10 @@ export class TapCashClient {
             memberPda,
             tokenMint,
             accountNumber,
-            programId: this.sdk.program.programId
         });
 
         const memberTokenAccount = await this.createAccount({
-            ...memberProps,
+            userId,
             member: memberPda,
             bank,
             accountPda,
@@ -189,10 +191,30 @@ export class TapCashClient {
         return memberTokenAccount;
 
     }
-
 }
 
+interface CreateMemberArgs {
+    userId: anchor.web3.PublicKey
+    memberPda: anchor.web3.PublicKey;
+    systemProgram: anchor.web3.PublicKey;
+    rent: anchor.web3.PublicKey;
+    bank: anchor.web3.PublicKey;
+}
 
+interface GetMemberAccountArgs {
+    memberPda: anchor.web3.PublicKey;
+    tokenMint: anchor.web3.PublicKey;
+    accountNumber: number;
+}
 
-
-
+interface CreateAccountArgs {
+    member: anchor.web3.PublicKey;
+    userId: anchor.web3.PublicKey;
+    bank: anchor.web3.PublicKey;
+    accountPda: anchor.web3.PublicKey;
+    accountAta: anchor.web3.PublicKey;
+    tokenMint: anchor.web3.PublicKey;
+    tokenProgram: anchor.web3.PublicKey;
+    associatedTokenProgram: anchor.web3.PublicKey;
+    systemProgram: anchor.web3.PublicKey;
+}

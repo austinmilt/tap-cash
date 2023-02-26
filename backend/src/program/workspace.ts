@@ -8,13 +8,10 @@ export interface WorkSpace {
     payer: anchor.web3.Keypair;
 }
 
-interface WorkSpaceProps {
-    endpoint: string;
-    bankAuth: anchor.web3.Keypair;
-}
-
-export const getWorkspace = (props: WorkSpaceProps): WorkSpace => {
-    const { endpoint, bankAuth } = props;
+export function createWorkspace (
+    endpoint: string,
+    bankAuth: anchor.web3.Keypair
+): WorkSpace {
     const program = anchor.workspace.TapCash as anchor.Program<TapCash>;
     const connection = new anchor.web3.Connection(endpoint);
     const anchorWallet = new anchor.Wallet(bankAuth);

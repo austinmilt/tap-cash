@@ -3,12 +3,8 @@ import { v4 as uuid } from "uuid";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { EmailAddress, ProfilePicture, MemberId } from "@tap/shared/member";
-import { BANK_AUTH } from "../program/constants";
-import { getWorkspace, WorkSpace } from "../program/workspace";
-import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
 import { ApiError, SolanaTxType } from "@tap/shared/error";
 import { TapCashClient } from "../program/sdk";
-import { RPC_URL } from "../constants";
 
 //TODO tests
 
@@ -29,9 +25,7 @@ const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
-    let userAta = await TAP_CLIENT.initializeNewMember({
-        userId: request.walletAddress
-    })
+    let userAta = await TAP_CLIENT.initializeNewMember(request.walletAddress);
 
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 

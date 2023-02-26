@@ -47,8 +47,12 @@ export function parseEnv<T>(
 }
 
 export function parseKeypair(
-    envValue: string
+    name: string,
+    envValue?: string
 ): anchor.web3.Keypair {
+    if (envValue === undefined) {
+        throw new Error(`Missing required env variable ${name}.`);
+    }
     const u8Array = envValue.split(",").map(Number);
     const keypair = anchor.web3.Keypair.fromSecretKey(new Uint8Array(u8Array));
     return keypair;
@@ -61,12 +65,6 @@ function castString<T>(value: string): T {
 }
 
 
-export const FAKE_USDC: anchor.web3.Keypair = parseEnv<anchor.web3.Keypair>(
-    "FAKE_USDC",
-    process.env.FAKE_USDC,
-    undefined,
-    (value: string) => parseKeypair(value)
-);
+export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
 
-// TO DO ADD URL LOGIC
-export const RPC_URL = anchor.web3.clusterApiUrl('devnet');
+export const RPC_URL = process.env.RPC_URL ?? anchor.web3.clusterApiUrl('devnet');
