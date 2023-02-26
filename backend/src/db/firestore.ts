@@ -63,7 +63,7 @@ export class FirestoreClient implements DatabaseClient {
     }
 
 
-    public async getMembersByusdcAddressAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]> {
+    public async getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]> {
         const responses: QuerySnapshot<DocumentData>[] = await Promise.all(
             accounts.map(account => (
                 this.buildMemberQuery("usdcAddress", "==", account.toBase58())

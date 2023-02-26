@@ -11,7 +11,7 @@ export interface DatabaseClient {
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
 
-    getMembersByusdcAddressAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
+    getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
 
     getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts>;
 }
