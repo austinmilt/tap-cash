@@ -48,7 +48,7 @@ export class TapCashClient {
 
         }
         catch {
-            return;
+            ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
         }
     }
 
@@ -89,6 +89,7 @@ export class TapCashClient {
      * @returns buffer of a u8 number for PDA
      */
     private createAccountNoBuffer(acctNumber: number) {
+        if (acctNumber > 255) {ApiError.invalidParameter('Account Number')}
         const buffer = new ArrayBuffer(1); // create a buffer with 1 byte
         const view = new DataView(buffer);
         view.setUint8(0, acctNumber); // write the number to the buffer

@@ -65,6 +65,15 @@ export class ApiError extends Error {
         );
     }
 
+    public static invalidParameter(parameter: string): ApiError {
+        return new ApiError(
+            ApiErrorCode.INVALID_ARGUMENT,
+            "Invalid Argument: " + parameter,
+            ApiResponseStatus.CLIENT_ERROR,
+            400
+        );
+    }
+
     public static solanaTxError(txType: SolanaTxType): ApiError {
         return new ApiError(
             ApiErrorCode.SOLANA_TX_ERROR,
@@ -108,7 +117,8 @@ export enum ApiErrorCode {
     GENERAL_CLIENT_ERROR = 1,
     MISSING_PARAMETER = 2,
     SOLANA_TX_ERROR = 3,
-    MEMBER_SEARCH_ERROR = 4
+    MEMBER_SEARCH_ERROR = 4, 
+    INVALID_ARGUMENT = 5
 }
 
 export enum SolanaTxType {
