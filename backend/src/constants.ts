@@ -3,7 +3,7 @@ import * as yamlenv from "yamlenv";
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
 // during deployment
-yamlenv.config({path: ".env.local.yml"});
+yamlenv.config({ path: ".env.local.yml" });
 
 export const CIRCLE_API_KEY: string = parseEnv("CIRCLE_API_KEY", process.env.CIRCLE_API_KEY);
 
@@ -16,6 +16,12 @@ export const CIRCLE_ENVIRONMENT: CircleEnvironments = parseEnv(
         else if (v === "sandbox") return CircleEnvironments.sandbox;
         else throw new Error(`Invalid value for CIRCLE_ENVIRONMENT: ${v}`)
     }
+);
+
+export const FIRESTORE_MEMBERS_COLLECTION: string = parseEnv(
+    "FIRESTORE_MEMBERS_COLLECTION",
+    process.env.FIRESTORE_MEMBERS_COLLECTION,
+    "tap-members-dev"
 );
 
 function parseEnv<T>(

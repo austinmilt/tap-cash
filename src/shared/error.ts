@@ -66,6 +66,16 @@ export class ApiError extends Error {
     }
 
 
+    public static memberSearchError(): ApiError {
+        return new ApiError(
+            ApiErrorCode.MEMBER_SEARCH_ERROR,
+            "Error searching for members.",
+            ApiResponseStatus.SERVER_ERROR,
+            500
+        );
+    }
+
+
     public static isErrorResponse(response: ApiResponse<unknown>): boolean {
         return (response.error !== undefined);
     }
@@ -87,5 +97,6 @@ export class ApiError extends Error {
 export enum ApiErrorCode {
     GENERAL_SERVER_ERROR = 0,
     GENERAL_CLIENT_ERROR = 1,
-    MISSING_PARAMETER = 2
+    MISSING_PARAMETER = 2,
+    MEMBER_SEARCH_ERROR = 4
 }

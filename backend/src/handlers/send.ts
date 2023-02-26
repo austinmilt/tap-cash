@@ -1,6 +1,7 @@
-import { AccountId, EmailAddress } from "../../../shared/member";
 
 //TODO tests
+
+import { EmailAddress, AccountId } from "@tap/shared/member";
 
 export interface SendArgs {
     senderEmailAddress: EmailAddress;

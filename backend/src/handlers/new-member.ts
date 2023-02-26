@@ -1,8 +1,8 @@
 import * as anchor from "@project-serum/anchor";
-import { EmailAddress, MemberId, ProfilePicture } from "../../../shared/member";
 import { v4 as uuid } from "uuid";
 import { DatabaseClient } from "../db/client";
-import { BigTableClient } from "../db/bigtable";
+import { FirestoreClient } from "../db/firestore";
+import { EmailAddress, ProfilePicture, MemberId } from "@tap/shared/member";
 
 //TODO tests
 
@@ -19,7 +19,7 @@ export interface InitializeMemberResult {
 }
 
 //TODO eventually we should periodically sync users' email, name, and picture
-const DB_CLIENT: DatabaseClient = BigTableClient.ofDefaults();
+const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
     // TODO: call on-chain program to get member account made and UDSC ATA
