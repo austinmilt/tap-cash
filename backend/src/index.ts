@@ -2,7 +2,7 @@
 
 import * as ff from '@google-cloud/functions-framework';
 import * as anchor from "@project-serum/anchor";
-import { CircleClient } from './circle/client';
+import { CircleMainClient } from './circle/main-client';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import {
   ApiDepositRequest,
@@ -37,7 +37,7 @@ ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
 
 
 ff.http('list-channels', (req: ff.Request, res: ff.Response) => {
-  const circleClient: CircleClient = CircleClient.ofDefaults();
+  const circleClient: CircleMainClient = CircleMainClient.ofDefaults();
   circleClient.listChannels()
     .then((result) => {
       respondOK(res, result);

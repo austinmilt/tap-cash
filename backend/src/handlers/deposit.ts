@@ -2,7 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { ApiResponseStatus } from "@tap/shared/api";
 import { ApiError } from "@tap/shared/error";
 import { EmailAddress, AccountId } from "@tap/shared/member";
-import { CircleSimulator } from "../circle/simulator";
+import { CircleEmulator } from "../circle/circle-emulator";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { TapCashClient } from "../program/sdk";
@@ -24,7 +24,7 @@ export interface DepositResult {
     amount: number
 }
 
-const SIMULATOR_CLIENT = CircleSimulator.ofDefaults();
+const SIMULATOR_CLIENT = CircleEmulator.ofDefaults();
 
 export async function deposit(request: DepositArgs): Promise<DepositResult> {
     // TODO: delegate the credit card retrieval and processing to Circle client

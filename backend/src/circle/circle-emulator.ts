@@ -5,7 +5,7 @@ import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
 import { BANK_AUTH } from "../program/constants";
 import { createWorkspace, WorkSpace } from "../program/workspace";
 
-export class CircleSimulator {
+export class CircleEmulator {
     private readonly connection: anchor.web3.Connection;
     private readonly provider: anchor.AnchorProvider;
     private readonly payer: anchor.web3.Keypair;
@@ -15,12 +15,12 @@ export class CircleSimulator {
         this.payer = sdk.payer;
     }
 
-    public static ofDefaults(): CircleSimulator {
-        return new CircleSimulator(createWorkspace(RPC_URL, BANK_AUTH));
+    public static ofDefaults(): CircleEmulator {
+        return new CircleEmulator(createWorkspace(RPC_URL, BANK_AUTH));
     }
 
     public static withSdk(sdk: WorkSpace) {
-        return new CircleSimulator(sdk);
+        return new CircleEmulator(sdk);
     }
 
     public async simulateDeposit(args: SimulateDepositArgs): Promise<string | undefined> {
