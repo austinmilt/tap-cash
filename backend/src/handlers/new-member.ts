@@ -3,6 +3,8 @@ import { v4 as uuid } from "uuid";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { EmailAddress, ProfilePicture, MemberId } from "@tap/shared/member";
+import { ApiError, SolanaTxType } from "@tap/shared/error";
+import { TapCashClient } from "../program/sdk";
 
 //TODO tests
 
@@ -20,9 +22,12 @@ export interface InitializeMemberResult {
 
 //TODO eventually we should periodically sync users' email, name, and picture
 const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
+const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
-    // TODO: call on-chain program to get member account made and UDSC ATA
+    let userAta = await TAP_CLIENT.initializeNewMember(request.walletAddress);
+
+    if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
     // TODO: store mapping from user's email to name, pfp, wallet, and ATA
     DB_CLIENT.addMember(
@@ -31,8 +36,8 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
             profile: request.profile,
             name: request.name
         },
-        anchor.web3.Keypair.generate().publicKey,
-        anchor.web3.Keypair.generate().publicKey
+        request.walletAddress,
+        userAta
     );
 
     return {
