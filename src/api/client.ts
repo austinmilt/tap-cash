@@ -21,13 +21,12 @@ import {
     ApiWithdrawRequest,
     ApiWithdrawResponse,
     ApiQueryRecipientsRequest,
-    ApiQueryRecipientsResponse,
     ApiRecentActivityRequest,
-    ApiRecentActivityResponse,
     GetQueryParams,
     ApiResponse
 } from "../../backend/src/shared/api";
 import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../../backend/src/shared/member";
+import { ApiQueryRecipientsData } from "@tap/shared/api";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;
@@ -183,7 +182,7 @@ interface QueryRecipientsArgs {
 
 
 export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, MemberPublicProfile[]> {
-    const queryContext = useGetQuery<ApiQueryRecipientsRequest, ApiQueryRecipientsResponse>(QUERY_RECIPIENTS_URI);
+    const queryContext = useGetQuery<ApiQueryRecipientsRequest, ApiQueryRecipientsData>(QUERY_RECIPIENTS_URI);
 
     const submit = useCallback(({ emailQuery, limit }: QueryRecipientsArgs) => {
         queryContext.submit({
@@ -194,8 +193,8 @@ export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, MemberPu
 
 
     const data: MemberPublicProfile[] | undefined = useMemo(() => {
-        if (queryContext.data?.result === undefined) return undefined;
-        return queryContext.data.result.map(v => ({
+        if (queryContext.data === undefined) return undefined;
+        return queryContext.data.map(v => ({
             email: v.emailAddress,
             profile: v.profilePicture,
             name: v.name
@@ -218,7 +217,7 @@ interface RecentActivityArgs {
 
 
 export function useRecentActivity(): QueryContext<RecentActivityArgs, MemberActivity[]> {
-    const queryContext = useGetQuery<ApiRecentActivityRequest, ApiRecentActivityResponse>(RECENT_ACTIVITY_URI);
+    const queryContext = useGetQuery<ApiRecentActivityRequest, MemberActivity[]>(RECENT_ACTIVITY_URI);
 
     const submit = useCallback(({ memberEmail, limit }: RecentActivityArgs) => {
         queryContext.submit({
@@ -229,8 +228,8 @@ export function useRecentActivity(): QueryContext<RecentActivityArgs, MemberActi
 
 
     const data: MemberActivity[] | undefined = useMemo(() => {
-        if (queryContext.data?.result === undefined) return undefined;
-        return queryContext.data.result.map(v => v as MemberActivity);
+        if (queryContext.data === undefined) return undefined;
+        return queryContext.data.map(v => v as MemberActivity);
     }, [queryContext.data]);
 
     return {
@@ -253,7 +252,13 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
         if (params !== undefined) {
             uri += `?${new URLSearchParams(params)}`
         }
-        fetch(uri)
+        fetch(uri, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
             .then(response => response.json())
             .then(body => {
                 const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
@@ -289,7 +294,7 @@ function usePostQuery<Req, Res>(baseUri: string): QueryContext<Req, Res> {
         fetch(uri, {
             method: 'POST',
             headers: {
-                Accept: 'application/json',
+                'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             // TODO more robust conversion of body
