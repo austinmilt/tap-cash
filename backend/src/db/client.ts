@@ -1,14 +1,17 @@
 import { web3 } from "@project-serum/anchor";
-import { MemberId, MemberPublicProfile } from "@tap/shared/member";
+import { EmailAddress, MemberId, MemberPublicProfile } from "@tap/shared/member";
+import { MemberAccounts } from "../types/types";
 
 export interface DatabaseClient {
     addMember(
         profile: MemberPublicProfile,
         wallet: web3.PublicKey,
-        usdcAccountAddress: web3.PublicKey
+        usdcAddress: web3.PublicKey
     ): Promise<MemberId>;
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
 
-    getMembersByUsdcAccountAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
+    getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
+
+    getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts>;
 }

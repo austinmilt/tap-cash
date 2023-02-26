@@ -25,7 +25,7 @@ export interface ApiInitializeMemberRequest {
     emailAddress: string;
     profilePictureUrl: string;
     name: string;
-    walletAddressBase58: string;
+    signerAddressBase58: string;
 }
 
 
