@@ -1,7 +1,6 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
 import * as anchor from "@project-serum/anchor";
-import { TapCash } from "./types/tap-cash";
 
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
@@ -27,7 +26,7 @@ export const FIRESTORE_MEMBERS_COLLECTION: string = parseEnv(
     "tap-members-dev"
 );
 
-function parseEnv<T>(
+export function parseEnv<T>(
     name: string,
     value: string | undefined,
     defaultValue?: T | undefined,
@@ -47,36 +46,27 @@ function parseEnv<T>(
     return result;
 }
 
+export function parseKeypair(
+    envValue: string
+): anchor.web3.Keypair {
+    const u8Array = envValue.split(",").map(Number);
+    const keypair = anchor.web3.Keypair.fromSecretKey(new Uint8Array(u8Array));
+    return keypair;
+}
+
+
 
 function castString<T>(value: string): T {
-    return value as T;
+    return value as unknown as T;
 }
 
-export interface WorkSpace {
-    connection: anchor.web3.Connection;
-    provider: anchor.AnchorProvider;
-    program: anchor.Program<TapCash>;
-}
 
-export const getWorkspace = async (): Promise<WorkSpace> => {
-    const program = await anchor.workspace.TapCash as anchor.Program<TapCash>;
-    //TODO add endpoint logic
-    const connection = new anchor.web3.Connection('');
-    // TODO FIX .env
-    const anchorWallet = new anchor.Wallet(BANK_AUTH);
-    const provider: anchor.AnchorProvider = new anchor.AnchorProvider(
-        connection,
-        // fallback value allows querying the program without having a wallet connected
-        anchorWallet ?? ({} as anchor.Wallet),
-        anchor.AnchorProvider.defaultOptions()
-    );
+export const FAKE_USDC: anchor.web3.Keypair = parseEnv<anchor.web3.Keypair>(
+    "FAKE_USDC",
+    process.env.FAKE_USDC,
+    undefined,
+    (value: string) => parseKeypair(value)
+);
 
-    return { connection, provider, program };
-}
-
-export const FAKE_USDC = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.USDC_KEY));
-export const BANK_AUTH = anchor.web3.Keypair.fromSecretKey(new Uint8Array(process.env.BANK_KEY));
-
-export const BANK_SEED = "tap-bank";
-export const MEMBER_SEED = "member";
-export const CHECKING_SEED = "checking";
+// TO DO ADD URL LOGIC
+export const RPC_URL = anchor.web3.clusterApiUrl('devnet');
