@@ -1,5 +1,5 @@
 import { FlatList, Pressable } from "react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { Button } from "../../components/Button";
 import { StyleSheet } from "react-native";
 import { TextInput } from "../../components/TextInput";
@@ -7,8 +7,9 @@ import { Text } from "../../components/Text";
 import { View } from "../../components/View";
 import { COLORS } from "../../common/styles";
 import { useQueryRecipients } from "../../api/client";
-import { EmailAddress, MemberPublicProfile } from "../../../shared/member";
 import React from "react";
+import { EmailAddress, MemberPublicProfile } from "@tap/shared/member";
+import { useStateWithDebounce } from "../../common/debounce";
 
 
 interface Props {
@@ -17,17 +18,12 @@ interface Props {
 }
 
 export function RecipientInput(props: Props): JSX.Element {
-    const [recipient, setRecipient] = useState<EmailAddress | undefined>();
     const recipientQueryContext = useQueryRecipients();
-
-    //TODO placheolder
-    useEffect(() => {
-        recipientQueryContext.submit({ emailQuery: "m", limit: 10 });
-    }, [])
-
-    useEffect(() => {
-        console.log("recipients", recipientQueryContext.data)
-    }, [recipientQueryContext.data])
+    const [recipient, setRecipient] = useStateWithDebounce<EmailAddress | undefined>(query => {
+        if (query !== undefined) {
+            recipientQueryContext.submit({ emailQuery: query, limit: 10 });
+        }
+    }, 250);
 
     //TODO validation, and error messages
 
