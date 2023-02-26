@@ -23,23 +23,23 @@ export class CircleSimulator {
         return new CircleSimulator(sdk);
     }
 
-    public async simulateDeposit(args: SimulateDepositArgs){
+    public async simulateDeposit(args: SimulateDepositArgs): Promise<string | undefined> {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
         let ix = await createMintToCheckedInstruction(tokenMint, args.destinationAta, this.provider.publicKey, decimalAmount, USDC_DECIMALS);
         let transaction = new anchor.web3.Transaction().add(ix);
-        
+
         try {
-          const {blockhash, lastValidBlockHeight} = await this.connection.getLatestBlockhash();
-          transaction.recentBlockhash = blockhash;
-          transaction.lastValidBlockHeight = lastValidBlockHeight;
-          const txId = await anchor.web3.sendAndConfirmTransaction(this.connection, transaction, [this.payer]);
-          return txId;
+            const { blockhash, lastValidBlockHeight } = await this.connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.lastValidBlockHeight = lastValidBlockHeight;
+            const txId = await anchor.web3.sendAndConfirmTransaction(this.connection, transaction, [this.payer]);
+            return txId;
         }
         catch {
             ApiError.generalServerError("Failed to deposit funds.");
         }
-    
+
     }
 }
 

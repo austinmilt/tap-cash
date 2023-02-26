@@ -193,7 +193,7 @@ export class TapCashClient {
 
     }
 
-    public async sendTokens(args: SendTokensArgs) {
+    public async sendTokens(args: SendTokensArgs): Promise<string | undefined> {
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
         const systemProgram: anchor.web3.PublicKey = anchor.web3.SystemProgram.programId;
         const tokenProgram = TOKEN_PROGRAM_ID;
