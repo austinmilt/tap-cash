@@ -22,6 +22,8 @@ import { RecentActivityArgs, getRecentActivity } from './handlers/recent-activit
 import { Arg } from './shared/arg';
 import { ApiError } from './shared/error';
 import { EmailAddress, ProfilePicture, AccountId } from './shared/member';
+import { PaymentMethodArgs, getPaymentMethods } from './handlers/payment-methods';
+import { PaymentMethodSummary } from './shared/payment';
 
 
 ff.http('new-member', (req: ff.Request, res: ff.Response) => {
@@ -142,6 +144,23 @@ function transformRecentActivityRequest(req: ff.Request): RecentActivityArgs {
   return {
     memberEmail: getRequiredParam<ApiRecentActivityRequest, EmailAddress>(req.query, "memberEmail"),
     limit: getRequiredIntegerParam<ApiRecentActivityRequest>(req.query, "limit"),
+  };
+}
+
+
+ff.http('payment-methods', (req: ff.Request, res: ff.Response) => {
+  getPaymentMethods(transformPaymenMethodsRequest(req))
+    .then((result) => {
+      respondOK<PaymentMethodSummary[]>(res, result);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformPaymenMethodsRequest(req: ff.Request): PaymentMethodArgs {
+  Arg.notNullish(req.query, "req.query");
+  return {
+    memberEmail: getRequiredParam<ApiRecentActivityRequest, EmailAddress>(req.query, "memberEmail"),
   };
 }
 
