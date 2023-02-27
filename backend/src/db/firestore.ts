@@ -35,6 +35,7 @@ export class FirestoreClient implements DatabaseClient {
             name: profile.name,
             usdcAddress: usdcAddress.toBase58(),
             signerAddress: signerAddress.toBase58(),
+            circleCreditCards: []
         };
         const memberDoc = await this.membersRef.add(memberDocData);
 
@@ -63,16 +64,31 @@ export class FirestoreClient implements DatabaseClient {
     }
 
 
-    public async getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]> {
-        const responses: QuerySnapshot<DocumentData>[] = await Promise.all(
-            accounts.map(account => (
-                this.buildMemberQuery("usdcAddress", "==", account.toBase58())
+    public async getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<Map<web3.PublicKey, MemberPublicProfile>> {
+        const result: Map<web3.PublicKey, MemberPublicProfile> = new Map();
+        await Promise.all(
+            accounts.map(async account => {
+                const response = await this.buildMemberQuery("usdcAddress", "==", account.toBase58())
                     .limit(1)
-                    .get()
-            ))
+                    .get();
+
+                // there should be only 1 or 0 results
+                for (const doc of response.docs) {
+                    try {
+                        const profile: MemberPublicProfile = parseMemberProfile(doc);
+                        result.set(account, profile);
+
+                    } catch (e) {
+                        // omit malformed documents
+                        //TODO better logging
+                        console.error("Unable to process document " + doc.id);
+                    }
+                }
+            })
         );
-        return parseMemberProfiles(responses.flatMap(r => r.docs));
+        return result;
     }
+
 
     public async getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts> {
         const response: QuerySnapshot<DocumentData> = await this.buildMemberQuery("email", "==", email)
@@ -107,6 +123,7 @@ interface MemberDocument extends DocumentData {
     profile: string;
     signerAddress: string;
     usdcAddress: string;
+    circleCreditCards: string[];
 }
 
 
@@ -118,11 +135,7 @@ function parseMemberProfiles(docs: QueryDocumentSnapshot<DocumentData>[]): Membe
     const result: MemberPublicProfile[] = [];
     for (const doc of docs) {
         try {
-            result.push({
-                email: getMemberDocField(doc, 'email'),
-                profile: getMemberDocField(doc, 'profile'),
-                name: getMemberDocField(doc, 'name')
-            });
+            result.push(parseMemberProfile(doc));
 
         } catch (e) {
             // omit malformed documents
@@ -132,6 +145,15 @@ function parseMemberProfiles(docs: QueryDocumentSnapshot<DocumentData>[]): Membe
     }
 
     return result;
+}
+
+
+function parseMemberProfile(doc: QueryDocumentSnapshot<DocumentData>): MemberPublicProfile {
+    return {
+        email: getMemberDocField(doc, 'email'),
+        profile: getMemberDocField(doc, 'profile'),
+        name: getMemberDocField(doc, 'name')
+    };
 }
 
 
