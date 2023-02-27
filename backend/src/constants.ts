@@ -66,5 +66,6 @@ function castString<T>(value: string): T {
 
 
 export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
+export const USDC_DECIMALS: number = 6;
 
-export const RPC_URL = process.env.RPC_URL ?? anchor.web3.clusterApiUrl('devnet');
+export const RPC_URL: string = parseEnv("RPC_URL", process.env.RPC_URL, anchor.web3.clusterApiUrl('devnet'));

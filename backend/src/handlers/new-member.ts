@@ -12,7 +12,7 @@ export interface InitializeMemberArgs {
     email: EmailAddress;
     profile: ProfilePicture;
     name: string;
-    walletAddress: anchor.web3.PublicKey;
+    signerAddress: anchor.web3.PublicKey;
 }
 
 
@@ -25,8 +25,7 @@ const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
-    let userAta = await TAP_CLIENT.initializeNewMember(request.walletAddress);
-    // let userAta: anchor.web3.PublicKey = anchor.web3.Keypair.generate().publicKey;
+    let userAta = await TAP_CLIENT.initializeNewMember(request.signerAddress);
 
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
@@ -37,7 +36,7 @@ export async function initializeMember(request: InitializeMemberArgs): Promise<I
             profile: request.profile,
             name: request.name
         },
-        request.walletAddress,
+        request.signerAddress,
         userAta
     );
 

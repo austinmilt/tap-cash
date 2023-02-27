@@ -19,7 +19,7 @@ export function createWorkspace(
         connection,
         // fallback value allows querying the program without having a wallet connected
         anchorWallet ?? ({} as anchor.Wallet),
-        anchor.AnchorProvider.defaultOptions()
+        { commitment: 'confirmed', preflightCommitment: 'confirmed' }
     );
     const program: anchor.Program<TapCash> = new anchor.Program(
         IDL as unknown as TapCash,

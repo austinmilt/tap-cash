@@ -1,4 +1,5 @@
 import { ApiErrorCode } from "./error";
+import * as anchor from "@project-serum/anchor";
 
 export interface GetQueryParams {
     [param: string]: string;
@@ -25,7 +26,7 @@ export interface ApiInitializeMemberRequest {
     emailAddress: string;
     profilePictureUrl: string;
     name: string;
-    walletAddressBase58: string;
+    signerAddressBase58: string;
 }
 
 
@@ -48,7 +49,7 @@ export interface ApiSendRequest {
     recipientEmailAddress: string;
     senderAccountId: string;
     amount: number;
-    //TODO
+    privateKey: anchor.web3.Keypair
 }
 
 
@@ -110,6 +111,7 @@ export interface ApiSendActivity {
     recipient: ApiMemberPublicProfile;
     currency: string;
     amount: number;
+    privateKey: string;
 }
 
 
