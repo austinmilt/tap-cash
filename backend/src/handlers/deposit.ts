@@ -24,7 +24,7 @@ export interface DepositArgs {
 export interface DepositResult {
     //TODO something about the result of the deposit attempt
     result: ApiResponseStatus,
-    id: string,
+    solanaTransactionId: string,
     amount: number
 }
 
