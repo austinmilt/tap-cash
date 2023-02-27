@@ -14,15 +14,6 @@ export class CircleMainClient {
     }
 
 
-    /**
-     * Dunno what this is for, just an example.
-     *
-     * @returns
-     */
-    public async listChannels(): Promise<ChannelResponse[] | undefined> {
-        const result = await this.sdk.channels.listChannels();
-        return result.data.data;
-    }
 
     /**
      * 
