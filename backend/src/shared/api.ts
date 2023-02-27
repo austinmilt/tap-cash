@@ -111,6 +111,7 @@ export interface ApiSendActivity {
     recipient: ApiMemberPublicProfile;
     currency: string;
     amount: number;
+    privateKey: string;
 }
 
 

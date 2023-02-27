@@ -2,7 +2,6 @@
 
 import * as ff from '@google-cloud/functions-framework';
 import * as anchor from "@project-serum/anchor";
-import { CircleMainClient } from './circle/main-client';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import {
   ApiDepositRequest,
@@ -92,7 +91,7 @@ function transformSendRequest(req: ff.Request): SendArgs {
     recipientEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(req.body, "recipientEmailAddress"),
     senderAccountId: getRequiredParam<ApiSendRequest, AccountId>(req.body, "senderAccountId"),
     amount: getRequiredParam<ApiSendRequest, number>(req.body, "amount", Number.parseFloat),
-    privateKey: getRequiredParam<ApiSendRequest, anchor.web3.Keypair>(req.body, "privateKey")
+    privateKey: getPrivateKeyParam<ApiSendRequest>(req.body, "privateKey")
   };
 }
 
@@ -165,6 +164,12 @@ function getRequiredIntegerParam<R>(body: ff.Request['body'] | ff.Request['query
 
 function getPublicKeyParam<R>(body: ff.Request['body'] | ff.Request['query'], key: keyof R): anchor.web3.PublicKey {
   return getRequiredParam<R, anchor.web3.PublicKey>(body, key, v => new anchor.web3.PublicKey(v));
+}
+
+
+function getPrivateKeyParam<R>(body: ff.Request['body'] | ff.Request['query'], key: keyof R): anchor.web3.Keypair {
+  //TODO this is probably wrong for web3auth encrypted key, but fine for a placeholder
+  return getRequiredParam<R, anchor.web3.Keypair>(body, key, v => anchor.web3.Keypair.fromSecretKey(new Uint8Array(JSON.parse(v))));
 }
 
 
