@@ -2,7 +2,6 @@
 
 import * as ff from '@google-cloud/functions-framework';
 import * as anchor from "@project-serum/anchor";
-import { CircleClient } from './circle/client';
 import { InitializeMemberArgs, initializeMember } from './handlers/new-member';
 import {
   ApiDepositRequest,
@@ -36,24 +35,14 @@ ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
 });
 
 
-ff.http('list-channels', (req: ff.Request, res: ff.Response) => {
-  const circleClient: CircleClient = CircleClient.ofDefaults();
-  circleClient.listChannels()
-    .then((result) => {
-      respondOK(res, result);
-    })
-    .catch(e => handleError(res, e))
-});
-
-
-ff.http('new-member', (req: ff.Request, res: ff.Response) => {
-  initializeMember(transformInitializeMemberRequest(req))
-    .then(() => {
-      // no need to send the member ID back to the client
-      respondOK(res);
-    })
-    .catch(e => handleError(res, e))
-});
+// ff.http('new-member', (req: ff.Request, res: ff.Response) => {
+//   initializeMember(transformInitializeMemberRequest(req))
+//     .then(() => {
+//       // no need to send the member ID back to the client
+//       respondOK(res);
+//     })
+//     .catch(e => handleError(res, e))
+// });
 
 
 function transformInitializeMemberRequest(req: ff.Request): InitializeMemberArgs {
