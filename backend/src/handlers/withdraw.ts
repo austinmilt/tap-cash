@@ -1,7 +1,7 @@
 
 //TODO tests
 
-import { EmailAddress, AccountId } from "@tap/shared/member";
+import { EmailAddress, AccountId } from "../shared/member";
 
 export interface WithdrawArgs {
     emailAddress: EmailAddress;

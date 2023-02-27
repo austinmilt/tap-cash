@@ -1,12 +1,12 @@
 import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { ApiError, SolanaTxType } from "@tap/shared/error";
 import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
 import { BANK_AUTH, BANK_SEED, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
 import { createWorkspace, WorkSpace } from "./workspace";
 import { airdropIfNeeded, getOrCreateUsdc } from "../helpers/solana";
 import { TapCash } from "../types/tap-cash";
 import { BN } from "bn.js";
+import { ApiError, SolanaTxType } from "../shared/error";
 
 export class TapCashClient {
     private readonly sdk: WorkSpace;
@@ -91,9 +91,9 @@ export class TapCashClient {
     }
 
     /**
-     * 
-     * Generates a buffer for PDA seed from a u8 number 
-     *  
+     *
+     * Generates a buffer for PDA seed from a u8 number
+     *
      * @param acctNumber number of the user's account (e.g, 1st account = 1)
      * @returns buffer of a u8 number for PDA
      */

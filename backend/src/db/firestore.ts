@@ -1,11 +1,11 @@
 import { DatabaseClient } from "./client";
 import { FIRESTORE_MEMBERS_COLLECTION } from "../constants";
-import { MemberPublicProfile, EmailAddress } from "@tap/shared/member";
 import { initializeApp } from "firebase-admin/app";
 import { CollectionReference, DocumentData, Firestore, QueryDocumentSnapshot, QuerySnapshot, getFirestore } from "firebase-admin/firestore";
 import { web3 } from "@project-serum/anchor";
-import { ApiError } from "@tap/shared/error";
 import { MemberAccounts } from "../types/types";
+import { ApiError } from "../shared/error";
+import { MemberPublicProfile, EmailAddress } from "../shared/member";
 
 initializeApp();
 
