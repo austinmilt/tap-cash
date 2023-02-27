@@ -18,7 +18,7 @@ export interface SendArgs {
 
 export interface SendResult {
     //TODO something about the result of the send attempt
-    txId: string
+    solanaTransactionId: string
 }
 
 const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
