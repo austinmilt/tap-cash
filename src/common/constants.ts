@@ -3,8 +3,6 @@
 
 // use http://10.0.2.2:8080/ when testing/deploying with android emulator locally
 
-export const HELLO_WORLD_URI: string = "https://hello-world-7pi36k236a-uc.a.run.app";
-export const LIST_CHANNELS_URI: string = "https://list-channels-7pi36k236a-uc.a.run.app";
 //TODO
 export const NEW_MEMBER_URI: string = "https://list-channels-7pi36k236a-uc.a.run.app";
 export const DEPOSIT_URI: string = "https://list-channels-7pi36k236a-uc.a.run.app";

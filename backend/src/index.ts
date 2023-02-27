@@ -23,17 +23,6 @@ import { Arg } from './shared/arg';
 import { ApiError } from './shared/error';
 import { EmailAddress, ProfilePicture, AccountId } from './shared/member';
 
-// e.g. http://localhost:8080?name=dave
-ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
-  const name = req.query.name;
-  if (typeof name !== 'string') {
-    respondError(res, ApiError.generalClientError("Missing or invalid required parameter: name"));
-
-  } else {
-    respondOK(res, `hello, ${req.query.name}`);
-  }
-});
-
 
 ff.http('new-member', (req: ff.Request, res: ff.Response) => {
   initializeMember(transformInitializeMemberRequest(req))
