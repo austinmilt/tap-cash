@@ -4,11 +4,12 @@ import {
     NEW_MEMBER_URI,
     QUERY_RECIPIENTS_URI,
     RECENT_ACTIVITY_URI,
+    SAVED_PAYMENT_METHODS_URI,
     SEND_URI,
     WITHDRAW_URI
 } from "../common/constants";
 import * as anchor from "@project-serum/anchor";
-import { MemberActivity } from "../../backend/src/shared/activity";
+import { MemberActivity } from "../shared/activity";
 import {
     ApiInitializeMemberRequest,
     ApiIntializeMemberResponse,
@@ -22,9 +23,10 @@ import {
     ApiRecentActivityRequest,
     GetQueryParams,
     ApiResponse
-} from "../../backend/src/shared/api";
-import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../../backend/src/shared/member";
+} from "../shared/api";
+import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../shared/member";
 import { ApiQueryRecipientsData } from "../shared/api";
+import { PaymentMethodSummary } from "../shared/payment";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;
@@ -216,6 +218,34 @@ export function useRecentActivity(): QueryContext<RecentActivityArgs, MemberActi
     };
 }
 
+
+interface SavedPaymentMethodsArgs {
+    memberEmail: EmailAddress;
+}
+
+
+export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, PaymentMethodSummary[]> {
+    const queryContext = useGetQuery<ApiRecentActivityRequest, PaymentMethodSummary[]>(SAVED_PAYMENT_METHODS_URI);
+
+    const submit = useCallback(({ memberEmail, limit }: RecentActivityArgs) => {
+        queryContext.submit({
+            memberEmail: memberEmail,
+            limit: limit.toString()
+        });
+    }, [queryContext.submit]);
+
+
+    const data: PaymentMethodSummary[] | undefined = useMemo(() => {
+        if (queryContext.data === undefined) return undefined;
+        return queryContext.data.map(v => v as PaymentMethodSummary);
+    }, [queryContext.data]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: data
+    };
+}
 
 
 function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): QueryContext<Req, Res> {
