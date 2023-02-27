@@ -263,5 +263,8 @@ interface CreateAccountArgs {
 interface SendTokensArgs {
     fromMember: anchor.web3.Keypair,
     destinationAta: anchor.web3.PublicKey,
+    /**
+     * Fractional token Amount, not decimal tokens (e.g., 1.5 USDC, not 1500000 USDC-lamports)
+     */
     amount: number
 }

@@ -24,7 +24,7 @@ export class CircleEmulator implements CircleClient {
         return new CircleEmulator(sdk);
     }
 
-    public async transferUsdc(args: CircleDepositArgs): Promise<string | undefined> {
+    public async transferUsdc(args: CircleDepositArgs): Promise<void> {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
         const destination: anchor.web3.PublicKey = new anchor.web3.PublicKey(args.destinationAtaString);
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
@@ -36,7 +36,7 @@ export class CircleEmulator implements CircleClient {
             transaction.recentBlockhash = blockhash;
             transaction.lastValidBlockHeight = lastValidBlockHeight;
             const txId = await anchor.web3.sendAndConfirmTransaction(this.connection, transaction, [this.payer]);
-            return txId;
+            return;
         }
         catch {
             ApiError.generalServerError("Failed to deposit funds.");

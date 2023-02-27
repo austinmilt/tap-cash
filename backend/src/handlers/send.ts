@@ -12,7 +12,7 @@ export interface SendArgs {
     recipientEmailAddress: EmailAddress;
     senderAccountId: AccountId;
     amount: number;
-    //TODO probably the sender's private key
+    privateKey: anchor.web3.Keypair;
 }
 
 
@@ -28,11 +28,10 @@ export async function send(request: SendArgs): Promise<SendResult> {
 
     const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.recipientEmailAddress);
 
-    // TODO Update with decryption
-    const decryptPrivateKey: anchor.web3.Keypair = anchor.web3.Keypair.generate();
+    // TODO  add decryption in index.ts
 
     const txId = await TAP_CLIENT.sendTokens({
-        fromMember: decryptPrivateKey,
+        fromMember: request.privateKey,
         destinationAta: usdcAddress,
         amount: request.amount
     })

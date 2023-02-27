@@ -24,8 +24,7 @@ export interface DepositArgs {
 export interface DepositResult {
     //TODO something about the result of the deposit attempt
     result: ApiResponseStatus,
-    id: string,
-    amount: number
+    amount?: number
 }
 
 const SIMULATOR_CLIENT = CircleEmulator.ofDefaults();
@@ -36,12 +35,18 @@ export async function deposit(request: DepositArgs): Promise<DepositResult> {
 
     const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.emailAddress);
 
-    const txId = await SIMULATOR_CLIENT.transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
-    if (!txId) { throw ApiError.generalServerError("Failed to deposit funds.") }
-
-    return {
-        id: txId,
-        result: ApiResponseStatus.SUCCESS,
-        amount: request.amount
+    try {
+        await SIMULATOR_CLIENT.transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
+        return {
+            result: ApiResponseStatus.SUCCESS,
+            amount: request.amount
+        }
     }
+    catch {
+        return {
+            result: ApiResponseStatus.SERVER_ERROR,
+        }
+    }
+
+
 }

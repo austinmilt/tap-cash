@@ -1,4 +1,5 @@
-import { Circle, PaymentCreationRequest, CardCreationRequest, Card, TransferCreationRequest, Transfer, BusinessRecipientAddressCreationRequest, BusinessRecipientAddressObject, ChannelResponse } from "@circle-fin/circle-sdk";
+import { Circle, PaymentCreationRequest, CardCreationRequest, Card, TransferCreationRequest, BusinessRecipientAddressCreationRequest, BusinessRecipientAddressObject, ChannelResponse } from "@circle-fin/circle-sdk";
+import { ApiError } from "../shared/error";
 import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT } from "../constants";
 
 export class CircleMainClient {
@@ -13,23 +14,12 @@ export class CircleMainClient {
         return new CircleMainClient(new Circle(CIRCLE_API_KEY, CIRCLE_ENVIRONMENT));
     }
 
-
-    /**
-     * Dunno what this is for, just an example.
-     *
-     * @returns
-     */
-    public async listChannels(): Promise<ChannelResponse[] | undefined> {
-        const result = await this.sdk.channels.listChannels();
-        return result.data.data;
-    }
-
     /**
      * 
      * @param paymentDetail PaymentCreationRequest
      * @returns a payment ID as a string
      */
-    public async createAndSendPayment(paymentDetail: PaymentCreationRequest): Promise<string | undefined> {
+    private async createAndSendPayment(paymentDetail: PaymentCreationRequest): Promise<string | undefined> {
         let payementResponse = await this.sdk.payments.createPayment(paymentDetail);
         return payementResponse.data.data?.id;
     }
@@ -39,7 +29,7 @@ export class CircleMainClient {
      * @param cardDetail 
      * @returns unique Id of card
      */
-    public async addCreditCard(cardDetail: CardCreationRequest): Promise<string | undefined> {
+    private async addCreditCard(cardDetail: CardCreationRequest): Promise<string | undefined> {
         let cardResponse = await this.sdk.cards.createCard(cardDetail);
         return cardResponse.data.data?.id;
     }
@@ -49,18 +39,24 @@ export class CircleMainClient {
      * @param id  
      * @returns G
      */
-    public async tryFetchCard(id: string): Promise<Card | undefined> {
+    private async tryFetchCard(id: string): Promise<Card | undefined> {
         let card = await this.sdk.cards.getCard(id);
         return card.data?.data;
     }
 
 
-    public async transferUsdc(transferDetail: TransferCreationRequest): Promise<Transfer | undefined> {
-        let transfer = await this.sdk.transfers.createTransfer();
-        return transfer.data.data;
+    private async transferUsdc(transferDetail: TransferCreationRequest): Promise<void> {
+        try {
+            let transfer = await this.sdk.transfers.createTransfer();
+            return;
+        }
+        catch {
+            ApiError.generalServerError("Failed to transfer funds.");
+        }
+
     }
 
-    public async createDestinationAddress(destination: BusinessRecipientAddressCreationRequest): Promise<BusinessRecipientAddressObject | undefined> {
+    private async createDestinationAddress(destination: BusinessRecipientAddressCreationRequest): Promise<BusinessRecipientAddressObject | undefined> {
         let response = await this.sdk.addresses.createBusinessRecipientAddress();
         return response.data.data;
     }

@@ -1,5 +1,5 @@
 export interface CircleClient {
-    transferUsdc(args: CircleDepositArgs): Promise<string | undefined>;
+    transferUsdc(args: CircleDepositArgs): Promise<void>;
 }
 
 export interface CircleDepositArgs {
