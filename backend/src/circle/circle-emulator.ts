@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { createMintToCheckedInstruction } from "@solana/spl-token";
-import { ApiError } from "@tap/shared/error";
+import { ApiError } from "../shared/error";
 import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
 import { BANK_AUTH } from "../program/constants";
 import { createWorkspace, WorkSpace } from "../program/workspace";

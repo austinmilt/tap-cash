@@ -4,7 +4,7 @@ import { MemberPublicProfile, EmailAddress } from "../shared/member";
 import { initializeApp } from "firebase-admin/app";
 import { CollectionReference, DocumentData, Firestore, QueryDocumentSnapshot, QuerySnapshot, getFirestore } from "firebase-admin/firestore";
 import { web3 } from "@project-serum/anchor";
-import { ApiError } from "@tap/shared/error";
+import { ApiError } from "../shared/error";
 import { MemberAccounts } from "../types/types";
 
 initializeApp();
