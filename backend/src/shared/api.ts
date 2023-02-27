@@ -1,4 +1,5 @@
 import { ApiErrorCode } from "./error";
+import * as anchor from "@project-serum/anchor";
 
 export interface GetQueryParams {
     [param: string]: string;
@@ -48,7 +49,7 @@ export interface ApiSendRequest {
     recipientEmailAddress: string;
     senderAccountId: string;
     amount: number;
-    //TODO
+    privateKey: anchor.web3.Keypair
 }
 
 

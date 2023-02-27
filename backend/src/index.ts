@@ -91,7 +91,8 @@ function transformSendRequest(req: ff.Request): SendArgs {
     senderEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(req.body, "senderEmailAddress"),
     recipientEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(req.body, "recipientEmailAddress"),
     senderAccountId: getRequiredParam<ApiSendRequest, AccountId>(req.body, "senderAccountId"),
-    amount: getRequiredParam<ApiSendRequest, number>(req.body, "amount", Number.parseFloat)
+    amount: getRequiredParam<ApiSendRequest, number>(req.body, "amount", Number.parseFloat),
+    privateKey: getRequiredParam<ApiSendRequest, anchor.web3.Keypair>(req.body, "privateKey")
   };
 }
 

@@ -30,15 +30,15 @@ export async function send(request: SendArgs): Promise<SendResult> {
 
     // TODO  add decryption in index.ts
 
-    const txId = await TAP_CLIENT.sendTokens({
+    const solanaTransactionId = await TAP_CLIENT.sendTokens({
         fromMember: request.privateKey,
         destinationAta: usdcAddress,
         amount: request.amount
     })
 
-    if (!txId) throw ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
+    if (!solanaTransactionId) throw ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
 
     return {
-        txId
+        solanaTransactionId
     }
 }
