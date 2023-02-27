@@ -27,7 +27,7 @@ export interface DepositResult {
     amount?: number
 }
 
-const SIMULATOR_CLIENT = CircleEmulator.ofDefaults();
+const CIRCLE_CLIENT: CircleClient = CircleEmulator.ofDefaults();
 const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 
 export async function deposit(request: DepositArgs): Promise<DepositResult> {

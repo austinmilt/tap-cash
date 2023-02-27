@@ -45,7 +45,7 @@ export class CircleMainClient {
     }
 
 
-    private async transferUsdc(transferDetail: TransferCreationRequest): Promise<void> {
+    public async transferUsdc(transferDetail: TransferCreationRequest): Promise<void> {
         try {
             let transfer = await this.sdk.transfers.createTransfer();
             return;
