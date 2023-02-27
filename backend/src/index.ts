@@ -35,14 +35,14 @@ ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
 });
 
 
-// ff.http('new-member', (req: ff.Request, res: ff.Response) => {
-//   initializeMember(transformInitializeMemberRequest(req))
-//     .then(() => {
-//       // no need to send the member ID back to the client
-//       respondOK(res);
-//     })
-//     .catch(e => handleError(res, e))
-// });
+ff.http('new-member', (req: ff.Request, res: ff.Response) => {
+  initializeMember(transformInitializeMemberRequest(req))
+    .then(() => {
+      // no need to send the member ID back to the client
+      respondOK(res);
+    })
+    .catch(e => handleError(res, e))
+});
 
 
 function transformInitializeMemberRequest(req: ff.Request): InitializeMemberArgs {

@@ -26,6 +26,7 @@ const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
     let userAta = await TAP_CLIENT.initializeNewMember(request.walletAddress);
+    // let userAta: anchor.web3.PublicKey = anchor.web3.Keypair.generate().publicKey;
 
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
