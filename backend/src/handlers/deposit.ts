@@ -1,12 +1,16 @@
 import * as anchor from "@project-serum/anchor";
 import { ApiResponseStatus } from "@tap/shared/api";
 import { ApiError } from "@tap/shared/error";
-import { EmailAddress, AccountId } from "@tap/shared/member";
 import { CircleEmulator } from "../circle/circle-emulator";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { TapCashClient } from "../program/sdk";
+import { EmailAddress, AccountId } from "../shared/member";
+
 //TODO tests
+
+//TODO tests
+
 
 export interface DepositArgs {
     emailAddress: EmailAddress;

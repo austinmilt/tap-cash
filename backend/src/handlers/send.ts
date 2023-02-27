@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { ApiError, SolanaTxType } from "@tap/shared/error";
-import { EmailAddress, AccountId } from "@tap/shared/member";
+import { EmailAddress, AccountId } from "../shared/member";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { TapCashClient } from "../program/sdk";

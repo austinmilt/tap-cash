@@ -36,16 +36,6 @@ ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
 });
 
 
-ff.http('list-channels', (req: ff.Request, res: ff.Response) => {
-  const circleClient: CircleMainClient = CircleMainClient.ofDefaults();
-  circleClient.listChannels()
-    .then((result) => {
-      respondOK(res, result);
-    })
-    .catch(e => handleError(res, e))
-});
-
-
 ff.http('new-member', (req: ff.Request, res: ff.Response) => {
   initializeMember(transformInitializeMemberRequest(req))
     .then(() => {

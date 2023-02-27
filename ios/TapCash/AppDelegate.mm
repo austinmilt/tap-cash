@@ -6,7 +6,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleName = @"MoCash";
+  self.moduleName = @"TapCash";
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

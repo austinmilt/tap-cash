@@ -53,7 +53,7 @@ export function parseKeypair(
     if (envValue === undefined) {
         throw new Error(`Missing required env variable ${name}.`);
     }
-    const u8Array = envValue.split(",").map(Number);
+    const u8Array = JSON.parse(envValue);
     const keypair = anchor.web3.Keypair.fromSecretKey(new Uint8Array(u8Array));
     return keypair;
 }
@@ -67,4 +67,5 @@ function castString<T>(value: string): T {
 
 export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
 export const USDC_DECIMALS: number = 6;
+
 export const RPC_URL: string = process.env.RPC_URL ?? anchor.web3.clusterApiUrl('devnet');

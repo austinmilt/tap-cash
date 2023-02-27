@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.mocash"
+    namespace "com.tapcash"
     defaultConfig {
-        applicationId "com.mocash"
+        applicationId "com.tapcash"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

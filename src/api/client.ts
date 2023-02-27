@@ -26,7 +26,7 @@ import {
     ApiResponse
 } from "../../backend/src/shared/api";
 import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../../backend/src/shared/member";
-import { ApiQueryRecipientsData } from "@tap/shared/api";
+import { ApiQueryRecipientsData } from "../shared/api";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;

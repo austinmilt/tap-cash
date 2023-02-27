@@ -1,6 +1,6 @@
 import { web3 } from "@project-serum/anchor";
-import { EmailAddress, MemberId, MemberPublicProfile } from "@tap/shared/member";
 import { MemberAccounts } from "../types/types";
+import { MemberId, MemberPublicProfile, EmailAddress } from "../shared/member";
 
 export interface DatabaseClient {
     addMember(
@@ -14,4 +14,6 @@ export interface DatabaseClient {
     getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
 
     getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts>;
+    //TODO change signature to return Map<web3.PublicKey, MemberPublicProfile>
+    getMembersByUsdcAccountAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
 }
