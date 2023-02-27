@@ -5,11 +5,6 @@
         "esModuleInterop": true,
         "strict": true,
         "outDir": "dist",
-        "paths": {
-            "@tap/shared/*": [
-                "./src/shared/*"
-            ]
-        }
     },
     "include": [
         "src/**/*"
