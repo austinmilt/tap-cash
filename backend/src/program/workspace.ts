@@ -1,5 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { IDL, TapCash } from "../types/tap-cash";
+import { TAPCASH_PROGRAM_ID } from "./constants";
 
 export interface WorkSpace {
     connection: anchor.web3.Connection;
@@ -22,7 +23,7 @@ export function createWorkspace(
     );
     const program: anchor.Program<TapCash> = new anchor.Program(
         IDL as unknown as TapCash,
-        new anchor.web3.PublicKey("TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz"),
+        TAPCASH_PROGRAM_ID,
         provider ?? ({} as anchor.AnchorProvider)
     );
     const payer = bankAuth;
