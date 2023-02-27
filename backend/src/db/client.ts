@@ -10,5 +10,6 @@ export interface DatabaseClient {
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
 
+    //TODO change signature to return Map<web3.PublicKey, MemberPublicProfile>
     getMembersByUsdcAccountAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
 }
