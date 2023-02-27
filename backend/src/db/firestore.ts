@@ -12,7 +12,7 @@ import {
     getFirestore
 } from "firebase-admin/firestore";
 import { ApiError } from "../shared/error";
-import { MemberAccounts } from "../types/types";
+import { CircleCardId, MemberAccounts } from "../types/types";
 import { PublicKey } from "../helpers/solana";
 
 initializeApp();
@@ -110,7 +110,7 @@ export class FirestoreClient implements DatabaseClient {
     }
 
 
-    public async saveCircleCreditCard(email: EmailAddress, circleCreditCardId: string): Promise<void> {
+    public async saveCircleCreditCard(email: EmailAddress, circleCreditCardId: CircleCardId): Promise<void> {
         const snapshot: QueryDocumentSnapshot<MemberDocument> | null = await this.getMemberDocSnapshotByEmail(email);
         if (snapshot === null) {
             throw ApiError.noSuchMember(email);
@@ -118,6 +118,16 @@ export class FirestoreClient implements DatabaseClient {
 
         const updated: Set<string> = snapshot.data().circleCreditCards.add(circleCreditCardId);
         await this.membersRef.doc(snapshot.id).update({ circleCreditCards: updated });
+    }
+
+
+    public async getCircleCreditCards(email: EmailAddress): Promise<Set<CircleCardId>> {
+        const member: MemberDocument | null = await this.getMemberDocByEmail(email);
+        if (member === null) {
+            throw ApiError.noSuchMember(email);
+        }
+
+        return member.circleCreditCards;
     }
 
 
@@ -149,7 +159,7 @@ export class FirestoreClient implements DatabaseClient {
 class MemberDocumentConverter implements FirestoreDataConverter<MemberDocument> {
     private readonly stringConverter: StringConverter = new StringConverter();
     private readonly pubkeyConverter: PublicKeyConverter = new PublicKeyConverter();
-    private readonly creditCardsConverter: SetConverter<string, string> = new SetConverter(this.stringConverter);
+    private readonly creditCardsConverter: SetConverter<string, string> = new SetConverter(new StringConverter());
 
     toFirestore(model: MemberDocument): DocumentData {
         return {
@@ -165,12 +175,12 @@ class MemberDocumentConverter implements FirestoreDataConverter<MemberDocument> 
 
     fromFirestore(snapshot: QueryDocumentSnapshot<DocumentData>): MemberDocument {
         return {
-            email: this.getField(snapshot, "email", this.stringConverter.fromFirestore),
-            name: this.getField(snapshot, "name", this.stringConverter.fromFirestore),
-            profile: this.getField(snapshot, "profile", this.stringConverter.fromFirestore),
-            signerAddress: this.getField(snapshot, "signerAddress", this.pubkeyConverter.fromFirestore),
-            usdcAddress: this.getField(snapshot, "usdcAddress", this.pubkeyConverter.fromFirestore),
-            circleCreditCards: this.getField(snapshot, "circleCreditCards", this.creditCardsConverter.fromFirestore),
+            email: this.getField<string, string>(snapshot, "email", v => this.stringConverter.fromFirestore(v)),
+            name: this.getField<string, string>(snapshot, "name", v => this.stringConverter.fromFirestore(v)),
+            profile: this.getField<ProfilePicture, string>(snapshot, "profile", v => this.stringConverter.fromFirestore(v)),
+            signerAddress: this.getField<PublicKey, string>(snapshot, "signerAddress", v => this.pubkeyConverter.fromFirestore(v)),
+            usdcAddress: this.getField<PublicKey, string>(snapshot, "usdcAddress", v => this.pubkeyConverter.fromFirestore(v)),
+            circleCreditCards: this.getField<Set<CircleCardId>, string[]>(snapshot, "circleCreditCards", v => this.creditCardsConverter.fromFirestore(v)),
         };
     }
 
@@ -255,7 +265,7 @@ interface MemberDocument {
     profile: ProfilePicture;
     signerAddress: PublicKey;
     usdcAddress: PublicKey;
-    circleCreditCards: Set<string>;
+    circleCreditCards: Set<CircleCardId>;
 }
 
 
