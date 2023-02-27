@@ -11,6 +11,7 @@ import {
   ApiQueryRecipientsRequest,
   ApiRecentActivityRequest,
   ApiResponseStatus,
+  ApiSavedPaymentMethodsRequest,
   ApiSendRequest,
   ApiWithdrawRequest
 } from './shared/api';
@@ -160,7 +161,7 @@ ff.http('payment-methods', (req: ff.Request, res: ff.Response) => {
 function transformPaymenMethodsRequest(req: ff.Request): PaymentMethodArgs {
   Arg.notNullish(req.query, "req.query");
   return {
-    memberEmail: getRequiredParam<ApiRecentActivityRequest, EmailAddress>(req.query, "memberEmail"),
+    memberEmail: getRequiredParam<ApiSavedPaymentMethodsRequest, EmailAddress>(req.query, "memberEmail"),
   };
 }
 
