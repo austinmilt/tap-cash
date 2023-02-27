@@ -3,14 +3,17 @@ import { createMint } from "@solana/spl-token";
 import { FAKE_USDC } from "../constants";
 import { WorkSpace } from "../program/workspace";
 
+export class PublicKey extends anchor.web3.PublicKey { };
+export class Keypair extends anchor.web3.Keypair { };
+
 
 /**
- * 
+ *
  * Gets USDC Public Key (or creates USDC Mint if one does not exist)
- * 
+ *
  * @param connection
- * @param auth 
- * @returns 
+ * @param auth
+ * @returns
  */
 export async function getOrCreateUsdc(connection: anchor.web3.Connection, auth: anchor.web3.Keypair): Promise<anchor.web3.PublicKey | undefined> {
     const usdc = FAKE_USDC;
@@ -40,12 +43,12 @@ export async function getOrCreateUsdc(connection: anchor.web3.Connection, auth: 
 
 
 /**
- * 
- * Airdrops 2 SOL if Balance is below 1 SOL 
- * 
- * @param workspace 
- * @param lamports 
- * @returns 
+ *
+ * Airdrops 2 SOL if Balance is below 1 SOL
+ *
+ * @param workspace
+ * @param lamports
+ * @returns
  */
 export async function airdropIfNeeded(workspace: WorkSpace, lamports = (anchor.web3.LAMPORTS_PER_SOL * 2)): Promise<void> {
     const { connection, program, provider } = workspace;
