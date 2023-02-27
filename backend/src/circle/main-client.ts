@@ -1,8 +1,16 @@
-import { Circle, PaymentCreationRequest, CardCreationRequest, Card, TransferCreationRequest, BusinessRecipientAddressCreationRequest, BusinessRecipientAddressObject, ChannelResponse } from "@circle-fin/circle-sdk";
+import {
+    Circle,
+    PaymentCreationRequest,
+    CardCreationRequest,
+    Card,
+    BusinessRecipientAddressCreationRequest,
+    BusinessRecipientAddressObject,
+} from "@circle-fin/circle-sdk";
 import { ApiError } from "../shared/error";
 import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT } from "../constants";
+import { CircleClient, CircleDepositArgs } from "./client";
 
-export class CircleMainClient {
+export class CircleMainClient implements CircleClient {
     private readonly sdk: Circle;
 
     private constructor(sdk: Circle) {
@@ -15,7 +23,7 @@ export class CircleMainClient {
     }
 
     /**
-     * 
+     *
      * @param paymentDetail PaymentCreationRequest
      * @returns a payment ID as a string
      */
@@ -25,8 +33,8 @@ export class CircleMainClient {
     }
 
     /**
-     * Add a new Credit Card 
-     * @param cardDetail 
+     * Add a new Credit Card
+     * @param cardDetail
      * @returns unique Id of card
      */
     private async addCreditCard(cardDetail: CardCreationRequest): Promise<string | undefined> {
@@ -34,18 +42,18 @@ export class CircleMainClient {
         return cardResponse.data.data?.id;
     }
 
-    /**
-     * Fetch an existing Credit Card 
-     * @param id  
-     * @returns G
-     */
-    private async tryFetchCard(id: string): Promise<Card | undefined> {
-        let card = await this.sdk.cards.getCard(id);
-        return card.data?.data;
+
+    public async fetchCard(id: string): Promise<Card> {
+        const response = await this.sdk.cards.getCard(id);
+        const card: Card | undefined = response.data.data;
+        if (card === undefined) {
+            throw new Error("No such card " + id);
+        }
+        return card;
     }
 
 
-    public async transferUsdc(transferDetail: TransferCreationRequest): Promise<void> {
+    public async transferUsdc(args: CircleDepositArgs): Promise<void> {
         try {
             let transfer = await this.sdk.transfers.createTransfer();
             return;
