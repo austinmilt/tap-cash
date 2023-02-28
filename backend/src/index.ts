@@ -14,7 +14,10 @@ import { ServerEnv } from './types/types';
 // local endpoints
 ff.http('index', (req: ff.Request, res: ff.Response) => {
   if (SERVER_ENV !== ServerEnv.LOCAL) {
-    throw new Error("Only permitted in local development environment.");
+    throw new Error(
+      "Only permitted in local development environment. " +
+      "Individual functions must be deployed to Google Cloud."
+    );
   }
   if (req.path.startsWith("/query-recipients")) handleQueryRecipients(req, res);
   else if (req.path.startsWith("/deposit")) handleDeposit(req, res);
