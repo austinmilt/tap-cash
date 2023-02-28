@@ -84,10 +84,28 @@ export class ApiError extends Error {
         );
     }
 
+    public static noCardFound(): ApiError {
+        return new ApiError(
+            ApiErrorCode.GENERAL_SERVER_ERROR,
+            `Error retrieving saved payment methods`,
+            ApiResponseStatus.SERVER_ERROR,
+            500
+        );
+    }
+
     public static solanaTxError(txType: SolanaTxType): ApiError {
         return new ApiError(
             ApiErrorCode.SOLANA_TX_ERROR,
             `Solana transaction Error: ${txType}`,
+            ApiResponseStatus.SERVER_ERROR,
+            500
+        )
+    }
+
+    public static solanaQueryError(queryType: SolanaQueryType): ApiError {
+        return new ApiError(
+            ApiErrorCode.SOLANA_QUERY_ERROR,
+            `Solana query Error: ${queryType}`,
             ApiResponseStatus.SERVER_ERROR,
             500
         )
@@ -128,12 +146,17 @@ export enum ApiErrorCode {
     MISSING_PARAMETER = 2,
     SOLANA_TX_ERROR = 3,
     MEMBER_SEARCH_ERROR = 4,
-    INVALID_ARGUMENT = 5
+    INVALID_ARGUMENT = 5,
+    SOLANA_QUERY_ERROR = 6,
 }
 
 export enum SolanaTxType {
     INITIALIZE_BANK = 0,
     INITIALIZE_MEMBER = 1,
     INITIALIZE_ACCOUNT = 2,
-    TRANSFER_TOKEN = 3,
+    TRANSFER_TOKEN = 3
+}
+
+export enum SolanaQueryType {
+    GET_TX_HISTORY = 0,
 }

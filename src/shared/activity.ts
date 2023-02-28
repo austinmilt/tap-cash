@@ -7,16 +7,23 @@ export interface MemberActivity {
     send?: SendActivity;
     receive?: ReceiveActivity;
     withdraw?: WithdrawActivity;
-}
 
+    /**
+     * Timestamp in seconds since Unix epoch. Expect to receive value from Solana,
+     * but optional in case none is returned.
+     */
+    unixTimestamp?: number;
+}
 
 export enum MemberActivityType {
     DEPOSIT,
     SEND,
     RECEIVE,
-    WITHDRAW
+    WITHDRAW,
+    // This is a catch-all for any activity that doesn't fit the above categories.
+    // We do not expect to see this in the UI, but it's here in case we need it.
+    UNKNOWN
 }
-
 
 export interface DepositActivity {
     account: AccountId;
@@ -30,7 +37,6 @@ export interface SendActivity {
     currency: Currency;
     amount: number;
 }
-
 
 export interface ReceiveActivity {
     sender: MemberPublicProfile;
