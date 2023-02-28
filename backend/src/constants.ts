@@ -2,6 +2,8 @@ import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
 import * as anchor from "@project-serum/anchor";
 import { ServerEnv } from "./types/types";
+import { MemberPublicProfile } from "./shared/member";
+import { Keypair, PublicKey } from "./helpers/solana";
 
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
@@ -42,6 +44,7 @@ export const SERVER_ENV: ServerEnv = parseEnv(
         throw new Error("Unknown environment " + v);
     }
 )
+export const UNKNOWN_USER_PROFILE: MemberPublicProfile = { name: 'Unknown', email: 'Unknown', profile: 'Unknown' };
 
 
 export function parseEnv<T>(
@@ -66,17 +69,30 @@ export function parseEnv<T>(
 
 export function parseKeypair(
     name: string,
-    envValue?: string
-): anchor.web3.Keypair {
-    if (envValue === undefined) {
-        throw new Error(`Missing required env variable ${name}.`);
-    }
-    const u8Array = JSON.parse(envValue);
-    const keypair = anchor.web3.Keypair.fromSecretKey(new Uint8Array(u8Array));
-    return keypair;
+    value: string | undefined,
+    defaultValue?: Keypair | undefined
+): Keypair {
+    return parseEnv(
+        name,
+        value,
+        defaultValue,
+        v => Keypair.fromSecretKey(new Uint8Array(JSON.parse(v)))
+    );
 }
 
 
+export function parsePublicKey(
+    name: string,
+    value: string | undefined,
+    defaultValue?: PublicKey | undefined
+): PublicKey {
+    return parseEnv(
+        name,
+        value,
+        defaultValue,
+        v => new PublicKey(v)
+    );
+}
 
 function castString<T>(value: string): T {
     return value as unknown as T;

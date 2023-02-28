@@ -47,7 +47,7 @@ export class CircleMainClient implements CircleClient {
         const response = await this.sdk.cards.getCard(id);
         const card: Card | undefined = response.data.data;
         if (card === undefined) {
-            throw new Error("No such card " + id);
+            throw ApiError.noCardFound();
         }
         return card;
     }
