@@ -1,6 +1,7 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
 import * as anchor from "@project-serum/anchor";
+import { MemberPublicProfile } from "./shared/member";
 
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
@@ -69,3 +70,5 @@ export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.
 export const USDC_DECIMALS: number = 6;
 
 export const RPC_URL: string = parseEnv("RPC_URL", process.env.RPC_URL, anchor.web3.clusterApiUrl('devnet'));
+
+export const UNKNOWN_USER_PROFILE: MemberPublicProfile = { name: 'Unknown', email: 'Unknown', profile: 'Unknown' };

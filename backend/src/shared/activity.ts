@@ -1,4 +1,3 @@
-import { PublicKey } from "../helpers/solana";
 import { Currency } from "./currency";
 import { AccountId, MemberPublicProfile } from "./member";
 
@@ -8,16 +7,8 @@ export interface MemberActivity {
     send?: SendActivity;
     receive?: ReceiveActivity;
     withdraw?: WithdrawActivity;
-    timestamp?: number;
-}
-
-export interface MemberActivityWithMemberDetail {
-    type: MemberActivityType;
-    deposit?: DepositActivity;
-    send?: SendActivityWithMemberDetail;
-    receive?: ReceiveActivityWithMemberDetail;
-    withdraw?: WithdrawActivity;
-    timestamp?: number;
+    // Timestamp in seconds since Unix epoch. Expect to receive value from Solana, but optional in case none is returned.
+    unixTimestamp?: number;
 }
 
 export enum MemberActivityType {
@@ -25,9 +16,10 @@ export enum MemberActivityType {
     SEND,
     RECEIVE,
     WITHDRAW,
+    // This is a catch-all for any activity that doesn't fit the above categories.
+    // We do not expect to see this in the UI, but it's here in case we need it.
     UNKNOWN
 }
-
 
 export interface DepositActivity {
     account: AccountId;
@@ -37,27 +29,13 @@ export interface DepositActivity {
 
 
 export interface SendActivity {
-    recipient: PublicKey;
-    currency: Currency;
-    amount: number;
-}
-
-
-export interface ReceiveActivityWithMemberDetail {
-    sender: MemberPublicProfile;
-    currency: Currency;
-    amount: number;
-}
-
-export interface SendActivityWithMemberDetail {
     recipient: MemberPublicProfile;
     currency: Currency;
     amount: number;
 }
 
-
 export interface ReceiveActivity {
-    sender: PublicKey;
+    sender: MemberPublicProfile;
     currency: Currency;
     amount: number;
 }
