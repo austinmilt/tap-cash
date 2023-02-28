@@ -345,15 +345,6 @@ export class TapCashClient {
                         } 
                         break;
                 }
-
-                
-                const response: TransactionHistory = {
-                    memberChange,
-                    bankChange,
-                    otherPartyChange,
-                    otherPartyAddress,
-                    txType
-                }
                 return memberActivity;
             }
         }).filter((tx) => tx).filter((tx, i) => i < maxNumberTx) as MemberActivity[];
