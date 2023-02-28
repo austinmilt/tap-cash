@@ -1,6 +1,7 @@
 
 //TODO tests
 
+import { ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
 import { UNKNOWN_USER_PROFILE } from "../constants";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
@@ -9,14 +10,17 @@ import { TapCashClient, TransactionDetail } from "../program/sdk";
 import { MemberActivityType, MemberActivity } from "../shared/activity";
 import { Currency } from "../shared/currency";
 import { EmailAddress } from "../shared/member";
+import { getRequiredParam, getRequiredIntegerParam, makeGetHandler } from "./model";
 
-export interface RecentActivityArgs {
+interface RecentActivityArgs {
     memberEmail: EmailAddress;
     limit: number;
 }
 
 const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
+
+export const handleRecentActivity = makeGetHandler(getRecentActivity, transformRequest, transformResult);
 
 /**
  *
@@ -118,4 +122,17 @@ export async function getRecentActivity(request: RecentActivityArgs): Promise<Me
         }
     }
     return recentActivityWithMemberDetail;
+}
+
+
+function transformRequest(params: ApiRecentActivityRequest): RecentActivityArgs {
+    return {
+        memberEmail: getRequiredParam<ApiRecentActivityRequest, EmailAddress>(params, "memberEmail"),
+        limit: getRequiredIntegerParam<ApiRecentActivityRequest>(params, "limit"),
+    };
+}
+
+
+function transformResult(result: MemberActivity[]): ApiRecentActivityResult {
+    return result;
 }

@@ -4,10 +4,12 @@ import { EmailAddress, AccountId } from "../shared/member";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { TapCashClient } from "../program/sdk";
+import { ApiSendRequest, ApiSendResult } from "../shared/api";
+import { getRequiredParam, getPrivateKeyParam, makePostHandler } from "./model";
 
 //TODO tests
 
-export interface SendArgs {
+interface SendArgs {
     senderEmailAddress: EmailAddress;
     recipientEmailAddress: EmailAddress;
     senderAccountId: AccountId;
@@ -16,15 +18,18 @@ export interface SendArgs {
 }
 
 
-export interface SendResult {
+interface SendResult {
     //TODO something about the result of the send attempt
     solanaTransactionId: string
 }
 
+
+export const handleSend = makePostHandler(send, transformRequest, transformResult);
+
 const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
-export async function send(request: SendArgs): Promise<SendResult> {
+async function send(request: SendArgs): Promise<SendResult> {
 
     const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.recipientEmailAddress);
 
@@ -41,4 +46,21 @@ export async function send(request: SendArgs): Promise<SendResult> {
     return {
         solanaTransactionId
     }
+}
+
+
+function transformRequest(body: ApiSendRequest): SendArgs {
+    return {
+        senderEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(body, "senderEmailAddress"),
+        recipientEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(body, "recipientEmailAddress"),
+        senderAccountId: getRequiredParam<ApiSendRequest, AccountId>(body, "senderAccountId"),
+        amount: getRequiredParam<ApiSendRequest, number>(body, "amount", Number.parseFloat),
+        privateKey: getPrivateKeyParam<ApiSendRequest>(body, "privateKey")
+    };
+}
+
+
+function transformResult(result: SendResult): ApiSendResult {
+    // nothing to return
+    return {};
 }

@@ -1,9 +1,11 @@
 
 //TODO tests
 
+import { ApiWithdrawRequest, ApiWithdrawResult } from "../shared/api";
 import { EmailAddress, AccountId } from "../shared/member";
+import { getRequiredParam, makePostHandler } from "./model";
 
-export interface WithdrawArgs {
+interface WithdrawArgs {
     emailAddress: EmailAddress;
     sourceAccount: AccountId;
     amount: number;
@@ -12,12 +14,31 @@ export interface WithdrawArgs {
 }
 
 
-export interface WithdrawResult {
+interface WithdrawResult {
     //TODO something about the result of the withdraw attempt
 }
 
-export async function withdraw(request: WithdrawArgs): Promise<WithdrawResult> {
+
+export const handleWithdraw = makePostHandler(withdraw, transformRequest, transformResult);
+
+
+async function withdraw(request: WithdrawArgs): Promise<WithdrawResult> {
     return {
         //TODO
     }
+}
+
+
+function transformRequest(body: ApiWithdrawRequest): WithdrawArgs {
+    return {
+        emailAddress: getRequiredParam<ApiWithdrawRequest, EmailAddress>(body, "emailAddress"),
+        sourceAccount: getRequiredParam<ApiWithdrawRequest, AccountId>(body, "sourceAccount"),
+        amount: getRequiredParam<ApiWithdrawRequest, number>(body, "amount", Number.parseFloat)
+    };
+}
+
+
+function transformResult(result: WithdrawResult): ApiWithdrawResult {
+    // nothing to return
+    return {};
 }
