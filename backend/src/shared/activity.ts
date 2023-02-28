@@ -11,6 +11,14 @@ export interface MemberActivity {
     timestamp?: number;
 }
 
+export interface MemberActivityWithMemberDetail {
+    type: MemberActivityType;
+    deposit?: DepositActivity;
+    send?: SendActivityWithMemberDetail;
+    receive?: ReceiveActivityWithMemberDetail;
+    withdraw?: WithdrawActivity;
+    timestamp?: number;
+}
 
 export enum MemberActivityType {
     DEPOSIT,
@@ -29,18 +37,30 @@ export interface DepositActivity {
 
 
 export interface SendActivity {
-    recipient: PublicKey | MemberPublicProfile;
+    recipient: PublicKey;
+    currency: Currency;
+    amount: number;
+}
+
+
+export interface ReceiveActivityWithMemberDetail {
+    sender: MemberPublicProfile;
+    currency: Currency;
+    amount: number;
+}
+
+export interface SendActivityWithMemberDetail {
+    recipient: MemberPublicProfile;
     currency: Currency;
     amount: number;
 }
 
 
 export interface ReceiveActivity {
-    sender: PublicKey | MemberPublicProfile;
+    sender: PublicKey;
     currency: Currency;
     amount: number;
 }
-
 
 
 export interface WithdrawActivity {
