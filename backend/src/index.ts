@@ -8,10 +8,14 @@ import { handleWithdraw } from './handlers/withdraw';
 import { handleQueryRecipients } from './handlers/query-recipients';
 import { handleRecentActivity } from './handlers/recent-activity';
 import { handlePaymentMethods } from './handlers/payment-methods';
+import { SERVER_ENV } from './constants';
+import { ServerEnv } from './types/types';
 
-
-// dev-only
+// local endpoints
 ff.http('index', (req: ff.Request, res: ff.Response) => {
+  if (SERVER_ENV !== ServerEnv.LOCAL) {
+    throw new Error("Only permitted in local development environment.");
+  }
   if (req.path.startsWith("/query-recipients")) handleQueryRecipients(req, res);
   else if (req.path.startsWith("/deposit")) handleDeposit(req, res);
   else if (req.path.startsWith("/new-member")) handleNewMember(req, res);
@@ -22,6 +26,8 @@ ff.http('index', (req: ff.Request, res: ff.Response) => {
   else res.sendStatus(400);
 });
 
+
+// deployed endpoints
 ff.http('deposit', handleDeposit);
 ff.http('new-member', handleNewMember);
 ff.http('send', handleSend);

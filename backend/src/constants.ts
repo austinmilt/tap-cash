@@ -1,6 +1,7 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
 import * as anchor from "@project-serum/anchor";
+import { ServerEnv } from "./types/types";
 
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
@@ -25,6 +26,23 @@ export const FIRESTORE_MEMBERS_COLLECTION: string = parseEnv(
     process.env.FIRESTORE_MEMBERS_COLLECTION,
     "tap-members-dev"
 );
+
+
+export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
+export const USDC_DECIMALS: number = 6;
+export const RPC_URL: string = parseEnv("RPC_URL", process.env.RPC_URL, anchor.web3.clusterApiUrl('devnet'));
+export const SERVER_ENV: ServerEnv = parseEnv(
+    "SERVER_ENV",
+    process.env.SERVER_ENV,
+    ServerEnv.LOCAL,
+    v => {
+        if (v === "local") return ServerEnv.LOCAL;
+        if (v === "prod") return ServerEnv.PROD;
+        if (v === "dev") return ServerEnv.DEV;
+        throw new Error("Unknown environment " + v);
+    }
+)
+
 
 export function parseEnv<T>(
     name: string,
@@ -63,9 +81,3 @@ export function parseKeypair(
 function castString<T>(value: string): T {
     return value as unknown as T;
 }
-
-
-export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
-export const USDC_DECIMALS: number = 6;
-
-export const RPC_URL: string = parseEnv("RPC_URL", process.env.RPC_URL, anchor.web3.clusterApiUrl('devnet'));
