@@ -154,8 +154,7 @@ export enum SolanaTxType {
     INITIALIZE_BANK = 0,
     INITIALIZE_MEMBER = 1,
     INITIALIZE_ACCOUNT = 2,
-    TRANSFER_TOKEN = 3,
-    GET_TX_HISTORY = 4,
+    TRANSFER_TOKEN = 3
 }
 
 export enum SolanaQueryType {

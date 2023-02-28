@@ -7,7 +7,11 @@ export interface MemberActivity {
     send?: SendActivity;
     receive?: ReceiveActivity;
     withdraw?: WithdrawActivity;
-    // Timestamp in seconds since Unix epoch. Expect to receive value from Solana, but optional in case none is returned.
+
+    /**
+     * Timestamp in seconds since Unix epoch. Expect to receive value from Solana,
+     * but optional in case none is returned.
+     */
     unixTimestamp?: number;
 }
 

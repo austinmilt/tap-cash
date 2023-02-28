@@ -233,15 +233,14 @@ export class TapCashClient {
         }
     }
 
-    public async getRecentActivity(member: PublicKey, maxNumberTx = 10): Promise<(TransactionDetail)[]> {
+    public async getRecentActivity(member: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         try {
             const signatures = await this.connection.getSignaturesForAddress(member);
             const txDetail = await this.connection.getTransactions(
                 signatures.map(sig => sig.signature),
                 { commitment: 'finalized', maxSupportedTransactionVersion: 1 }
             );
-            const parsedTxs = await this.getParsedMemberTransactions(txDetail, member, maxNumberTx);
-            return parsedTxs;
+            return await this.getParsedMemberTransactions(txDetail, member, maxNumberTx);
         }
         catch {
             throw ApiError.solanaQueryError(SolanaQueryType.GET_TX_HISTORY);
@@ -324,7 +323,7 @@ interface TokenBalance {
     uiTokenAmount: anchor.web3.TokenAmount;
 }
 
-interface TransactionDetail {
+export interface TransactionDetail {
     bankChange: number;
     otherPartyChange: number;
     memberChange: number;
