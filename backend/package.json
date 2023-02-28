@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "functions-framework --target=payment-methods",
+    "start": "functions-framework --target=index",
     "prestart": "npm run build",
     "gcp-build": "npm run build",
     "deploy-query-recipients": "gcloud functions deploy query-recipients --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",

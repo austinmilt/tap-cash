@@ -31,8 +31,7 @@ export interface ApiInitializeMemberRequest {
 }
 
 
-export interface ApiIntializeMemberResponse extends ApiResponse<void> { }
-
+export interface ApiInitializeMemberResult { }
 
 export interface ApiDepositRequest {
     emailAddress: string;
@@ -42,7 +41,7 @@ export interface ApiDepositRequest {
 }
 
 
-export interface ApiDepositResponse extends ApiResponse<void> { }
+export interface ApiDepositResult { }
 
 
 export interface ApiSendRequest {
@@ -54,7 +53,7 @@ export interface ApiSendRequest {
 }
 
 
-export interface ApiSendResponse extends ApiResponse<void> { }
+export interface ApiSendResult { }
 
 
 export interface ApiWithdrawRequest {
@@ -65,7 +64,7 @@ export interface ApiWithdrawRequest {
 }
 
 
-export interface ApiWithdrawResponse extends ApiResponse<void> { }
+export interface ApiWithdrawResult { }
 
 
 export interface ApiQueryRecipientsRequest extends GetQueryParams {
@@ -74,15 +73,11 @@ export interface ApiQueryRecipientsRequest extends GetQueryParams {
 }
 
 
-export type ApiQueryRecipientsData = {
+export type ApiQueryRecipientsResult = {
     emailAddress: string;
     profilePicture: string;
     name: string;
 }[];
-
-
-export interface ApiQueryRecipientsResponse extends ApiResponse<ApiQueryRecipientsData> { }
-
 
 export interface ApiRecentActivityRequest extends GetQueryParams {
     memberEmail: string;
@@ -90,7 +85,7 @@ export interface ApiRecentActivityRequest extends GetQueryParams {
 }
 
 
-export interface ApiRecentActivityResponse extends ApiResponse<ApiMemberActivity[]> { }
+export interface ApiRecentActivityResult { }
 
 
 export interface ApiMemberActivity {
@@ -143,4 +138,4 @@ export interface ApiSavedPaymentMethodsRequest extends GetQueryParams {
 }
 
 
-export interface ApiSavedPaymentMethodsResponse extends ApiResponse<PaymentMethodSummary[]> { }
+export interface ApiSavedPaymentMethodsResult extends Array<PaymentMethodSummary> { }
