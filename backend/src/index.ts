@@ -11,6 +11,7 @@ import {
   ApiQueryRecipientsRequest,
   ApiRecentActivityRequest,
   ApiResponseStatus,
+  ApiSavedPaymentMethodsRequest,
   ApiSendRequest,
   ApiWithdrawRequest
 } from './shared/api';
@@ -22,17 +23,8 @@ import { RecentActivityArgs, getRecentActivity } from './handlers/recent-activit
 import { Arg } from './shared/arg';
 import { ApiError } from './shared/error';
 import { EmailAddress, ProfilePicture, AccountId } from './shared/member';
-
-// e.g. http://localhost:8080?name=dave
-ff.http('hello-world', (req: ff.Request, res: ff.Response) => {
-  const name = req.query.name;
-  if (typeof name !== 'string') {
-    respondError(res, ApiError.generalClientError("Missing or invalid required parameter: name"));
-
-  } else {
-    respondOK(res, `hello, ${req.query.name}`);
-  }
-});
+import { PaymentMethodArgs, getPaymentMethods } from './handlers/payment-methods';
+import { PaymentMethodSummary } from './shared/payment';
 
 
 ff.http('new-member', (req: ff.Request, res: ff.Response) => {
@@ -153,6 +145,23 @@ function transformRecentActivityRequest(req: ff.Request): RecentActivityArgs {
   return {
     memberEmail: getRequiredParam<ApiRecentActivityRequest, EmailAddress>(req.query, "memberEmail"),
     limit: getRequiredIntegerParam<ApiRecentActivityRequest>(req.query, "limit"),
+  };
+}
+
+
+ff.http('payment-methods', (req: ff.Request, res: ff.Response) => {
+  getPaymentMethods(transformPaymenMethodsRequest(req))
+    .then((result) => {
+      respondOK<PaymentMethodSummary[]>(res, result);
+    })
+    .catch(e => handleError(res, e))
+});
+
+
+function transformPaymenMethodsRequest(req: ff.Request): PaymentMethodArgs {
+  Arg.notNullish(req.query, "req.query");
+  return {
+    memberEmail: getRequiredParam<ApiSavedPaymentMethodsRequest, EmailAddress>(req.query, "memberEmail"),
   };
 }
 

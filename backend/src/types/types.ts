@@ -12,3 +12,6 @@ export interface MemberAccounts {
      */
     usdcAddress: web3.PublicKey;
 }
+
+
+export type CircleCardId = string;

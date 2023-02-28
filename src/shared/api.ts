@@ -1,4 +1,6 @@
 import { ApiErrorCode } from "./error";
+import * as anchor from "@project-serum/anchor";
+import { PaymentMethodSummary } from "./payment";
 
 export interface GetQueryParams {
     [param: string]: string;
@@ -48,7 +50,7 @@ export interface ApiSendRequest {
     recipientEmailAddress: string;
     senderAccountId: string;
     amount: number;
-    //TODO
+    privateKey: anchor.web3.Keypair
 }
 
 
@@ -133,3 +135,12 @@ export interface ApiMemberPublicProfile {
     profile: string;
     name: string;
 }
+
+
+
+export interface ApiSavedPaymentMethodsRequest extends GetQueryParams {
+    memberEmail: string;
+}
+
+
+export interface ApiSavedPaymentMethodsResponse extends ApiResponse<PaymentMethodSummary[]> { }

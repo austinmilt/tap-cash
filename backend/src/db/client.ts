@@ -1,17 +1,21 @@
-import { web3 } from "@project-serum/anchor";
+import { PublicKey } from "../helpers/solana";
 import { EmailAddress, MemberId, MemberPublicProfile } from "../shared/member";
-import { MemberAccounts } from "../types/types";
+import { CircleCardId, MemberAccounts } from "../types/types";
 
 export interface DatabaseClient {
     addMember(
         profile: MemberPublicProfile,
-        wallet: web3.PublicKey,
-        usdcAddress: web3.PublicKey
+        wallet: PublicKey,
+        usdcAddress: PublicKey
     ): Promise<MemberId>;
+
+    saveCircleCreditCard(member: EmailAddress, circleCreditCardId: string): Promise<void>;
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
 
-    getMembersByUsdcAddress(accounts: web3.PublicKey[]): Promise<MemberPublicProfile[]>;
+    getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<PublicKey, MemberPublicProfile>>;
 
     getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts>;
+
+    getCircleCreditCards(email: EmailAddress): Promise<Set<CircleCardId>>;
 }

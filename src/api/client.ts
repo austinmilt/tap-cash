@@ -1,16 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
 import {
     DEPOSIT_URI,
-    HELLO_WORLD_URI,
-    LIST_CHANNELS_URI,
     NEW_MEMBER_URI,
     QUERY_RECIPIENTS_URI,
     RECENT_ACTIVITY_URI,
+    SAVED_PAYMENT_METHODS_URI,
     SEND_URI,
     WITHDRAW_URI
 } from "../common/constants";
 import * as anchor from "@project-serum/anchor";
-import { MemberActivity } from "../../backend/src/shared/activity";
+import { MemberActivity } from "../shared/activity";
 import {
     ApiInitializeMemberRequest,
     ApiIntializeMemberResponse,
@@ -24,37 +23,16 @@ import {
     ApiRecentActivityRequest,
     GetQueryParams,
     ApiResponse
-} from "../../backend/src/shared/api";
-import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../../backend/src/shared/member";
+} from "../shared/api";
+import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../shared/member";
 import { ApiQueryRecipientsData } from "../shared/api";
+import { PaymentMethodSummary } from "../shared/payment";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;
     loading: boolean;
     data: Res | undefined;
     error: Error | undefined
-}
-
-export function useHelloWorld(): QueryContext<string, string> {
-    const queryContext = useGetQuery<{ name: string }, string>(HELLO_WORLD_URI);
-    const submit = useCallback((name: string) => queryContext.submit({ name: name }), [queryContext.submit]);
-    return {
-        ...queryContext,
-        submit: submit
-    };
-}
-
-
-export function useListChannels(): QueryContext<void, string> {
-    const queryContext = useGetQuery<void, object>(LIST_CHANNELS_URI);
-    const data: string | undefined = useMemo(() => (
-        queryContext.data == null ? undefined : JSON.stringify(queryContext.data, undefined, 2)
-    ), [queryContext.data]);
-
-    return {
-        ...queryContext,
-        data: data
-    };
 }
 
 
@@ -121,7 +99,7 @@ interface SendArgs {
     recipeient: EmailAddress;
     senderAccount: AccountId;
     amount: number;
-    //TODO probably the sender's private key
+    privateKey: anchor.web3.Keypair;
 }
 
 
@@ -133,7 +111,8 @@ export function useSend(): QueryContext<SendArgs, void> {
             senderEmailAddress: req.sender,
             recipientEmailAddress: req.recipeient,
             senderAccountId: req.senderAccount,
-            amount: req.amount
+            amount: req.amount,
+            privateKey: req.privateKey
         });
 
     }, [queryContext.submit]);
@@ -239,6 +218,34 @@ export function useRecentActivity(): QueryContext<RecentActivityArgs, MemberActi
     };
 }
 
+
+interface SavedPaymentMethodsArgs {
+    memberEmail: EmailAddress;
+}
+
+
+export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, PaymentMethodSummary[]> {
+    const queryContext = useGetQuery<ApiRecentActivityRequest, PaymentMethodSummary[]>(SAVED_PAYMENT_METHODS_URI);
+
+    const submit = useCallback(({ memberEmail, limit }: RecentActivityArgs) => {
+        queryContext.submit({
+            memberEmail: memberEmail,
+            limit: limit.toString()
+        });
+    }, [queryContext.submit]);
+
+
+    const data: PaymentMethodSummary[] | undefined = useMemo(() => {
+        if (queryContext.data === undefined) return undefined;
+        return queryContext.data.map(v => v as PaymentMethodSummary);
+    }, [queryContext.data]);
+
+    return {
+        ...queryContext,
+        submit: submit,
+        data: data
+    };
+}
 
 
 function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): QueryContext<Req, Res> {
