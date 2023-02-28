@@ -1,3 +1,4 @@
+import { PublicKey } from "../helpers/solana";
 import { Currency } from "./currency";
 import { AccountId, MemberPublicProfile } from "./member";
 
@@ -7,6 +8,7 @@ export interface MemberActivity {
     send?: SendActivity;
     receive?: ReceiveActivity;
     withdraw?: WithdrawActivity;
+    timestamp?: number;
 }
 
 
@@ -14,7 +16,8 @@ export enum MemberActivityType {
     DEPOSIT,
     SEND,
     RECEIVE,
-    WITHDRAW
+    WITHDRAW,
+    UNKNOWN
 }
 
 
@@ -26,17 +29,18 @@ export interface DepositActivity {
 
 
 export interface SendActivity {
-    recipient: MemberPublicProfile;
+    recipient: PublicKey | MemberPublicProfile;
     currency: Currency;
     amount: number;
 }
 
 
 export interface ReceiveActivity {
-    sender: MemberPublicProfile;
+    sender: PublicKey | MemberPublicProfile;
     currency: Currency;
     amount: number;
 }
+
 
 
 export interface WithdrawActivity {
