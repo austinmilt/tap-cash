@@ -245,6 +245,7 @@ export class TapCashClient {
             const parsedTxs = txDetail.map(tx => {
                 // TO DO Update this to account for null preTokenBalances (for CircleEmulator, which uses MintTo Tx)
                 // Example: https://explorer.solana.com/tx/5bcK71nuzLFWK6pcZL9eidz7awMMiVh6zufBjNeDuYYbYbrZ7ZcstSM2t5NnEW8zTRRJAyaHq6p7RHaYnzn98CTY
+                // OR change our emulator to use Transfer instead of MintTo
                 if (!tx || !tx.meta || !tx.meta.preTokenBalances || !tx.meta.postTokenBalances) return;
                 {
                     const preTokenBalancesWithAta = tx.meta.preTokenBalances.map((balance) => {
