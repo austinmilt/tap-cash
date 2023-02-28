@@ -236,129 +236,125 @@ export class TapCashClient {
     }
 
     public async getRecentActivity(member: anchor.web3.PublicKey, maxNumberTx = 10): Promise<(MemberActivity)[]> {
-        const signatures = await this.connection.getSignaturesForAddress(member);
-        const txDetail = await this.connection.getTransactions(
-            signatures.map(sig => sig.signature),
-            { commitment: 'finalized', maxSupportedTransactionVersion: 1 }
-        );
-        const parsedTxs = txDetail.map(tx => {
-            // TO DO Update this to account for null preTokenBalances (for CircleEmulator, which uses MintTo Tx)
-            // Example: https://explorer.solana.com/tx/5bcK71nuzLFWK6pcZL9eidz7awMMiVh6zufBjNeDuYYbYbrZ7ZcstSM2t5NnEW8zTRRJAyaHq6p7RHaYnzn98CTY
-            if (!tx || !tx.meta || !tx.meta.preTokenBalances || !tx.meta.postTokenBalances) return;
-            {
-                const preTokenBalancesWithAta = tx.meta.preTokenBalances.map((balance) => {
-                    if (!balance.mint || !balance.owner) return;
-                    if (balance.mint !== FAKE_USDC.publicKey.toBase58()) return;
-                    const isCurrentMember = balance.owner === member.toBase58();
-                    const isUser = balance.owner === this.program.programId.toBase58();
-                    const isBank = balance.owner === BANK_USDC_WALLET.toBase58();
-                    return {
-                        ...balance,
-                        ata: getAssociatedTokenAddress(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
-                        isCurrentMember,
-                        isUser,
-                        isBank
+        try {
+            const signatures = await this.connection.getSignaturesForAddress(member);
+            const txDetail = await this.connection.getTransactions(
+                signatures.map(sig => sig.signature),
+                { commitment: 'finalized', maxSupportedTransactionVersion: 1 }
+            );
+            const parsedTxs = txDetail.map(tx => {
+                // TO DO Update this to account for null preTokenBalances (for CircleEmulator, which uses MintTo Tx)
+                // Example: https://explorer.solana.com/tx/5bcK71nuzLFWK6pcZL9eidz7awMMiVh6zufBjNeDuYYbYbrZ7ZcstSM2t5NnEW8zTRRJAyaHq6p7RHaYnzn98CTY
+                if (!tx || !tx.meta || !tx.meta.preTokenBalances || !tx.meta.postTokenBalances) return;
+                {
+                    const preTokenBalancesWithAta = tx.meta.preTokenBalances.map((balance) => {
+                        if (!balance.mint || !balance.owner) return;
+                        if (balance.mint !== FAKE_USDC.publicKey.toBase58()) return;
+                        const isCurrentMember = balance.owner === member.toBase58();
+                        const isUser = balance.owner === this.program.programId.toBase58();
+                        const isBank = balance.owner === BANK_USDC_WALLET.toBase58();
+                        return {
+                            ...balance,
+                            ata: getAssociatedTokenAddress(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
+                            isCurrentMember,
+                            isUser,
+                            isBank
+                        }
+                    }).filter((balance) => balance);
+                    const postTokenBalancesWithAta = tx.meta.postTokenBalances.map((balance) => {
+                        if (!balance.mint || !balance.owner) return;
+                        if (balance.mint !== FAKE_USDC.publicKey.toBase58()) return;
+                        const isCurrentMember = balance.owner === member.toBase58();
+                        const isUser = balance.owner === this.program.programId.toBase58();
+                        const isBank = balance.owner === BANK_USDC_WALLET.toBase58();
+                        return {
+                            ...balance,
+                            ata: getAssociatedTokenAddress(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
+                            isCurrentMember,
+                            isUser,
+                            isBank
+                        }
+                    }).filter((balance) => balance);
+    
+                    const memberPreBalance = preTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
+                    const memberPostBalance = postTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
+                    const otherPartyPreBalance = preTokenBalancesWithAta.find((balance) => balance?.isUser && !balance?.isCurrentMember);
+                    const otherPartyPostBalance = postTokenBalancesWithAta.find((balance) => balance?.isUser && !balance?.isCurrentMember);
+                    const otherPartyAddress = otherPartyPreBalance?.owner ?? otherPartyPostBalance?.owner;
+                    const bankPreBalance = preTokenBalancesWithAta.find((balance) => balance?.isBank);
+                    const bankPostBalance = postTokenBalancesWithAta.find((balance) => balance?.isBank);
+                    const bankChange = (bankPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (bankPreBalance?.uiTokenAmount?.uiAmount ?? 0);
+                    const otherPartyChange = (otherPartyPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (otherPartyPreBalance?.uiTokenAmount?.uiAmount ?? 0);
+                    const memberChange = (memberPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (memberPreBalance?.uiTokenAmount?.uiAmount ?? 0);
+                    const txType: MemberActivityType
+                        = bankChange < 0 ? MemberActivityType.DEPOSIT
+                            : bankChange > 0 ? MemberActivityType.WITHDRAW
+                                : (otherPartyChange < 0 && memberChange > 0) ? MemberActivityType.RECEIVE
+                                    : (otherPartyChange > 0 && memberChange < 0) ? MemberActivityType.SEND
+                                        : MemberActivityType.UNKNOWN;
+    
+                    let memberActivity: MemberActivity;
+                    switch (txType) {
+                        case MemberActivityType.DEPOSIT:
+                            memberActivity = {
+                                type: MemberActivityType.DEPOSIT,
+                                deposit: {
+                                    amount: bankChange,
+                                    account: member.toBase58(),
+                                    currency: Currency.USD
+                                },
+                                timestamp: tx.blockTime ?? undefined
+                            }
+                            break;
+                        case MemberActivityType.WITHDRAW:
+                            memberActivity = {
+                                type: MemberActivityType.WITHDRAW,  
+                                withdraw: {
+                                    amount: bankChange,
+                                    source: member.toBase58(),
+                                    currency: Currency.USD
+                                },
+                                timestamp: tx.blockTime ?? undefined
+                            }   
+                            break;
+                        case MemberActivityType.RECEIVE:
+                            memberActivity = {
+                                type: MemberActivityType.RECEIVE,
+                                receive: {
+                                    amount: memberChange,
+                                    sender: new PublicKey(otherPartyAddress ?? ''),
+                                    currency: Currency.USD
+                                },
+                                timestamp: tx.blockTime ?? undefined
+                            }
+                            break;
+                        case MemberActivityType.SEND:
+                            memberActivity = {
+                                type: MemberActivityType.SEND,
+                                send: {
+                                    amount: memberChange,
+                                    recipient: new PublicKey(otherPartyAddress ?? ''),
+                                    currency: Currency.USD
+                                },
+                                timestamp: tx.blockTime ?? undefined
+                            }
+                            break;
+                        default:
+                            memberActivity = { 
+                                type: MemberActivityType.UNKNOWN,
+                                timestamp: tx.blockTime ?? undefined
+                            } 
+                            break;
                     }
-                }).filter((balance) => balance);
-                const postTokenBalancesWithAta = tx.meta.postTokenBalances.map((balance) => {
-                    if (!balance.mint || !balance.owner) return;
-                    if (balance.mint !== FAKE_USDC.publicKey.toBase58()) return;
-                    const isCurrentMember = balance.owner === member.toBase58();
-                    const isUser = balance.owner === this.program.programId.toBase58();
-                    const isBank = balance.owner === BANK_USDC_WALLET.toBase58();
-                    return {
-                        ...balance,
-                        ata: getAssociatedTokenAddress(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
-                        isCurrentMember,
-                        isUser,
-                        isBank
-                    }
-                }).filter((balance) => balance);
-
-                const memberPreBalance = preTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
-                const memberPostBalance = postTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
-                const otherPartyPreBalance = preTokenBalancesWithAta.find((balance) => balance?.isUser && !balance?.isCurrentMember);
-                const otherPartyPostBalance = postTokenBalancesWithAta.find((balance) => balance?.isUser && !balance?.isCurrentMember);
-                const otherPartyAddress = otherPartyPreBalance?.owner ?? otherPartyPostBalance?.owner;
-                const bankPreBalance = preTokenBalancesWithAta.find((balance) => balance?.isBank);
-                const bankPostBalance = postTokenBalancesWithAta.find((balance) => balance?.isBank);
-                const bankChange = (bankPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (bankPreBalance?.uiTokenAmount?.uiAmount ?? 0);
-                const otherPartyChange = (otherPartyPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (otherPartyPreBalance?.uiTokenAmount?.uiAmount ?? 0);
-                const memberChange = (memberPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (memberPreBalance?.uiTokenAmount?.uiAmount ?? 0);
-                const txType: MemberActivityType
-                    = bankChange < 0 ? MemberActivityType.DEPOSIT
-                        : bankChange > 0 ? MemberActivityType.WITHDRAW
-                            : (otherPartyChange < 0 && memberChange > 0) ? MemberActivityType.RECEIVE
-                                : (otherPartyChange > 0 && memberChange < 0) ? MemberActivityType.SEND
-                                    : MemberActivityType.UNKNOWN;
-
-                let memberActivity: MemberActivity;
-                switch (txType) {
-                    case MemberActivityType.DEPOSIT:
-                        memberActivity = {
-                            type: MemberActivityType.DEPOSIT,
-                            deposit: {
-                                amount: bankChange,
-                                account: member.toBase58(),
-                                currency: Currency.USD
-                            },
-                            timestamp: tx.blockTime ?? undefined
-                        }
-                        break;
-                    case MemberActivityType.WITHDRAW:
-                        memberActivity = {
-                            type: MemberActivityType.WITHDRAW,  
-                            withdraw: {
-                                amount: bankChange,
-                                source: member.toBase58(),
-                                currency: Currency.USD
-                            },
-                            timestamp: tx.blockTime ?? undefined
-                        }   
-                        break;
-                    case MemberActivityType.RECEIVE:
-                        memberActivity = {
-                            type: MemberActivityType.RECEIVE,
-                            receive: {
-                                amount: memberChange,
-                                sender: new PublicKey(otherPartyAddress ?? ''),
-                                currency: Currency.USD
-                            },
-                            timestamp: tx.blockTime ?? undefined
-                        }
-                        break;
-                    case MemberActivityType.SEND:
-                        memberActivity = {
-                            type: MemberActivityType.SEND,
-                            send: {
-                                amount: memberChange,
-                                recipient: new PublicKey(otherPartyAddress ?? ''),
-                                currency: Currency.USD
-                            },
-                            timestamp: tx.blockTime ?? undefined
-                        }
-                        break;
-                    default:
-                        memberActivity = { 
-                            type: MemberActivityType.UNKNOWN,
-                            timestamp: tx.blockTime ?? undefined
-                        } 
-                        break;
+                    return memberActivity;
                 }
-                return memberActivity;
-            }
-        }).filter((tx) => tx).filter((tx, i) => i < maxNumberTx) as MemberActivity[];
-        return parsedTxs;
+            }).filter((tx) => tx).filter((tx, i) => i < maxNumberTx) as MemberActivity[];
+            return parsedTxs;
+        }
+        catch {
+            throw ApiError.solanaTxError(SolanaTxType.GET_TX_HISTORY);
+        }
     }
-}
-
-
-interface TransactionHistory {
-    memberChange: number;
-    bankChange: number;
-    otherPartyChange: number;
-    otherPartyAddress?: string;
-    txType: MemberActivityType;
 }
 
 interface CreateMemberArgs {

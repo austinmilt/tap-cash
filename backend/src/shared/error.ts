@@ -84,6 +84,15 @@ export class ApiError extends Error {
         );
     }
 
+    public static noCardFound(): ApiError {
+        return new ApiError(
+            ApiErrorCode.INVALID_ARGUMENT,
+            `Card not found`,
+            ApiResponseStatus.CLIENT_ERROR,
+            400
+        );
+    }
+
     public static solanaTxError(txType: SolanaTxType): ApiError {
         return new ApiError(
             ApiErrorCode.SOLANA_TX_ERROR,
@@ -136,4 +145,5 @@ export enum SolanaTxType {
     INITIALIZE_MEMBER = 1,
     INITIALIZE_ACCOUNT = 2,
     TRANSFER_TOKEN = 3,
+    GET_TX_HISTORY = 4,
 }
