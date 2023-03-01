@@ -11,13 +11,13 @@ import { MemberActivityType, MemberActivity } from "../shared/activity";
 import { Currency } from "../shared/currency";
 import { EmailAddress } from "../shared/member";
 import { getRequiredParam, getRequiredIntegerParam, makeGetHandler } from "./model";
+import { getDatabaseClient } from "../helpers/singletons";
 
 interface RecentActivityArgs {
     memberEmail: EmailAddress;
     limit: number;
 }
 
-const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export const handleRecentActivity = makeGetHandler(getRecentActivity, transformRequest, transformResult);
@@ -30,11 +30,11 @@ export const handleRecentActivity = makeGetHandler(getRecentActivity, transformR
  * @returns { MemberActivity[] }
  */
 export async function getRecentActivity(request: RecentActivityArgs): Promise<MemberActivity[]> {
-    const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.memberEmail);
+    const { usdcAddress } = await getDatabaseClient().getMemberAccountsByEmail(request.memberEmail);
     const recentActivity: TransactionDetail[] = await TAP_CLIENT.getRecentActivity(usdcAddress, request.limit);
     // Filter only transactions that have a valid otherPartyAddress (to fetch member profiles)
     const addressesToQuery: PublicKey[] = recentActivity.flatMap(a => a.otherPartyAddress !== undefined ? [a.otherPartyAddress] : []);
-    const memberProfiles = await DB_CLIENT.getMembersByUsdcAddress(addressesToQuery);
+    const memberProfiles = await getDatabaseClient().getMembersByUsdcAddress(addressesToQuery);
 
     let recentActivityWithMemberDetail: MemberActivity[] = [];
     for (const activity of recentActivity) {

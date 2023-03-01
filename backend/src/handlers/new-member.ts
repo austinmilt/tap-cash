@@ -1,12 +1,11 @@
 import * as anchor from "@project-serum/anchor";
 import { v4 as uuid } from "uuid";
-import { DatabaseClient } from "../db/client";
-import { FirestoreClient } from "../db/firestore";
 import { EmailAddress, ProfilePicture, MemberId } from "../shared/member";
 import { ApiError, SolanaTxType } from "../shared/error";
 import { TapCashClient } from "../program/sdk";
 import { getPublicKeyParam, getRequiredParam, makePostHandler } from "./model";
 import { ApiInitializeMemberRequest, ApiInitializeMemberResult } from "../shared/api";
+import { getDatabaseClient } from "../helpers/singletons";
 
 //TODO tests
 
@@ -26,7 +25,6 @@ interface InitializeMemberResult {
 export const handleNewMember = makePostHandler(initializeMember, transformRequest, transformResult);
 
 //TODO eventually we should periodically sync users' email, name, and picture
-const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
@@ -35,7 +33,7 @@ async function initializeMember(request: InitializeMemberArgs): Promise<Initiali
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
     // TODO: store mapping from user's email to name, pfp, wallet, and ATA
-    DB_CLIENT.addMember(
+    getDatabaseClient().addMember(
         {
             email: request.email,
             profile: request.profile,

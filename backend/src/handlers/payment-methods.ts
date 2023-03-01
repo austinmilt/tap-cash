@@ -11,6 +11,7 @@ import { CreditCardCarrier, PaymentMethodSummary, PaymentMethodType } from "../s
 import { CircleCardId } from "../types/types";
 import { ApiSavedPaymentMethodsRequest, ApiSavedPaymentMethodsResult } from "../shared/api";
 import { getRequiredParam, makeGetHandler } from "./model";
+import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 
 interface PaymentMethodArgs {
     memberEmail: EmailAddress;
@@ -18,12 +19,9 @@ interface PaymentMethodArgs {
 
 export const handlePaymentMethods = makeGetHandler(getPaymentMethods, transformRequest, transformResult);
 
-const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
-const CIRCLE_CLIENT: CircleClient = CircleEmulator.ofDefaults();
-
 async function getPaymentMethods(request: PaymentMethodArgs): Promise<PaymentMethodSummary[]> {
-    const circleCardIds: Set<CircleCardId> = await DB_CLIENT.getCircleCreditCards(request.memberEmail);
-    const cards: Card[] = await Promise.all(Array.from(circleCardIds).map(CIRCLE_CLIENT.fetchCard));
+    const circleCardIds: Set<CircleCardId> = await getDatabaseClient().getCircleCreditCards(request.memberEmail);
+    const cards: Card[] = await Promise.all(Array.from(circleCardIds).map(getCircleClient().fetchCard));
     return cards.map(card => ({
         type: PaymentMethodType.CREDIT_CARD,
         creditCard: {

@@ -5,6 +5,7 @@ import { WorkSpace } from "../program/workspace";
 
 export class PublicKey extends anchor.web3.PublicKey { };
 export class Keypair extends anchor.web3.Keypair { };
+export class Connection extends anchor.web3.Connection { };
 
 
 /**
@@ -15,7 +16,7 @@ export class Keypair extends anchor.web3.Keypair { };
  * @param auth
  * @returns
  */
-export async function getOrCreateUsdc(connection: anchor.web3.Connection, auth: anchor.web3.Keypair): Promise<anchor.web3.PublicKey | undefined> {
+export async function getOrCreateUsdc(connection: Connection, auth: Keypair): Promise<PublicKey | undefined> {
     const usdc = FAKE_USDC;
 
     // If we already have a USDC account, use it (otherwise make it -- e.g., LocalHost session)

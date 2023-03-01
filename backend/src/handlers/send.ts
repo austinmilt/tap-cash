@@ -1,11 +1,10 @@
 import * as anchor from "@project-serum/anchor";
 import { ApiError, SolanaTxType } from "../shared/error";
 import { EmailAddress, AccountId } from "../shared/member";
-import { DatabaseClient } from "../db/client";
-import { FirestoreClient } from "../db/firestore";
 import { TapCashClient } from "../program/sdk";
 import { ApiSendRequest, ApiSendResult } from "../shared/api";
 import { getRequiredParam, getPrivateKeyParam, makePostHandler } from "./model";
+import { getDatabaseClient } from "../helpers/singletons";
 
 //TODO tests
 
@@ -26,12 +25,11 @@ interface SendResult {
 
 export const handleSend = makePostHandler(send, transformRequest, transformResult);
 
-const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
 const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 async function send(request: SendArgs): Promise<SendResult> {
 
-    const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.recipientEmailAddress);
+    const { usdcAddress } = await getDatabaseClient().getMemberAccountsByEmail(request.recipientEmailAddress);
 
     // TODO  add decryption in index.ts
 

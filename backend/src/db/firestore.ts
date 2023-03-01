@@ -15,8 +15,6 @@ import { ApiError } from "../shared/error";
 import { CircleCardId, MemberAccounts } from "../types/types";
 import { PublicKey } from "../helpers/solana";
 
-initializeApp();
-
 export class FirestoreClient implements DatabaseClient {
     private readonly membersRef: CollectionReference<MemberDocument>;
 
@@ -25,6 +23,7 @@ export class FirestoreClient implements DatabaseClient {
     }
 
     public static ofDefaults(): FirestoreClient {
+        initializeApp();
         // `getFirestore()` pulls configs from environment variables
         const firestore: Firestore = getFirestore();
         const membersRef: CollectionReference<MemberDocument> = firestore.collection(FIRESTORE_MEMBERS_COLLECTION)

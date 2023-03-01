@@ -1,14 +1,21 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
-import * as anchor from "@project-serum/anchor";
 import { ServerEnv } from "./types/types";
 import { MemberPublicProfile } from "./shared/member";
-import { Keypair, PublicKey } from "./helpers/solana";
+import * as anchor from "@project-serum/anchor";
 
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
 // during deployment
-yamlenv.config({ path: ".env.local.yml" });
+if (process.env.SERVER_ENV === "test") {
+    //TODO do this a better way
+    process.env.FAKE_USDC = JSON.stringify(Array.from(anchor.web3.Keypair.generate().secretKey));
+    process.env.BANK_KEY = JSON.stringify(Array.from(anchor.web3.Keypair.generate().secretKey));
+    yamlenv.config({ path: ".env.test.yml" });
+
+} else {
+    yamlenv.config({ path: ".env.local.yml" });
+}
 
 export const CIRCLE_API_KEY: string = parseEnv("CIRCLE_API_KEY", process.env.CIRCLE_API_KEY);
 
@@ -29,18 +36,18 @@ export const FIRESTORE_MEMBERS_COLLECTION: string = parseEnv(
     "tap-members-dev"
 );
 
-
 export const FAKE_USDC: anchor.web3.Keypair = parseKeypair("FAKE_USDC", process.env.FAKE_USDC);
 export const USDC_DECIMALS: number = 6;
 export const RPC_URL: string = parseEnv("RPC_URL", process.env.RPC_URL, anchor.web3.clusterApiUrl('devnet'));
 export const SERVER_ENV: ServerEnv = parseEnv(
     "SERVER_ENV",
     process.env.SERVER_ENV,
-    ServerEnv.LOCAL,
+    undefined,
     v => {
         if (v === "local") return ServerEnv.LOCAL;
         if (v === "prod") return ServerEnv.PROD;
         if (v === "dev") return ServerEnv.DEV;
+        if (v === "test") return ServerEnv.TEST;
         throw new Error("Unknown environment " + v);
     }
 )
@@ -62,7 +69,12 @@ export function parseEnv<T>(
             result = defaultValue;
         }
     } else {
-        result = transform(value);
+        try {
+            result = transform(value);
+
+        } catch (e) {
+            throw new Error(`Unable to transform value for ${name}: ${value}. Error ${(e as unknown as Error).message}`);
+        }
     }
     return result;
 }
@@ -70,13 +82,13 @@ export function parseEnv<T>(
 export function parseKeypair(
     name: string,
     value: string | undefined,
-    defaultValue?: Keypair | undefined
-): Keypair {
+    defaultValue?: anchor.web3.Keypair | undefined
+): anchor.web3.Keypair {
     return parseEnv(
         name,
         value,
         defaultValue,
-        v => Keypair.fromSecretKey(new Uint8Array(JSON.parse(v)))
+        v => anchor.web3.Keypair.fromSecretKey(new Uint8Array(JSON.parse(v)))
     );
 }
 
@@ -84,13 +96,13 @@ export function parseKeypair(
 export function parsePublicKey(
     name: string,
     value: string | undefined,
-    defaultValue?: PublicKey | undefined
-): PublicKey {
+    defaultValue?: anchor.web3.PublicKey | undefined
+): anchor.web3.PublicKey {
     return parseEnv(
         name,
         value,
         defaultValue,
-        v => new PublicKey(v)
+        v => new anchor.web3.PublicKey(v)
     );
 }
 
