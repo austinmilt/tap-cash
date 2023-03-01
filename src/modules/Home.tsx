@@ -14,7 +14,6 @@ export function Home({ navigation }: Props): JSX.Element {
         <Screen>
             <Text>
                 $420.69
-                {NEW_MEMBER_URI}
             </Text>
             <View flex row centerH bottom spread paddingH-30 width="80%" gap={10}>
                 <Button.Primary
