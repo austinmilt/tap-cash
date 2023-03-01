@@ -54,6 +54,7 @@ function makeHandler<Request, Result, ResultApi extends HttpResult>(
             respondOK(res, transformResult(result));
 
         } catch (e) {
+            console.error(e);
             handleError(res, e as unknown as ApiError | Error);
         }
     }
