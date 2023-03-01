@@ -20,5 +20,6 @@ export type CircleCardId = string;
 export enum ServerEnv {
     LOCAL,
     DEV,
-    PROD
+    PROD,
+    TEST
 }

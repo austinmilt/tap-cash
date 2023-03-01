@@ -1,10 +1,7 @@
 import { ApiDepositRequest, ApiDepositResult, ApiResponseStatus } from "../shared/api";
-import { CircleEmulator } from "../circle/circle-emulator";
-import { DatabaseClient } from "../db/client";
-import { FirestoreClient } from "../db/firestore";
 import { EmailAddress, AccountId } from "../shared/member";
-import { CircleClient } from "../circle/client";
 import { getRequiredParam, makePostHandler } from "./model";
+import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 
 //TODO tests
 
@@ -21,20 +18,16 @@ export interface DepositArgs {
 export interface DepositResult {
 }
 
-const CIRCLE_CLIENT: CircleClient = CircleEmulator.ofDefaults();
-const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
-
-
 export const handleDeposit = makePostHandler(deposit, transformRequest, transformResult);
 
 
 async function deposit(request: DepositArgs): Promise<DepositResult> {
     // TODO: delegate the credit card retrieval and processing to Circle client
 
-    const { usdcAddress } = await DB_CLIENT.getMemberAccountsByEmail(request.emailAddress);
+    const { usdcAddress } = await getDatabaseClient().getMemberAccountsByEmail(request.emailAddress);
 
     try {
-        await CIRCLE_CLIENT.transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
+        await getCircleClient().transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
         return {
             result: ApiResponseStatus.SUCCESS,
             amount: request.amount

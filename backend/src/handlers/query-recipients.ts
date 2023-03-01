@@ -6,6 +6,7 @@ import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { ApiQueryRecipientsRequest, ApiQueryRecipientsResult } from "../shared/api";
 import { getRequiredParam, getRequiredIntegerParam, makeGetHandler } from "./model";
+import { getDatabaseClient } from "../helpers/singletons";
 
 interface QueryRecipientsArgs {
     emailQuery: string;
@@ -18,10 +19,8 @@ type QueryRecipientsResult = MemberPublicProfile[];
 
 export const handleQueryRecipients = makeGetHandler(queryRecipients, transformRequest, transformResult);
 
-const DB_CLIENT: DatabaseClient = FirestoreClient.ofDefaults();
-
 async function queryRecipients(request: QueryRecipientsArgs): Promise<QueryRecipientsResult> {
-    return await DB_CLIENT.queryMembersByEmail(request.emailQuery, request.limit);
+    return await getDatabaseClient().queryMembersByEmail(request.emailQuery, request.limit);
 }
 
 
