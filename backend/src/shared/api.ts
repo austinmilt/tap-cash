@@ -47,9 +47,8 @@ export interface ApiDepositResult { }
 export interface ApiSendRequest {
     senderEmailAddress: string;
     recipientEmailAddress: string;
-    senderAccountId: string;
     amount: number;
-    privateKey: anchor.web3.Keypair
+    privateKey: number[];
 }
 
 
@@ -85,7 +84,7 @@ export interface ApiRecentActivityRequest extends GetQueryParams {
 }
 
 
-export interface ApiRecentActivityResult { }
+export type ApiRecentActivityResult = ApiMemberActivity[];
 
 
 export interface ApiMemberActivity {
@@ -107,7 +106,6 @@ export interface ApiSendActivity {
     recipient: ApiMemberPublicProfile;
     currency: string;
     amount: number;
-    privateKey: string;
 }
 
 

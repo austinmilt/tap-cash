@@ -6,6 +6,8 @@ import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { MockCircleClient } from "../dev/testing/MockCircleClient";
+import { MockTapCashClient } from "../dev/testing/MockTapCashClient";
+import { MainTapCashClient, TapCashClient } from "../program/sdk";
 import { ServerEnv } from "../types/types";
 
 let dbClient: DatabaseClient;
@@ -50,6 +52,28 @@ export function setCircleClient(newClient: CircleClient) {
         throw new Error("Setting the singleton only allowed in tests.");
     }
     circleClient = newClient;
+}
+
+
+let tapClient: TapCashClient;
+export function getTapCashClient(): TapCashClient {
+    if (tapClient === undefined) {
+        tapClient = makeSingleton<TapCashClient>(
+            MockTapCashClient.make,
+            MainTapCashClient.ofDefaults,
+            MainTapCashClient.ofDefaults,
+            MainTapCashClient.ofDefaults
+        )
+    }
+    return tapClient;
+}
+
+
+export function setTapCashClient(newClient: TapCashClient) {
+    if (SERVER_ENV !== ServerEnv.TEST) {
+        throw new Error("Setting the singleton only allowed in tests.");
+    }
+    tapClient = newClient;
 }
 
 

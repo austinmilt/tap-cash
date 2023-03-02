@@ -62,12 +62,12 @@ export class InMemoryDatabaseClient implements DatabaseClient {
         return results;
     }
 
-    public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<PublicKey, MemberPublicProfile>> {
-        const unique: Set<PublicKey> = new Set(accounts);
-        const result: Map<PublicKey, MemberPublicProfile> = new Map();
+    public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<string, MemberPublicProfile>> {
+        const unique: Set<string> = new Set(accounts.map(p => p.toBase58()));
+        const result: Map<string, MemberPublicProfile> = new Map();
         for (const member of this.members.values()) {
-            if (unique.has(member.usdcAddress)) {
-                result.set(member.usdcAddress, memberToPublicProfile(member));
+            if (unique.has(member.usdcAddress.toBase58())) {
+                result.set(member.usdcAddress.toBase58(), memberToPublicProfile(member));
             }
         }
         return result;

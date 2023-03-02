@@ -13,7 +13,7 @@ export interface DatabaseClient {
 
     queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]>;
 
-    getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<PublicKey, MemberPublicProfile>>;
+    getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<string, MemberPublicProfile>>;
 
     getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts>;
 

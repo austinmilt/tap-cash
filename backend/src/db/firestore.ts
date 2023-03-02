@@ -65,8 +65,8 @@ export class FirestoreClient implements DatabaseClient {
     }
 
 
-    public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<PublicKey, MemberPublicProfile>> {
-        const result: Map<PublicKey, MemberPublicProfile> = new Map();
+    public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<string, MemberPublicProfile>> {
+        const result: Map<string, MemberPublicProfile> = new Map();
         await Promise.all(
             accounts.map(async account => {
                 const response = await this.buildMemberQuery("usdcAddress", "==", account.toBase58())
@@ -82,7 +82,7 @@ export class FirestoreClient implements DatabaseClient {
                             email: memberDoc.email,
                             profile: memberDoc.profile
                         };
-                        result.set(account, profile);
+                        result.set(account.toBase58(), profile);
 
                     } catch (e) {
                         // omit malformed documents
