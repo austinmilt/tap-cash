@@ -35,9 +35,7 @@ export interface ApiInitializeMemberResult { }
 
 export interface ApiDepositRequest {
     emailAddress: string;
-    destinationAccountId: string;
     amount: number;
-    //TODO
 }
 
 

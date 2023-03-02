@@ -32,29 +32,6 @@ export function setDatabaseClient(newClient: DatabaseClient) {
 }
 
 
-
-let circleClient: CircleClient;
-export function getCircleClient(): CircleClient {
-    if (circleClient === undefined) {
-        circleClient = makeSingleton<CircleClient>(
-            MockCircleClient.make,
-            CircleEmulator.ofDefaults,
-            CircleMainClient.ofDefaults,
-            CircleMainClient.ofDefaults
-        )
-    }
-    return circleClient;
-}
-
-
-export function setCircleClient(newClient: CircleClient) {
-    if (SERVER_ENV !== ServerEnv.TEST) {
-        throw new Error("Setting the singleton only allowed in tests.");
-    }
-    circleClient = newClient;
-}
-
-
 let tapClient: TapCashClient;
 export function getTapCashClient(): TapCashClient {
     if (tapClient === undefined) {
@@ -74,6 +51,38 @@ export function setTapCashClient(newClient: TapCashClient) {
         throw new Error("Setting the singleton only allowed in tests.");
     }
     tapClient = newClient;
+}
+
+
+
+
+let circleClient: CircleClient;
+export function getCircleClient(): CircleClient {
+    if (circleClient === undefined) {
+        circleClient = makeSingleton<CircleClient>(
+            () => {
+                const tapClient = getTapCashClient();
+                if (tapClient instanceof MockTapCashClient) {
+                    return MockCircleClient.make(tapClient);
+
+                } else {
+                    throw new Error("Must use MockTapCashClient for MockCircleClient");
+                }
+            },
+            CircleEmulator.ofDefaults,
+            CircleMainClient.ofDefaults,
+            CircleMainClient.ofDefaults
+        )
+    }
+    return circleClient;
+}
+
+
+export function setCircleClient(newClient: CircleClient) {
+    if (SERVER_ENV !== ServerEnv.TEST) {
+        throw new Error("Setting the singleton only allowed in tests.");
+    }
+    circleClient = newClient;
 }
 
 

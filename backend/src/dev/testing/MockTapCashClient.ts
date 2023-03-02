@@ -43,6 +43,11 @@ export class MockTapCashClient implements TapCashClient {
         });
     }
 
+    public getMemberIdFromAta(ataAddress: PublicKey): PublicKey | undefined {
+        const id: string | undefined = this.ataToUserId.get(ataAddress.toBase58());
+        return id === undefined ? undefined : new PublicKey(id);
+    }
+
     public initializeNewMemberWithBalance(userId: PublicKey, balance: number): PublicKey {
         this.accounts.set(userId.toBase58(), { balance: balance });
         const ata: PublicKey = this.getMemberAta(userId);
