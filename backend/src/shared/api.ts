@@ -1,5 +1,4 @@
 import { ApiErrorCode } from "./error";
-import * as anchor from "@project-serum/anchor";
 import { PaymentMethodSummary } from "./payment";
 
 export interface GetQueryParams {
