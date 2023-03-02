@@ -49,12 +49,17 @@ export class InMemoryDatabaseClient implements DatabaseClient {
     }
 
     public async queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]> {
-        return Array.from(this.members.keys())
-            .filter(email => email.startsWith(emailQuery))
-            .map(this.members.get)
-            .flatMap(member => member ? [member] : [])
-            .slice(0, limit)
-            .map(memberToPublicProfile);
+        const results: MemberPublicProfile[] = [];
+        for (const value of this.members.values()) {
+            if (results.length >= limit) {
+                break;
+            }
+
+            if (value.email.startsWith(emailQuery)) {
+                results.push(value);
+            }
+        }
+        return results;
     }
 
     public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<PublicKey, MemberPublicProfile>> {
