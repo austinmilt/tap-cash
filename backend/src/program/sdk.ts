@@ -226,7 +226,7 @@ export class MainTapCashClient implements TapCashClient {
                     associatedTokenProgram,
                     systemProgram
                 })
-                .signers([this.sdk.payer, args.fromMember, ])
+                .signers([this.sdk.payer, args.fromMember ])
                 .transaction();
             tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
