@@ -8,8 +8,8 @@ import { View } from "../../components/View";
 import { COLORS } from "../../common/styles";
 import { useQueryRecipients } from "../../api/client";
 import React from "react";
-import { EmailAddress, MemberPublicProfile } from "../shared/member";
 import { useStateWithDebounce } from "../../common/debounce";
+import { EmailAddress, MemberPublicProfile } from "../../shared/member";
 
 
 interface Props {

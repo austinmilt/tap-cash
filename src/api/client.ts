@@ -12,20 +12,20 @@ import * as anchor from "@project-serum/anchor";
 import { MemberActivity } from "../shared/activity";
 import {
     ApiInitializeMemberRequest,
-    ApiIntializeMemberResponse,
     ApiDepositRequest,
-    ApiDepositResponse,
     ApiSendRequest,
-    ApiSendResponse,
     ApiWithdrawRequest,
-    ApiWithdrawResponse,
     ApiQueryRecipientsRequest,
     ApiRecentActivityRequest,
     GetQueryParams,
-    ApiResponse
+    ApiResponse,
+    ApiInitializeMemberResult,
+    ApiDepositResult,
+    ApiSendResult,
+    ApiWithdrawResult,
+    ApiQueryRecipientsResult
 } from "../shared/api";
 import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../shared/member";
-import { ApiQueryRecipientsData } from "../shared/api";
 import { PaymentMethodSummary } from "../shared/payment";
 
 interface QueryContext<Req, Res> {
@@ -45,7 +45,7 @@ interface InitializeMemberArgs {
 
 
 export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> {
-    const queryContext = usePostQuery<ApiInitializeMemberRequest, ApiIntializeMemberResponse>(NEW_MEMBER_URI);
+    const queryContext = usePostQuery<ApiInitializeMemberRequest, ApiInitializeMemberResult>(NEW_MEMBER_URI);
 
     const submit = useCallback((req: InitializeMemberArgs) => {
         queryContext.submit({
@@ -75,12 +75,11 @@ interface DepositArgs {
 
 
 export function useDeposit(): QueryContext<DepositArgs, void> {
-    const queryContext = usePostQuery<ApiDepositRequest, ApiDepositResponse>(DEPOSIT_URI);
+    const queryContext = usePostQuery<ApiDepositRequest, ApiDepositResult>(DEPOSIT_URI);
 
     const submit = useCallback((req: DepositArgs) => {
         queryContext.submit({
             emailAddress: req.email,
-            destinationAccountId: req.destination,
             amount: req.amount
         });
 
@@ -104,15 +103,14 @@ interface SendArgs {
 
 
 export function useSend(): QueryContext<SendArgs, void> {
-    const queryContext = usePostQuery<ApiSendRequest, ApiSendResponse>(SEND_URI);
+    const queryContext = usePostQuery<ApiSendRequest, ApiSendResult>(SEND_URI);
 
     const submit = useCallback((req: SendArgs) => {
         queryContext.submit({
             senderEmailAddress: req.sender,
             recipientEmailAddress: req.recipeient,
-            senderAccountId: req.senderAccount,
             amount: req.amount,
-            privateKey: req.privateKey
+            privateKey: Array.from(req.privateKey.secretKey)
         });
 
     }, [queryContext.submit]);
@@ -135,7 +133,7 @@ interface WithdrawArgs {
 
 
 export function useWithdraw(): QueryContext<WithdrawArgs, void> {
-    const queryContext = usePostQuery<ApiWithdrawRequest, ApiWithdrawResponse>(WITHDRAW_URI);
+    const queryContext = usePostQuery<ApiWithdrawRequest, ApiWithdrawResult>(WITHDRAW_URI);
 
     const submit = useCallback((req: WithdrawArgs) => {
         queryContext.submit({
@@ -161,7 +159,7 @@ interface QueryRecipientsArgs {
 
 
 export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, MemberPublicProfile[]> {
-    const queryContext = useGetQuery<ApiQueryRecipientsRequest, ApiQueryRecipientsData>(QUERY_RECIPIENTS_URI);
+    const queryContext = useGetQuery<ApiQueryRecipientsRequest, ApiQueryRecipientsResult>(QUERY_RECIPIENTS_URI);
 
     const submit = useCallback(({ emailQuery, limit }: QueryRecipientsArgs) => {
         queryContext.submit({
@@ -259,6 +257,7 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
         if (params !== undefined) {
             uri += `?${new URLSearchParams(params)}`
         }
+        console.log("FETCH", uri);
         fetch(uri, {
             method: 'GET',
             headers: {
@@ -266,9 +265,11 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
+            .then(response => { console.log(response); return response.json() })
             .then(body => {
+                console.log(body);
                 const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
+                console.log(apiResponse);
                 if (apiResponse.error !== undefined) {
                     setError(new Error(`API responded with error: ${apiResponse.error}`));
 
@@ -276,7 +277,10 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
                     setData(apiResponse.result);
                 }
             })
-            .catch(setError)
+            .catch(e => {
+                setError(e);
+                console.error(e, (e as unknown as Error).message);
+            })
             .finally(() => setLoading(false));
     }, [baseUri]);
 
