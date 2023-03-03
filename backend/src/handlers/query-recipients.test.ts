@@ -6,6 +6,7 @@ import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient } from "../helpers/singletons";
 import { Keypair } from "../helpers/solana";
+import { buildGetRequest } from "../dev/testing/utils";
 
 
 describe('query-recipients handler', () => {
@@ -57,23 +58,3 @@ describe('query-recipients handler', () => {
         expect(result[0].emailAddress).toStrictEqual("mary.jane@gmail.com");
     });
 });
-
-
-function buildPostRequest<T extends ff.Request['body']>(body: T): ff.Request {
-    // Our handlers use very little of the request object, so
-    // we can get away with just spoofing it. If we tried to use
-    // this on a live local server, it would break.
-    return {
-        body: body,
-    } as unknown as ff.Request;
-}
-
-
-function buildGetRequest<T extends ff.Request['query']>(params: T): ff.Request {
-    // Our handlers use very little of the request object, so
-    // we can get away with just spoofing it. If we tried to use
-    // this on a live local server, it would break.
-    return {
-        query: params,
-    } as unknown as ff.Request;
-}

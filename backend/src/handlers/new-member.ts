@@ -2,10 +2,9 @@ import * as anchor from "@project-serum/anchor";
 import { v4 as uuid } from "uuid";
 import { EmailAddress, ProfilePicture, MemberId } from "../shared/member";
 import { ApiError, SolanaTxType } from "../shared/error";
-import { TapCashClient } from "../program/sdk";
 import { getPublicKeyParam, getRequiredParam, makePostHandler } from "./model";
 import { ApiInitializeMemberRequest, ApiInitializeMemberResult } from "../shared/api";
-import { getDatabaseClient } from "../helpers/singletons";
+import { getDatabaseClient, getTapCashClient } from "../helpers/singletons";
 
 //TODO tests
 
@@ -24,11 +23,8 @@ interface InitializeMemberResult {
 
 export const handleNewMember = makePostHandler(initializeMember, transformRequest, transformResult);
 
-//TODO eventually we should periodically sync users' email, name, and picture
-const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
-
 async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
-    let userAta = await TAP_CLIENT.initializeNewMember(request.signerAddress);
+    let userAta = await getTapCashClient().initializeNewMember(request.signerAddress);
 
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 

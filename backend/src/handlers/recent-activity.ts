@@ -1,24 +1,20 @@
 
 //TODO tests
 
-import { ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
+import { ApiMemberActivity, ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
 import { UNKNOWN_USER_PROFILE } from "../constants";
-import { DatabaseClient } from "../db/client";
-import { FirestoreClient } from "../db/firestore";
 import { PublicKey } from "../helpers/solana";
-import { TapCashClient, TransactionDetail } from "../program/sdk";
+import { TransactionDetail } from "../program/sdk";
 import { MemberActivityType, MemberActivity } from "../shared/activity";
 import { Currency } from "../shared/currency";
 import { EmailAddress } from "../shared/member";
 import { getRequiredParam, getRequiredIntegerParam, makeGetHandler } from "./model";
-import { getDatabaseClient } from "../helpers/singletons";
+import { getDatabaseClient, getTapCashClient } from "../helpers/singletons";
 
 interface RecentActivityArgs {
     memberEmail: EmailAddress;
     limit: number;
 }
-
-const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
 
 export const handleRecentActivity = makeGetHandler(getRecentActivity, transformRequest, transformResult);
 
@@ -29,16 +25,16 @@ export const handleRecentActivity = makeGetHandler(getRecentActivity, transformR
  * @param request { memberEmail: string, limit: number}
  * @returns { MemberActivity[] }
  */
-export async function getRecentActivity(request: RecentActivityArgs): Promise<MemberActivity[]> {
+async function getRecentActivity(request: RecentActivityArgs): Promise<MemberActivity[]> {
     const { usdcAddress } = await getDatabaseClient().getMemberAccountsByEmail(request.memberEmail);
-    const recentActivity: TransactionDetail[] = await TAP_CLIENT.getRecentActivity(usdcAddress, request.limit);
+    const recentActivity: TransactionDetail[] = await getTapCashClient().getRecentActivity(usdcAddress, request.limit);
     // Filter only transactions that have a valid otherPartyAddress (to fetch member profiles)
-    const addressesToQuery: PublicKey[] = recentActivity.flatMap(a => a.otherPartyAddress !== undefined ? [a.otherPartyAddress] : []);
+    const addressesToQuery: PublicKey[] = recentActivity.flatMap(a => a.otherPartyAtaAddress !== undefined ? [a.otherPartyAtaAddress] : []);
     const memberProfiles = await getDatabaseClient().getMembersByUsdcAddress(addressesToQuery);
 
     let recentActivityWithMemberDetail: MemberActivity[] = [];
     for (const activity of recentActivity) {
-        const { bankChange, memberChange, otherPartyChange, member, unixTimestamp, otherPartyAddress } = activity;
+        const { bankChange, memberChange, otherPartyChange, memberAtaAddress: member, unixTimestamp, otherPartyAtaAddress: otherPartyAddress } = activity;
 
         // we only queried for known otherPartyAddress above, but
         // `recentActivity` doesnt filter by those
@@ -84,7 +80,7 @@ export async function getRecentActivity(request: RecentActivityArgs): Promise<Me
                     receive: {
                         amount: memberChange,
                         // Based on our filtering above, we know that otherPartyAddress is not null
-                        sender: memberProfiles.get(otherPartyAddress as PublicKey) ?? UNKNOWN_USER_PROFILE,
+                        sender: memberProfiles.get(otherPartyAddress.toBase58()) ?? UNKNOWN_USER_PROFILE,
                         currency: Currency.USD
                     },
                     unixTimestamp
@@ -95,9 +91,9 @@ export async function getRecentActivity(request: RecentActivityArgs): Promise<Me
                 memberActivity = {
                     type: MemberActivityType.SEND,
                     send: {
-                        amount: memberChange,
+                        amount: -memberChange,
                         // Based on our filtering above, we know that otherPartyAddress is not null
-                        recipient: memberProfiles.get(otherPartyAddress as PublicKey) ?? UNKNOWN_USER_PROFILE,
+                        recipient: memberProfiles.get(otherPartyAddress.toBase58()) ?? UNKNOWN_USER_PROFILE,
                         currency: Currency.USD
                     },
                     unixTimestamp
@@ -134,5 +130,41 @@ function transformRequest(params: ApiRecentActivityRequest): RecentActivityArgs 
 
 
 function transformResult(result: MemberActivity[]): ApiRecentActivityResult {
-    return result;
+    return result.map(act => {
+        const activityType: MemberActivityType = act.type;
+        const transformed: ApiMemberActivity = { type: act.type };
+
+        if (activityType === MemberActivityType.SEND) {
+            transformed.send = {
+                currency: act.send!.currency,
+                amount: act.send!.amount,
+                recipient: act.send!.recipient,
+            }
+        }
+
+        if (activityType === MemberActivityType.DEPOSIT) {
+            transformed.deposit = {
+                currency: act.deposit!.currency,
+                amount: act.deposit!.amount,
+                account: act.deposit!.account
+            }
+        }
+
+        if (activityType === MemberActivityType.WITHDRAW) {
+            transformed.withdraw = {
+                currency: act.withdraw!.currency,
+                amount: act.withdraw!.amount,
+                source: act.withdraw!.source
+            }
+        }
+
+        if (activityType === MemberActivityType.RECEIVE) {
+            transformed.receive = {
+                currency: act.receive!.currency,
+                amount: act.receive!.amount,
+                sender: act.receive!.sender
+            }
+        }
+        return transformed;
+    });
 }

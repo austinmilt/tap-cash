@@ -8,7 +8,6 @@ import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 
 export interface DepositArgs {
     emailAddress: EmailAddress;
-    destinationAccountId: AccountId;
     amount: number;
     //TODO something about handling credit card info
     //TODO probably the user's private key
@@ -43,7 +42,6 @@ async function deposit(request: DepositArgs): Promise<DepositResult> {
 function transformRequest(body: ApiDepositRequest): DepositArgs {
     return {
         emailAddress: getRequiredParam<ApiDepositRequest, EmailAddress>(body, "emailAddress"),
-        destinationAccountId: getRequiredParam<ApiDepositRequest, AccountId>(body, "destinationAccountId"),
         amount: getRequiredParam<ApiDepositRequest, number>(body, "amount", Number.parseFloat)
     };
 }

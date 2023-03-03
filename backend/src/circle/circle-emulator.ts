@@ -75,8 +75,3 @@ export class CircleEmulator implements CircleClient {
         }
     }
 }
-
-interface SimulateDepositArgs {
-    destinationAta: anchor.web3.PublicKey,
-    amount: number
-}

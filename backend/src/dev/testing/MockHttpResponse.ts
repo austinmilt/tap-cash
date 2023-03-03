@@ -26,7 +26,7 @@ interface Use {
     }
 }
 
-enum UsedMethod {
+export enum UsedMethod {
     SEND,
     STATUS,
     JSON,
