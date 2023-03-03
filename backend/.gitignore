@@ -2,5 +2,6 @@ node_modules/
 dist/
 .env.*
 !.env.example.yml
-!.env.test.yml
 keys
+**/test-ledger/**
+!.env.test.yml

@@ -40,10 +40,14 @@ export class MainTapCashClient implements TapCashClient {
             [Buffer.from(BANK_SEED), bankAuth.publicKey.toBuffer()],
             this.program.programId
         );
-
         // If Bank is already init, use it (otherwise make it -- e.g., LocalHost session)
-        const accountInfo = await this.connection.getAccountInfo(bankPda);
-        if (accountInfo) return bankPda;
+        try {
+            const accountInfo = await this.connection.getAccountInfo(bankPda);
+            if (accountInfo) return bankPda;
+        }
+        catch {
+            // do nothing
+        }
 
         try {
             let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
@@ -59,7 +63,7 @@ export class MainTapCashClient implements TapCashClient {
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
             await this.provider.sendAndConfirm(tx);
-
+            return bankPda;
         }
         catch {
             ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
@@ -165,7 +169,6 @@ export class MainTapCashClient implements TapCashClient {
             await airdropIfNeeded(this.sdk);
             await getOrCreateUsdc(this.connection, BANK_AUTH);
         }
-
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
         const memberPda = await this.getMemberPda(userId);
@@ -176,7 +179,6 @@ export class MainTapCashClient implements TapCashClient {
             systemProgram,
             rent
         });
-
         const { accountAta, accountPda } = await this.getMemberAta({
             memberPda,
             tokenMint,
@@ -194,9 +196,7 @@ export class MainTapCashClient implements TapCashClient {
             associatedTokenProgram,
             systemProgram
         })
-
         return memberTokenAccount;
-
     }
 
     public async sendTokens(args: SendTokensArgs): Promise<string | undefined> {

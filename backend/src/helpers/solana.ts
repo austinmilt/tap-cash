@@ -53,16 +53,21 @@ export async function getOrCreateUsdc(connection: Connection, auth: Keypair): Pr
  */
 export async function airdropIfNeeded(workspace: WorkSpace, lamports = (anchor.web3.LAMPORTS_PER_SOL * 2)): Promise<void> {
     const { connection, program, provider } = workspace;
-    let balance = await connection.getBalance(provider.wallet.publicKey);
-    if (balance > 1) return;
+    try {
+        let balance = await connection.getBalance(provider.wallet.publicKey);
+        if (balance < 1) throw new Error ("Balance is below 1 SOL");
+    }
+    catch {
+        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
+        const airdrop = await connection.requestAirdrop(provider.wallet.publicKey, lamports);
+        await connection.confirmTransaction({
+            signature: airdrop,
+            blockhash: blockhash,
+            lastValidBlockHeight: lastValidBlockHeight
+        });
+    
+        return;
+    }
 
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized');
-    const airdrop = await connection.requestAirdrop(provider.wallet.publicKey, lamports);
-    await connection.confirmTransaction({
-        signature: airdrop,
-        blockhash: blockhash,
-        lastValidBlockHeight: lastValidBlockHeight
-    });
 
-    return;
 }
