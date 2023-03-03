@@ -1,17 +1,15 @@
 import * as anchor from "@project-serum/anchor";
 import { ApiError, SolanaTxType } from "../shared/error";
-import { EmailAddress, AccountId } from "../shared/member";
-import { TapCashClient } from "../program/sdk";
+import { EmailAddress } from "../shared/member";
 import { ApiSendRequest, ApiSendResult } from "../shared/api";
 import { getRequiredParam, getPrivateKeyParam, makePostHandler } from "./model";
-import { getDatabaseClient } from "../helpers/singletons";
+import { getDatabaseClient, getTapCashClient } from "../helpers/singletons";
 
 //TODO tests
 
 interface SendArgs {
     senderEmailAddress: EmailAddress;
     recipientEmailAddress: EmailAddress;
-    senderAccountId: AccountId;
     amount: number;
     privateKey: anchor.web3.Keypair;
 }
@@ -25,15 +23,13 @@ interface SendResult {
 
 export const handleSend = makePostHandler(send, transformRequest, transformResult);
 
-const TAP_CLIENT: TapCashClient = TapCashClient.ofDefaults();
-
 async function send(request: SendArgs): Promise<SendResult> {
 
     const { usdcAddress } = await getDatabaseClient().getMemberAccountsByEmail(request.recipientEmailAddress);
 
     // TODO  add decryption in index.ts
 
-    const solanaTransactionId = await TAP_CLIENT.sendTokens({
+    const solanaTransactionId = await getTapCashClient().sendTokens({
         fromMember: request.privateKey,
         destinationAta: usdcAddress,
         amount: request.amount
@@ -51,7 +47,6 @@ function transformRequest(body: ApiSendRequest): SendArgs {
     return {
         senderEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(body, "senderEmailAddress"),
         recipientEmailAddress: getRequiredParam<ApiSendRequest, EmailAddress>(body, "recipientEmailAddress"),
-        senderAccountId: getRequiredParam<ApiSendRequest, AccountId>(body, "senderAccountId"),
         amount: getRequiredParam<ApiSendRequest, number>(body, "amount", Number.parseFloat),
         privateKey: getPrivateKeyParam<ApiSendRequest>(body, "privateKey")
     };

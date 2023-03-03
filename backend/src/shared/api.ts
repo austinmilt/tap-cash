@@ -1,5 +1,4 @@
 import { ApiErrorCode } from "./error";
-import * as anchor from "@project-serum/anchor";
 import { PaymentMethodSummary } from "./payment";
 
 export interface GetQueryParams {
@@ -35,9 +34,7 @@ export interface ApiInitializeMemberResult { }
 
 export interface ApiDepositRequest {
     emailAddress: string;
-    destinationAccountId: string;
     amount: number;
-    //TODO
 }
 
 
@@ -47,9 +44,8 @@ export interface ApiDepositResult { }
 export interface ApiSendRequest {
     senderEmailAddress: string;
     recipientEmailAddress: string;
-    senderAccountId: string;
     amount: number;
-    privateKey: anchor.web3.Keypair
+    privateKey: number[];
 }
 
 
@@ -85,7 +81,7 @@ export interface ApiRecentActivityRequest extends GetQueryParams {
 }
 
 
-export interface ApiRecentActivityResult { }
+export type ApiRecentActivityResult = ApiMemberActivity[];
 
 
 export interface ApiMemberActivity {
@@ -107,7 +103,6 @@ export interface ApiSendActivity {
     recipient: ApiMemberPublicProfile;
     currency: string;
     amount: number;
-    privateKey: string;
 }
 
 

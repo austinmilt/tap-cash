@@ -8,7 +8,13 @@ import { airdropIfNeeded, getOrCreateUsdc, PublicKey } from "../helpers/solana";
 import { TapCash } from "../types/tap-cash";
 import { BN } from "bn.js";
 
-export class TapCashClient {
+export interface TapCashClient {
+    initializeNewMember(userId: PublicKey): Promise<PublicKey | undefined>;
+    sendTokens(args: SendTokensArgs): Promise<string | undefined>;
+    getRecentActivity(member: PublicKey, maxNumberTx: number): Promise<TransactionDetail[]>;
+}
+
+export class MainTapCashClient implements TapCashClient {
     private readonly sdk: WorkSpace;
     private readonly connection: anchor.web3.Connection;
     private readonly program: anchor.Program<TapCash>;
@@ -20,17 +26,17 @@ export class TapCashClient {
         this.provider = sdk.provider;
     }
 
-    public static ofDefaults(): TapCashClient {
-        return new TapCashClient(createWorkspace(RPC_URL, BANK_AUTH));
+    public static ofDefaults(): MainTapCashClient {
+        return new MainTapCashClient(createWorkspace(RPC_URL, BANK_AUTH));
     }
 
     public static withSdk(sdk: WorkSpace) {
-        return new TapCashClient(sdk);
+        return new MainTapCashClient(sdk);
     }
 
     private async getOrInitBank(): Promise<PublicKey | undefined> {
         const bankAuth = this.provider.wallet;
-        const [bankPda] = await PublicKey.findProgramAddressSync(
+        const [bankPda] = PublicKey.findProgramAddressSync(
             [Buffer.from(BANK_SEED), bankAuth.publicKey.toBuffer()],
             this.program.programId
         );
@@ -67,7 +73,7 @@ export class TapCashClient {
     private async getMemberPda(userId: PublicKey): Promise<PublicKey> {
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
-        const [memberPda] = await PublicKey.findProgramAddressSync(
+        const [memberPda] = PublicKey.findProgramAddressSync(
             [Buffer.from(MEMBER_SEED), bank.toBuffer(), userId.toBuffer()],
             this.program.programId
         );
@@ -111,7 +117,7 @@ export class TapCashClient {
     }
 
     private async getMemberAccountPda(args: GetMemberAccountArgs): Promise<PublicKey> {
-        const [accountPda] = await PublicKey.findProgramAddressSync(
+        const [accountPda] = PublicKey.findProgramAddressSync(
             [
                 args.memberPda.toBuffer(),
                 Buffer.from(CHECKING_SEED),
@@ -151,7 +157,7 @@ export class TapCashClient {
 
     public async initializeNewMember(
         userId: PublicKey
-    ) {
+    ): Promise<PublicKey | undefined> {
         const systemProgram: PublicKey = anchor.web3.SystemProgram.programId;
         const rent: PublicKey = anchor.web3.SYSVAR_RENT_PUBKEY;
         const tokenProgram = TOKEN_PROGRAM_ID;
@@ -233,14 +239,14 @@ export class TapCashClient {
         }
     }
 
-    public async getRecentActivity(member: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
+    public async getRecentActivity(memberUsdcAddress: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         try {
-            const signatures = await this.connection.getSignaturesForAddress(member);
+            const signatures = await this.connection.getSignaturesForAddress(memberUsdcAddress);
             const txDetail = await this.connection.getTransactions(
                 signatures.map(sig => sig.signature),
                 { commitment: 'finalized', maxSupportedTransactionVersion: 1 }
             );
-            return await this.getParsedMemberTransactions(txDetail, member, maxNumberTx);
+            return await this.getParsedMemberTransactions(txDetail, memberUsdcAddress, maxNumberTx);
         }
         catch {
             throw ApiError.solanaQueryError(SolanaQueryType.GET_TX_HISTORY);
@@ -301,8 +307,8 @@ export class TapCashClient {
                 bankChange,
                 otherPartyChange,
                 memberChange,
-                otherPartyAddress: otherPartyAddress ? new PublicKey(otherPartyAddress) : undefined,
-                member,
+                otherPartyAtaAddress: otherPartyAddress ? new PublicKey(otherPartyAddress) : undefined,
+                memberAtaAddress: member,
                 unixTimestamp: tx.blockTime ?? undefined,
             };
             return txDetail;
@@ -327,8 +333,8 @@ export interface TransactionDetail {
     bankChange: number;
     otherPartyChange: number;
     memberChange: number;
-    otherPartyAddress: PublicKey | undefined;
-    member: PublicKey;
+    otherPartyAtaAddress: PublicKey | undefined;
+    memberAtaAddress: PublicKey;
     unixTimestamp?: number;
 }
 
@@ -358,7 +364,7 @@ interface CreateAccountArgs {
     systemProgram: PublicKey;
 }
 
-interface SendTokensArgs {
+export interface SendTokensArgs {
     fromMember: anchor.web3.Keypair,
     destinationAta: PublicKey,
     /**

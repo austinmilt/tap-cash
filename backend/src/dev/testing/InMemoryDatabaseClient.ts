@@ -49,20 +49,25 @@ export class InMemoryDatabaseClient implements DatabaseClient {
     }
 
     public async queryMembersByEmail(emailQuery: string, limit: number): Promise<MemberPublicProfile[]> {
-        return Array.from(this.members.keys())
-            .filter(email => email.startsWith(emailQuery))
-            .map(this.members.get)
-            .flatMap(member => member ? [member] : [])
-            .slice(0, limit)
-            .map(memberToPublicProfile);
+        const results: MemberPublicProfile[] = [];
+        for (const value of this.members.values()) {
+            if (results.length >= limit) {
+                break;
+            }
+
+            if (value.email.startsWith(emailQuery)) {
+                results.push(value);
+            }
+        }
+        return results;
     }
 
-    public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<PublicKey, MemberPublicProfile>> {
-        const unique: Set<PublicKey> = new Set(accounts);
-        const result: Map<PublicKey, MemberPublicProfile> = new Map();
+    public async getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<string, MemberPublicProfile>> {
+        const unique: Set<string> = new Set(accounts.map(p => p.toBase58()));
+        const result: Map<string, MemberPublicProfile> = new Map();
         for (const member of this.members.values()) {
-            if (unique.has(member.usdcAddress)) {
-                result.set(member.usdcAddress, memberToPublicProfile(member));
+            if (unique.has(member.usdcAddress.toBase58())) {
+                result.set(member.usdcAddress.toBase58(), memberToPublicProfile(member));
             }
         }
         return result;

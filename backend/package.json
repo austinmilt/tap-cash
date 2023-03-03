@@ -8,7 +8,7 @@
     "start": "functions-framework --target=index",
     "prestart": "npm run build",
     "test-windows": "SET SERVER_ENV=test&& jest",
-    "test": "SERVER_ENV=test && jest",
+    "test": "SERVER_ENV=test jest",
     "gcp-build": "npm run build",
     "deploy-query-recipients": "gcloud functions deploy query-recipients --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
     "deploy-new-member": "gcloud functions deploy new-member --env-vars-file .env.prod.yml --gen2 --runtime=nodejs16 --region=us-central1 --trigger-http --allow-unauthenticated",
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.1",
+    "@types/jest": "^29.4.0",
     "@types/node-fetch": "^2.6.2",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.1",
