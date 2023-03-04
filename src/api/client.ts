@@ -276,7 +276,6 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
             })
             .catch(e => {
                 setError(e);
-                console.error(e, (e as unknown as Error).message);
             })
             .finally(() => setLoading(false));
     }, [baseUri]);
