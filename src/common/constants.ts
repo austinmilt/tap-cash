@@ -33,19 +33,6 @@ function parseEnv<T>(
     return result;
 }
 
-function parseKeypair(
-    name: string,
-    envValue?: string
-): anchor.web3.Keypair {
-    if (envValue === undefined) {
-        throw new Error(`Missing required env variable ${name}.`);
-    }
-    const u8Array = JSON.parse(envValue);
-    const keypair = anchor.web3.Keypair.fromSecretKey(new Uint8Array(u8Array));
-    return keypair;
-}
-
-
 
 function castString<T>(value: string): T {
     return value as unknown as T;

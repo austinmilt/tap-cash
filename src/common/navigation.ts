@@ -1,5 +1,6 @@
 export enum NavScreen {
-    AUTHORIZE = "Authorize",
+    SPLASH = "Splash",
+    AUTHENTICATE = "Authenticate",
     HOME = "Home",
     PROFILE = "Profile",
     SEND = "Send",
@@ -17,5 +18,5 @@ export interface Navigation {
 
 // TODO find the type in react-navigation stuff
 export interface Route {
-    params: {[param: string]: any};
+    params: { [param: string]: any };
 }

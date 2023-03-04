@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Button } from "../../components/Button";
 import { View } from "../../components/View";
 import { NumberInput } from "react-native-ui-lib";
-import { COLORS } from "../../common/styles";
 import { StyleSheet } from "react-native";
+import { COLORS } from "../../common/styles";
 
 interface Props {
     onCompleted: (amount: number) => void;
@@ -21,7 +21,7 @@ export function AmountInput(props: Props): JSX.Element {
             <View flexG centerV>
                 {/* @ts-ignore this component's type validation is fucked up*/}
                 <NumberInput
-                    onChangeNumber={(v: {number: number}) => setAmount(v.number)}
+                    onChangeNumber={(v: { number: number }) => setAmount(v.number)}
                     onSubmitEditing={() => props.onCompleted(amount)}
                     leadingText="$"
                     fractionDigits={2}
@@ -31,8 +31,9 @@ export function AmountInput(props: Props): JSX.Element {
                     autoFocus
                 />
             </View>
-            <Button.Secondary
-                title="Cancel"
+            <Button
+                secondary
+                label="Cancel"
                 onPress={props.onCancel}
             />
         </View>

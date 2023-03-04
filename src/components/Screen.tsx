@@ -1,13 +1,13 @@
-import { StyleSheet, ViewProps } from "react-native";
-import { COLORS } from "../common/styles";
-import { View } from "react-native-ui-lib";
+import { StyleSheet } from "react-native";
+import { ViewProps } from "react-native-ui-lib";
+import { ViewStyleProps } from "../common/styles";
+import { View } from "./View";
 
-export function Screen(props: ViewProps): JSX.Element {
+export function Screen(props: ViewProps & ViewStyleProps): JSX.Element {
     return (
         <View
-            {...props}
-            style={[STYLE, props.style]}
             useSafeArea
+            {...props}
         >
             {props.children}
         </View>
@@ -15,12 +15,11 @@ export function Screen(props: ViewProps): JSX.Element {
 }
 
 const STYLE = StyleSheet.create({
-    style: {
+    base: {
         display: "flex",
         flex: 1,
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: COLORS.secondaryDark,
     }
-}).style;
+});

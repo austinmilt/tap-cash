@@ -11,8 +11,9 @@ export function Profile({ navigation }: Props): JSX.Element {
     return (
         <Screen>
             <View flex bottom>
-                <Button.Primary
-                    title="Home"
+                <Button
+                    primary
+                    label="Home"
                     onPress={() => navigation.navigate(NavScreen.HOME)}
                 />
             </View>

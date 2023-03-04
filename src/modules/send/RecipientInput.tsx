@@ -5,11 +5,10 @@ import { StyleSheet } from "react-native";
 import { TextInput } from "../../components/TextInput";
 import { Text } from "../../components/Text";
 import { View } from "../../components/View";
-import { COLORS } from "../../common/styles";
 import { useQueryRecipients } from "../../api/client";
 import React from "react";
-import { EmailAddress, MemberPublicProfile } from "../shared/member";
 import { useStateWithDebounce } from "../../common/debounce";
+import { EmailAddress, MemberPublicProfile } from "../../shared/member";
 
 
 interface Props {
@@ -37,7 +36,7 @@ export function RecipientInput(props: Props): JSX.Element {
 
     return (
         <View center flexG>
-            <View flex flexG padding-30 width="100%" gap={30}>
+            <View flex flexG padding-30 width="100%" gap-lg>
                 <TextInput
                     onChangeText={setRecipient}
                     value={recipient}
@@ -59,14 +58,16 @@ export function RecipientInput(props: Props): JSX.Element {
                     contentContainerStyle={STYLES.suggestions}
                 />
             </View>
-            <View flex flexS row centerH bottom spread paddingH-30 width="80%" gap={10}>
-                <Button.Secondary
-                    title="Cancel"
+            <View flex flexS row centerH bottom spread paddingH-30 width="80%" gap-sm>
+                <Button
+                    label="Cancel"
                     onPress={props.onCancel}
+                    secondary
                 />
-                <Button.Primary
-                    title="Confirm"
+                <Button
+                    label="Confirm"
                     onPress={onSubmit}
+                    primary
                 />
             </View>
         </View>
@@ -100,6 +101,6 @@ const STYLES = StyleSheet.create({
 
     suggestion: {
         fontSize: 18,
-        color: COLORS.secondaryLight
+        color: "green"
     }
 })

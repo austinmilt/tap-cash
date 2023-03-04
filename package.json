@@ -7,7 +7,7 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start-windows": "SET ENVFILE=.env.local && react-native start",
-    "start-unix": "ENVFILE=.env.local && react-native start",
+    "start": "ENVFILE=.env.local react-native start",
     "test": "jest"
   },
   "dependencies": {
