@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { NavScreen, Navigation } from "../../common/navigation";
-import { Screen } from "../../components/Screen";
-import { View } from "../../components/View";
-import { AppLogo } from "../../components/AppLogo";
+import { NavScreen, Navigation } from "../common/navigation";
+import { Screen } from "../components/Screen";
+import { View } from "../components/View";
+import { AppLogo } from "../components/AppLogo";
 
 interface Props {
     navigation: Navigation;

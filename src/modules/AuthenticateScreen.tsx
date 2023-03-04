@@ -7,7 +7,7 @@ interface Props {
     navigation: Navigation;
 }
 
-export function Authenticate({ navigation }: Props): JSX.Element {
+export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     return (
         <Screen>
             <View flex center>

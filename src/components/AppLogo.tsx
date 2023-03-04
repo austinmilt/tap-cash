@@ -11,5 +11,5 @@ export function AppLogo(props: Props): JSX.Element {
         "primary-dark": props.primary,
         "gray-light": props.secondary
     }
-    return <Text xxl {...extraProps}>TAP</Text>
+    return <Text xxl {...extraProps}>tap</Text>
 }
