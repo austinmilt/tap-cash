@@ -1,48 +1,23 @@
-import { StyleProp, ViewStyle } from "react-native/types";
-import { Button as RNUIButton } from "react-native-ui-lib"
+import { ButtonProps, Button as RNUIButton } from "react-native-ui-lib"
 import { COLORS } from "../common/styles";
 
 interface Props {
-    title: string;
+    label: string;
     onPress: () => void;
-    style?: StyleProp<ViewStyle>;
+    primary?: boolean;
+    secondary?: boolean;
+    disabled?: boolean;
 }
 
-export function Button(): void {
-    throw new Error("Use one of the composed button types.");
-}
-
-
-// https://www.npmjs.com/package/react-native-really-awesome-button
-function PrimaryButton(props: Props): JSX.Element {
+export function Button(props: Props & ButtonProps): JSX.Element {
     return (
         <RNUIButton
-            onPress={props.onPress}
-            color={COLORS.primaryDark}
-            backgroundColor={COLORS.primaryLight}
-            style={props.style}
-            label={props.title}
-            labelStyle={{fontWeight: "900", fontSize: 21}}
+            color={props.primary ? COLORS.primaryDark : COLORS.primaryLight}
+            backgroundColor={props.primary ? COLORS.grayLight : COLORS.grayDark}
+            labelStyle={{ fontWeight: "900", fontSize: 21 }}
             borderRadius={5}
             size="large"
+            {...props}
         />
-    )
+    );
 }
-Button.Primary = PrimaryButton;
-
-
-function SecondaryButton(props: Props): JSX.Element {
-    return (
-        <RNUIButton
-            onPress={props.onPress}
-            color={COLORS.secondaryDark}
-            backgroundColor={COLORS.secondaryLight}
-            style={props.style}
-            label={props.title}
-            labelStyle={{fontWeight: "900", fontSize: 21}}
-            borderRadius={5}
-            size="large"
-        />
-    )
-}
-Button.Secondary = SecondaryButton;

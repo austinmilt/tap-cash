@@ -6,15 +6,23 @@ import { Authenticate } from './src/modules/Authenticate';
 import { Send } from "./src/modules/send/Send";
 import { Profile } from './src/modules/Profile';
 import { NavScreen } from './src/common/navigation';
+import { SplashScreen } from './src/modules/authentication/Splash';
 
 const Stack = createNativeStackNavigator();
 
 export default function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={NavScreen.AUTHORIZE} screenOptions={{headerShown: false}}>
+      <Stack.Navigator
+        initialRouteName={NavScreen.SPLASH}
+        screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen
-          name={NavScreen.AUTHORIZE}
+          name={NavScreen.SPLASH}
+          component={SplashScreen}
+        />
+        <Stack.Screen
+          name={NavScreen.AUTHENTICATE}
           component={Authenticate}
         />
         <Stack.Screen

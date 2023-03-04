@@ -257,7 +257,6 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
         if (params !== undefined) {
             uri += `?${new URLSearchParams(params)}`
         }
-        console.log("FETCH", uri);
         fetch(uri, {
             method: 'GET',
             headers: {
@@ -265,11 +264,9 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => { console.log(response); return response.json() })
+            .then(response => response.json())
             .then(body => {
-                console.log(body);
                 const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
-                console.log(apiResponse);
                 if (apiResponse.error !== undefined) {
                     setError(new Error(`API responded with error: ${apiResponse.error}`));
 

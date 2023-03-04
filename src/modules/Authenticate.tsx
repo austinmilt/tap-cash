@@ -11,8 +11,9 @@ export function Authenticate({ navigation }: Props): JSX.Element {
     return (
         <Screen>
             <View flex center>
-                <Button.Primary
-                    title="Log In"
+                <Button
+                    primary
+                    label="Log In"
                     onPress={() => navigation.navigate(NavScreen.HOME)}
                 />
             </View>
