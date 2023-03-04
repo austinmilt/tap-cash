@@ -164,25 +164,3 @@ export function useViewStyle(props: ViewStyleProps): ViewStyle {
         return result;
     }, [props]);
 }
-
-
-Colors.loadColors({
-    primaryLight: "red",
-    primaryMedium: CORE_TEXT_STYLES['primary-medium'].color,
-    primaryDark: CORE_TEXT_STYLES['primary-dark'].color,
-    secondaryLight: CORE_TEXT_STYLES['secondary-light'].color,
-    secondaryMedium: CORE_TEXT_STYLES['secondary-medium'].color,
-    secondaryDark: CORE_TEXT_STYLES['secondary-dark'].color,
-});
-
-Typography.loadTypographies({
-    heading: { fontSize: 36, fontWeight: '600', fontFamily: "Jost-Medium" },
-    subheading: { fontSize: 28, fontWeight: '500', fontFamily: "Jost-Medium" },
-    body: { fontSize: 18, fontWeight: '400', fontFamily: "Jost-Medium" }
-});
-
-Spacings.loadSpacings({
-    page: 20,
-    card: 12,
-    gridGutter: 16
-});
