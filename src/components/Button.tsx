@@ -1,5 +1,6 @@
 import { ButtonProps, Button as RNUIButton } from "react-native-ui-lib"
 import { COLORS } from "../common/styles";
+import { useMemo } from "react";
 
 interface Props {
     label: string;
@@ -12,12 +13,12 @@ interface Props {
 export function Button(props: Props & ButtonProps): JSX.Element {
     return (
         <RNUIButton
-            color={props.primary ? COLORS.primaryDark : COLORS.primaryLight}
-            backgroundColor={props.primary ? COLORS.grayLight : COLORS.grayDark}
-            labelStyle={{ fontWeight: "900", fontSize: 21 }}
+            color={props.primary ? COLORS.grayLight : COLORS.primaryMedium}
+            backgroundColor={props.primary ? COLORS.primaryMedium : COLORS.grayLight}
+            labelStyle={{ fontSize: 18 }}
             borderRadius={5}
             size="large"
             {...props}
         />
-    );
+    )
 }

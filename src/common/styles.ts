@@ -2,6 +2,13 @@ import { Colors, Typography, Spacings } from 'react-native-ui-lib';
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { useMemo } from 'react';
 
+//TODO NEXT TIME ON DRAGONBALL Z
+// implement each step of the user flows like they put in
+// the figma (either Round 1 - Hi-fi or something new if he)
+// does it by then (check slack). Dont worry as much about
+// styling until all that is done
+//TODO
+
 export const COLORS = {
     primaryLight: "#3E5FE1",
     primaryMedium: "#3E5FE1",
@@ -18,7 +25,7 @@ export const COLORS = {
 
 const CORE_TEXT_STYLES = StyleSheet.create({
     "primary-light": {
-        color: COLORS.primaryLight
+        color: COLORS.primaryLight,
     },
     "primary-medium": {
         color: COLORS.primaryMedium
@@ -46,23 +53,33 @@ const CORE_TEXT_STYLES = StyleSheet.create({
     },
     "sm": {
         fontSize: 12,
-        fontFamily: "Futura"
     },
     "md": {
         fontSize: 18,
-        fontFamily: "Futura"
     },
     "lg": {
         fontSize: 24,
-        fontFamily: "Futura"
     },
     "xl": {
         fontSize: 36,
-        fontFamily: "Futura"
     },
     "xxl": {
         fontSize: 48,
-        fontFamily: "Futura"
+    },
+    "light-weight": {
+        fontFamily: "Jost-Light"
+    },
+    "normal": {
+        fontFamily: "Jost-Medium"
+    },
+    "semibold": {
+        fontFamily: "Jost-Semibold"
+    },
+    "bold": {
+        fontFamily: "Jost-Bold"
+    },
+    "extra-bold": {
+        fontFamily: "Jost-ExtraBold"
     },
 });
 
@@ -80,6 +97,15 @@ const CORE_VIEW_STYLES = StyleSheet.create({
     },
     "gap-lg": {
         gap: 30
+    },
+    "padding-sm": {
+        padding: 10
+    },
+    "padding-md": {
+        padding: 20
+    },
+    "padding-lg": {
+        padding: 30
     },
     "primary-light": {
         backgroundColor: COLORS.primaryLight
@@ -115,7 +141,10 @@ type TextStyleKey = keyof typeof CORE_TEXT_STYLES;
 export type TextStyleProps = { [key in TextStyleKey]?: boolean };
 export function useTextStyle(props: TextStyleProps): TextStyle {
     return useMemo(() => {
-        let result: TextStyle = {};
+        let result: TextStyle = {
+            fontFamily: "Jost-Medium",
+            color: COLORS.grayMedium
+        };
         for (const key of Object.keys(props)) {
             result = { ...result, ...CORE_TEXT_STYLES[key as TextStyleKey] }
         }
@@ -147,9 +176,9 @@ Colors.loadColors({
 });
 
 Typography.loadTypographies({
-    heading: { fontSize: 36, fontWeight: '600', fontFamily: "Futura" },
-    subheading: { fontSize: 28, fontWeight: '500', fontFamily: "Futura" },
-    body: { fontSize: 18, fontWeight: '400', fontFamily: "Futura" }
+    heading: { fontSize: 36, fontWeight: '600', fontFamily: "Jost-Medium" },
+    subheading: { fontSize: 28, fontWeight: '500', fontFamily: "Jost-Medium" },
+    body: { fontSize: 18, fontWeight: '400', fontFamily: "Jost-Medium" }
 });
 
 Spacings.loadSpacings({
