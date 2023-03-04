@@ -25,7 +25,6 @@ export const handleNewMember = makePostHandler(initializeMember, transformReques
 
 async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
     let userAta = await getTapCashClient().initializeNewMember(request.signerAddress);
-
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
     // TODO: store mapping from user's email to name, pfp, wallet, and ATA
