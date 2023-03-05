@@ -66,4 +66,3 @@ yarn-error.log
 !.env.example
 
 secrets/
-program/tap_cash/tests/helpers/usdc-old.json
