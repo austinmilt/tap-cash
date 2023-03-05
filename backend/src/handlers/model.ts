@@ -1,6 +1,6 @@
 // Google Cloud Functions Framework main entrypoint
 import * as ff from '@google-cloud/functions-framework';
-import { ApiResponseStatus } from '../shared/api';
+import { ApiResponse, ApiResponseStatus } from '../shared/api';
 import { ApiError } from '../shared/error';
 import { Keypair, PublicKey } from '../helpers/solana';
 
@@ -101,7 +101,7 @@ function getParam<R, T>(
 
 // these are mostly just here to make sure we use a consistent format for responses
 function respondOK<T>(response: ff.Response, result?: T, apiStatus: ApiResponseStatus = 1, httpStatus: number = 200): void {
-    response.status(httpStatus).send({ result: result, status: apiStatus });
+    respond(response, { result: result, status: apiStatus }, httpStatus);
 }
 
 
@@ -116,5 +116,10 @@ function handleError(response: ff.Response, error: ApiError | Error): void {
 
 
 function respondError(response: ff.Response, error: ApiError): void {
-    response.status(error.httpStatus).send(error.toApiResponse());
+    respond(response, error.toApiResponse(), error.httpStatus);
+}
+
+
+function respond<T>(responseHandler: ff.Response, response: ApiResponse<T>, httpStatus: number): void {
+    responseHandler.status(httpStatus).json(response);
 }

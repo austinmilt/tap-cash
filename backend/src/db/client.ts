@@ -3,11 +3,26 @@ import { EmailAddress, MemberId, MemberPublicProfile } from "../shared/member";
 import { CircleCardId, MemberAccounts } from "../types/types";
 
 export interface DatabaseClient {
+
+    /**
+     * Adds a new member the db.
+     *
+     * @param profile user profile info
+     * @param signerAddress public address of the signer wallet belonging to the member
+     * @param usdcAddress public address of the member's USDC account
+     * @throws if a member with the same email already exists
+     */
     addMember(
         profile: MemberPublicProfile,
-        wallet: PublicKey,
+        signerAddress: PublicKey,
         usdcAddress: PublicKey
     ): Promise<MemberId>;
+
+    /**
+     * @param emailAddress email address to check for membership
+     * @returns `true` if the email address is associated with a member, `false` otherwise
+     */
+    isMember(emailAddress: EmailAddress): Promise<boolean>;
 
     saveCircleCreditCard(member: EmailAddress, circleCreditCardId: string): Promise<void>;
 

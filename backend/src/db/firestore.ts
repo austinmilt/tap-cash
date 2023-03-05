@@ -38,7 +38,9 @@ export class FirestoreClient implements DatabaseClient {
         signerAddress: PublicKey,
         usdcAddress: PublicKey
     ): Promise<string> {
-        //TODO check that the member doesnt already exist
+        if (await this.isMember(profile.email)) {
+            throw new Error("Member already exists.");
+        }
         const memberDocData: MemberDocument = {
             email: profile.email,
             profile: profile.profile,
@@ -50,6 +52,12 @@ export class FirestoreClient implements DatabaseClient {
         const memberDoc = await this.membersRef.add(memberDocData);
 
         return memberDoc.id;
+    }
+
+
+    public async isMember(emailAddress: EmailAddress): Promise<boolean> {
+        const matches: MemberPublicProfile[] = await this.queryMembersByEmail(emailAddress, 1);
+        return matches.length > 0;
     }
 
 

@@ -1,4 +1,4 @@
-import { MockHttpResponse } from "../dev/testing/MockHttpResponse";
+import { MockHttpResponse, UsedMethod } from "../dev/testing/MockHttpResponse";
 import { ApiInitializeMemberRequest } from "../shared/api";
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
@@ -52,5 +52,28 @@ describe('new-member handler', () => {
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
         expect(tapClient.getMemberAccount(userId)?.balance).toStrictEqual(0);
+    });
+
+    it('new-member - member already exists - returns error', async () => {
+        const mockResponse: MockHttpResponse = new MockHttpResponse();
+        const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
+        setDatabaseClient(dbClient);
+
+        const addMember = async () => {
+            await handleNewMember(
+                buildPostRequest<ApiInitializeMemberRequest>({
+                    emailAddress: "mary.jane@gmail.com",
+                    profilePictureUrl: "https://www.google.com",
+                    name: "Mary Jane",
+                    signerAddressBase58: "rand4XuRxdtPS9gDYy6KDeGkEpi69xmkCy5oEmDYfoC"
+                }),
+                mockResponse
+            );
+        }
+
+        await addMember();
+        await addMember();
+        expect(mockResponse.mockedLastUseOf(UsedMethod.STATUS)?.status?.code).toStrictEqual(400);
+        expect(mockResponse.mockedLastUse()?.json?.body.error.code).toStrictEqual(5);
     });
 });

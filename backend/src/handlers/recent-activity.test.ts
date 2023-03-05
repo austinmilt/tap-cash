@@ -35,7 +35,7 @@ describe('recent-activity handler', () => {
         );
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
-        expect(mockResponse.mockedNextUse()?.send?.body.result).toStrictEqual([]);
+        expect(mockResponse.mockedNextUse()?.json?.body.result).toStrictEqual([]);
     });
 
 
@@ -91,7 +91,7 @@ describe('recent-activity handler', () => {
         );
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
-        const result: ApiRecentActivityResult = mockResponse.mockedNextUse()?.send?.body.result;
+        const result: ApiRecentActivityResult = mockResponse.mockedNextUse()?.json?.body.result;
         expect(result.length).toStrictEqual(10);
         result.forEach(act => expect(act.send?.recipient.email).toStrictEqual("john.doe@gmail.com"));
         result.forEach(act => expect(act.send?.amount).toStrictEqual(1));

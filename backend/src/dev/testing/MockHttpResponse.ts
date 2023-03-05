@@ -45,8 +45,17 @@ export class MockHttpResponse implements Response {
         return (this.uses.length > this.useIndex) ? this.uses[this.useIndex++] : null;
     }
 
+    public mockedLastUse(): Use | null {
+        return this.uses.length > 0 ? this.uses[this.uses.length - 1] : null;
+    }
+
     public mockedUsesOf(method: UsedMethod): Use[] {
         return this.uses.filter(use => use.method === method);
+    }
+
+    public mockedLastUseOf(method: UsedMethod): Use | null {
+        const uses = this.uses.filter(use => use.method === method);
+        return uses.length > 0 ? uses[uses.length - 1] : null;
     }
 
     status(code: number): this {

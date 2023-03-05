@@ -43,6 +43,10 @@ export class InMemoryDatabaseClient implements DatabaseClient {
         return id;
     }
 
+    public async isMember(email: EmailAddress): Promise<boolean> {
+        return this.getMember(email) !== undefined;
+    }
+
     public async saveCircleCreditCard(member: EmailAddress, circleCreditCardId: CircleCardId): Promise<void> {
         const memberData: Member = this.getRequiredMember(member);
         memberData.circleCreditCards.add(circleCreditCardId);
@@ -87,11 +91,15 @@ export class InMemoryDatabaseClient implements DatabaseClient {
     }
 
     private getRequiredMember(email: string): Member {
-        const member: Member | undefined = this.members.get(email);
+        const member: Member | undefined = this.getMember(email);
         if (member === undefined) {
             throw ApiError.noSuchMember(email);
         }
         return member;
+    }
+
+    private getMember(email: EmailAddress): Member | undefined {
+        return this.members.get(email);
     }
 }
 

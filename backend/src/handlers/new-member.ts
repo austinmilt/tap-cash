@@ -5,8 +5,8 @@ import { ApiError, SolanaTxType } from "../shared/error";
 import { getPublicKeyParam, getRequiredParam, makePostHandler } from "./model";
 import { ApiInitializeMemberRequest, ApiInitializeMemberResult } from "../shared/api";
 import { getDatabaseClient, getTapCashClient } from "../helpers/singletons";
+import { DatabaseClient } from "../db/client";
 
-//TODO tests
 
 interface InitializeMemberArgs {
     email: EmailAddress;
@@ -24,12 +24,16 @@ interface InitializeMemberResult {
 export const handleNewMember = makePostHandler(initializeMember, transformRequest, transformResult);
 
 async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
+    const dbClient: DatabaseClient = getDatabaseClient();
+    if (await dbClient.isMember(request.email)) {
+        throw ApiError.memberAlreadyExists(request.email);
+    }
+
     let userAta = await getTapCashClient().initializeNewMember(request.signerAddress);
 
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
-    // TODO: store mapping from user's email to name, pfp, wallet, and ATA
-    getDatabaseClient().addMember(
+    await dbClient.addMember(
         {
             email: request.email,
             profile: request.profile,
