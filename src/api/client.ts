@@ -44,24 +44,13 @@ interface InitializeMemberArgs {
 }
 
 
-export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> {
-    const queryContext = usePostQuery<ApiInitializeMemberRequest, ApiInitializeMemberResult>(NEW_MEMBER_URI);
-
-    const submit = useCallback((req: InitializeMemberArgs) => {
-        queryContext.submit({
-            emailAddress: req.email,
-            profilePictureUrl: req.profile,
-            name: req.name,
-            signerAddressBase58: req.signerAddress.toBase58()
-        });
-
-    }, [queryContext.submit]);
-
-    return {
-        ...queryContext,
-        submit: submit,
-        data: undefined
-    };
+export async function intializeMember(req: InitializeMemberArgs): Promise<void> {
+    await post(NEW_MEMBER_URI, {
+        emailAddress: req.email,
+        profilePictureUrl: req.profile,
+        name: req.name,
+        signerAddressBase58: req.signerAddress.toBase58()
+    });
 }
 
 
@@ -296,27 +285,9 @@ function usePostQuery<Req, Res>(baseUri: string): QueryContext<Req, Res> {
 
     const submit: (body: Req) => void = useCallback((body) => {
         setLoading(true);
-        let uri: string = baseUri;
         // https://reactnative.dev/docs/network
-        fetch(uri, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            // TODO more robust conversion of body
-            body: JSON.stringify(body),
-        })
-            .then(response => response.json())
-            .then(body => {
-                const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
-                if (apiResponse.error !== undefined) {
-                    setError(new Error(`API responded with error: ${apiResponse.error.message}`));
-
-                } else {
-                    setData(apiResponse.result);
-                }
-            })
+        post<Req, Res>(baseUri, body)
+            .then(setData)
             .catch(setError)
             .finally(() => setLoading(false));
     }, [baseUri]);
@@ -327,4 +298,31 @@ function usePostQuery<Req, Res>(baseUri: string): QueryContext<Req, Res> {
         data: data,
         submit: submit
     }
+}
+
+
+async function post<Req, Res>(baseUri: string, body: Req): Promise<Res> {
+    let uri: string = baseUri;
+    // https://reactnative.dev/docs/network
+    const response = await fetch(uri, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        // TODO more robust conversion of body
+        body: JSON.stringify(body),
+    });
+
+    const responseBody = await response.json();
+    const apiResponse: ApiResponse<Res> = responseBody as ApiResponse<Res>;
+    if (apiResponse.error !== undefined) {
+        throw new Error(`API responded with error: ${apiResponse.error.message}`);
+    }
+
+    if (apiResponse.result == null) {
+        throw new Error("API response is empty.");
+    }
+
+    return apiResponse.result;
 }

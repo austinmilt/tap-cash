@@ -1,4 +1,5 @@
 import Config from "react-native-config";
+import { PublicKey } from "../solana/solana";
 
 //TODO
 
@@ -11,7 +12,12 @@ export const WITHDRAW_URI: string = parseEnv("WITHDRAW_URI", Config.WITHDRAW_URI
 export const QUERY_RECIPIENTS_URI: string = parseEnv("QUERY_RECIPIENTS_URI", Config.QUERY_RECIPIENTS_URI);
 export const RECENT_ACTIVITY_URI: string = parseEnv("RECENT_ACTIVITY_URI", Config.RECENT_ACTIVITY_URI);
 export const SAVED_PAYMENT_METHODS_URI: string = parseEnv("SAVED_PAYMENT_METHODS_URI", Config.SAVED_PAYMENT_METHODS_URI);
-
+export const USDC_MINT_ADDRESS: PublicKey = parseEnv(
+    "USDC_MINT_ADDRESS",
+    Config.USDC_MINT_ADDRESS,
+    undefined,
+    v => new PublicKey(v)
+);
 
 function parseEnv<T>(
     name: string,
