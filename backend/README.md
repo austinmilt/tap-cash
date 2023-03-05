@@ -30,3 +30,10 @@ https://hello-world-7pi36k236a-uc.a.run.app
 
 Note it only "deploys" one function locally, so either change the script args or run what's in the script
 with your custom function.
+
+
+## Devnet
+[Program](https://explorer.solana.com/address/TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz?cluster=devnet): `TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz`
+[USDC](https://explorer.solana.com/address/USDCMGr4yKJju4p6r229yeWmKSsBLicUcZ2T1Ggx9sk?cluster=devnet): `USDCMGr4yKJju4p6r229yeWmKSsBLicUcZ2T1Ggx9sk`
+Bank Auth: `BaNkRi9z8s8y93KixtteuLXRxrL8Ph5XaXZs8HEvCda1`
+Bank PDA: `61t7eqKRX4y4og7N3viKsNrc6Hp9AMWSa6Ym4jt82g23`

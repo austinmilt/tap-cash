@@ -4,11 +4,14 @@ skip-lint = false
 [programs.localnet]
 tap_cash = "TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz"
 
+[programs.devnet]
+tap_cash = "TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz"
+
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "wallet.json"
 
 [scripts]
