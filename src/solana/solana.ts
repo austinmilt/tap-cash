@@ -2,7 +2,6 @@ import {
     Connection,
     Keypair,
     PublicKey,
-    clusterApiUrl,
 } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { USDC_MINT_ADDRESS } from "../common/constants";
@@ -19,23 +18,9 @@ export class SolanaWallet {
     }
 
 
-    public static devnet(ed25519PrivKey: string): SolanaWallet {
+    public static of(ed25519PrivKey: string, solanRpcUrl: string): SolanaWallet {
         const keypair: Keypair = Keypair.fromSecretKey(Buffer.from(ed25519PrivKey, 'hex'));
-        const connection: Connection = new Connection(clusterApiUrl("devnet"));
-        return new SolanaWallet(keypair, connection);
-    }
-
-
-    public static testnet(ed25519PrivKey: string): SolanaWallet {
-        const keypair: Keypair = Keypair.fromSecretKey(Buffer.from(ed25519PrivKey, 'hex'));
-        const connection: Connection = new Connection(clusterApiUrl("testnet"));
-        return new SolanaWallet(keypair, connection);
-    }
-
-
-    public static mainnet(ed25519PrivKey: string): SolanaWallet {
-        const keypair: Keypair = Keypair.fromSecretKey(Buffer.from(ed25519PrivKey, 'hex'));
-        const connection: Connection = new Connection(clusterApiUrl("mainnet-beta"));
+        const connection: Connection = new Connection(solanRpcUrl);
         return new SolanaWallet(keypair, connection);
     }
 

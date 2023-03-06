@@ -56,7 +56,6 @@ export interface ApiWithdrawRequest {
     emailAddress: string;
     sourceAccount: string;
     amount: number;
-    //TODO
 }
 
 

@@ -1,11 +1,10 @@
 import Config from "react-native-config";
 import { PublicKey } from "../solana/solana";
-
-//TODO
+import { OPENLOGIN_NETWORK } from "@web3auth/react-native-sdk";
 
 // use http://10.0.2.2:8080/ when testing/deploying with android emulator locally
 
-export const NEW_MEMBER_URI: string = parseEnv("NEW_MEMBER_URI", Config.NEW_MEMBER_URI);
+export const SAVE_MEMBER_URI: string = parseEnv("SAVE_MEMBER_URI", Config.SAVE_MEMBER_URI);
 export const DEPOSIT_URI: string = parseEnv("DEPOSIT_URI", Config.DEPOSIT_URI);
 export const SEND_URI: string = parseEnv("SEND_URI", Config.SEND_URI);
 export const WITHDRAW_URI: string = parseEnv("WITHDRAW_URI", Config.WITHDRAW_URI);
@@ -17,6 +16,24 @@ export const USDC_MINT_ADDRESS: PublicKey = parseEnv(
     Config.USDC_MINT_ADDRESS,
     undefined,
     v => new PublicKey(v)
+);
+export const WEB3_AUTH_NETWORK: string = parseEnv(
+    "WEB3_AUTH_NETWORK",
+    Config.WEB3_AUTH_NETWORK,
+    undefined,
+    v => {
+        if (v === "mainnet") return OPENLOGIN_NETWORK.MAINNET;
+        else if (v === "testnet") return OPENLOGIN_NETWORK.TESTNET;
+        else throw new Error("Invalid network " + v);
+    }
+)
+export const WEB3_AUTH_CLIENT_ID: string = parseEnv(
+    "WEB3_AUTH_CLIENT_ID",
+    Config.WEB3_AUTH_CLIENT_ID
+);
+export const SOLANA_RPC_URL: string = parseEnv(
+    "SOLANA_RPC_URL",
+    Config.SOLANA_RPC_URL
 );
 
 function parseEnv<T>(
