@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import {
     DEPOSIT_URI,
-    NEW_MEMBER_URI,
+    SAVE_MEMBER_URI,
     QUERY_RECIPIENTS_URI,
     RECENT_ACTIVITY_URI,
     SAVED_PAYMENT_METHODS_URI,
@@ -35,7 +35,7 @@ interface QueryContext<Req, Res> {
 }
 
 
-interface InitializeMemberArgs {
+interface SaveMemberArgs {
     email: EmailAddress;
     profile: ProfilePicture;
     name: string;
@@ -43,12 +43,18 @@ interface InitializeMemberArgs {
 }
 
 
-export async function intializeMember(req: InitializeMemberArgs): Promise<void> {
-    await post(NEW_MEMBER_URI, {
-        emailAddress: req.email,
-        profilePictureUrl: req.profile,
-        name: req.name,
-        signerAddressBase58: req.signerAddress.toBase58()
+/**
+ * Adds or updates the member details on the backend, including
+ * creating their accounts if needed.
+ *
+ * @param args
+ */
+export async function saveMember(args: SaveMemberArgs): Promise<void> {
+    await post(SAVE_MEMBER_URI, {
+        emailAddress: args.email,
+        profilePictureUrl: args.profile,
+        name: args.name,
+        signerAddressBase58: args.signerAddress.toBase58()
     });
 }
 
