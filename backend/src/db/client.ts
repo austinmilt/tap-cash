@@ -18,6 +18,15 @@ export interface DatabaseClient {
         usdcAddress: PublicKey
     ): Promise<MemberId>;
 
+
+    /**
+     * Updates the member's profile info if they exist.
+     *
+     * @param profile profile data to update
+     * @throws if the member has not been added to the db
+     */
+    updateMember(profile: Partial<MemberPublicProfile>): Promise<MemberId>;
+
     /**
      * @param emailAddress email address to check for membership
      * @returns `true` if the email address is associated with a member, `false` otherwise

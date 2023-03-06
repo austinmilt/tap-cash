@@ -1,7 +1,7 @@
 import { DatabaseClient } from "../../db/client";
 import { PublicKey } from "../../helpers/solana";
 import { ApiError } from "../../shared/error";
-import { EmailAddress, MemberPublicProfile, ProfilePicture } from "../../shared/member";
+import { EmailAddress, MemberId, MemberPublicProfile, ProfilePicture } from "../../shared/member";
 import { CircleCardId, MemberAccounts } from "../../types/types";
 import { v4 as uuid } from "uuid";
 
@@ -41,6 +41,15 @@ export class InMemoryDatabaseClient implements DatabaseClient {
             circleCreditCards: new Set()
         });
         return id;
+    }
+
+    public async updateMember(profile: Partial<MemberPublicProfile>): Promise<MemberId> {
+        if (profile.email == null) {
+            throw ApiError.invalidParameter("email");
+        }
+        const member = this.getRequiredMember(profile.email);
+        this.members.set(profile.email, { ...member, ...profile });
+        return member.id;
     }
 
     public async isMember(email: EmailAddress): Promise<boolean> {

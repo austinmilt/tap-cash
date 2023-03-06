@@ -1,5 +1,4 @@
 import * as anchor from "@project-serum/anchor";
-import { v4 as uuid } from "uuid";
 import { EmailAddress, ProfilePicture, MemberId } from "../shared/member";
 import { ApiError, SolanaTxType } from "../shared/error";
 import { getPublicKeyParam, getRequiredParam, makePostHandler } from "./model";
@@ -8,7 +7,7 @@ import { getDatabaseClient, getTapCashClient } from "../helpers/singletons";
 import { DatabaseClient } from "../db/client";
 
 
-interface InitializeMemberArgs {
+interface SaveMemberArgs {
     email: EmailAddress;
     profile: ProfilePicture;
     name: string;
@@ -16,24 +15,25 @@ interface InitializeMemberArgs {
 }
 
 
-interface InitializeMemberResult {
+interface SaveMemberResult {
     memberId: MemberId;
 }
 
 
-export const handleNewMember = makePostHandler(initializeMember, transformRequest, transformResult);
+export const handleSaveMember = makePostHandler(saveMember, transformRequest, transformResult);
 
-async function initializeMember(request: InitializeMemberArgs): Promise<InitializeMemberResult> {
+async function saveMember(request: SaveMemberArgs): Promise<SaveMemberResult> {
     const dbClient: DatabaseClient = getDatabaseClient();
+
     if (await dbClient.isMember(request.email)) {
-        throw ApiError.memberAlreadyExists(request.email);
+        return { memberId: await dbClient.updateMember(request) };
     }
 
     let userAta = await getTapCashClient().initializeNewMember(request.signerAddress);
 
     if (!userAta) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
 
-    await dbClient.addMember(
+    const memberId: string = await dbClient.addMember(
         {
             email: request.email,
             profile: request.profile,
@@ -43,14 +43,12 @@ async function initializeMember(request: InitializeMemberArgs): Promise<Initiali
         userAta
     );
 
-    return {
-        memberId: uuid()
-    }
+    return { memberId: memberId };
 }
 
 
 
-function transformRequest(body: ApiInitializeMemberRequest): InitializeMemberArgs {
+function transformRequest(body: ApiInitializeMemberRequest): SaveMemberArgs {
     return {
         email: getRequiredParam<ApiInitializeMemberRequest, EmailAddress>(body, "emailAddress"),
         profile: getRequiredParam<ApiInitializeMemberRequest, ProfilePicture>(body, "profilePictureUrl"),
@@ -60,7 +58,7 @@ function transformRequest(body: ApiInitializeMemberRequest): InitializeMemberArg
 }
 
 
-function transformResult(result: InitializeMemberResult): ApiInitializeMemberResult {
+function transformResult(result: SaveMemberResult): ApiInitializeMemberResult {
     // nothing to return
     return {};
 }

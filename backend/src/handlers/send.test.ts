@@ -3,7 +3,7 @@ import { ApiInitializeMemberRequest, ApiSendRequest } from "../shared/api";
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient, setTapCashClient } from "../helpers/singletons";
-import { handleNewMember } from "./new-member";
+import { handleSaveMember } from "./save-member";
 import { buildPostRequest } from "../dev/testing/utils";
 import { MockTapCashClient } from "../dev/testing/MockTapCashClient";
 import { Keypair, PublicKey } from "../helpers/solana";
@@ -21,7 +21,7 @@ describe('send handler', () => {
 
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
@@ -34,7 +34,7 @@ describe('send handler', () => {
         tapClient.setMemberBalance(userWallet.publicKey, 10);
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",
@@ -69,7 +69,7 @@ describe('send handler', () => {
 
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
@@ -82,7 +82,7 @@ describe('send handler', () => {
         tapClient.setMemberBalance(userWallet.publicKey, 10);
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",

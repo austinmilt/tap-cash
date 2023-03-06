@@ -3,7 +3,7 @@ import { ApiInitializeMemberRequest, ApiRecentActivityRequest, ApiRecentActivity
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient, setTapCashClient } from "../helpers/singletons";
-import { handleNewMember } from "./new-member";
+import { handleSaveMember } from "./save-member";
 import { buildGetRequest, buildPostRequest } from "../dev/testing/utils";
 import { MockTapCashClient } from "../dev/testing/MockTapCashClient";
 import { Keypair, PublicKey } from "../helpers/solana";
@@ -16,7 +16,7 @@ describe('recent-activity handler', () => {
         const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
         setDatabaseClient(dbClient);
 
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
@@ -49,7 +49,7 @@ describe('recent-activity handler', () => {
 
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
@@ -62,7 +62,7 @@ describe('recent-activity handler', () => {
         tapClient.setMemberBalance(userWallet.publicKey, 9999999);
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
-        await handleNewMember(
+        await handleSaveMember(
             buildPostRequest<ApiInitializeMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",
