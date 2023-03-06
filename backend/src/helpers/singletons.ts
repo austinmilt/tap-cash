@@ -1,7 +1,7 @@
 import { CircleEmulator } from "../circle/circle-emulator";
 import { CircleClient } from "../circle/client";
 import { CircleMainClient } from "../circle/main-client";
-import { SERVER_ENV } from "../constants";
+import { SERVER_ENV, USE_IN_MEMORY_DB, USE_MOCK_CIRCLE, USE_MOCK_TAP_CASH } from "../constants";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
@@ -15,7 +15,7 @@ export function getDatabaseClient(): DatabaseClient {
     if (dbClient === undefined) {
         dbClient = makeSingleton<DatabaseClient>(
             InMemoryDatabaseClient.make,
-            FirestoreClient.ofDefaults,
+            () => USE_IN_MEMORY_DB ? InMemoryDatabaseClient.make() : FirestoreClient.ofDefaults(),
             FirestoreClient.ofDefaults,
             FirestoreClient.ofDefaults
         )
@@ -37,7 +37,7 @@ export function getTapCashClient(): TapCashClient {
     if (tapClient === undefined) {
         tapClient = makeSingleton<TapCashClient>(
             MockTapCashClient.make,
-            MainTapCashClient.ofDefaults,
+            () => USE_MOCK_TAP_CASH ? MockTapCashClient.make() : MainTapCashClient.ofDefaults(),
             MainTapCashClient.ofDefaults,
             MainTapCashClient.ofDefaults
         )
@@ -59,17 +59,18 @@ export function setTapCashClient(newClient: TapCashClient) {
 let circleClient: CircleClient;
 export function getCircleClient(): CircleClient {
     if (circleClient === undefined) {
-        circleClient = makeSingleton<CircleClient>(
-            () => {
-                const tapClient = getTapCashClient();
-                if (tapClient instanceof MockTapCashClient) {
-                    return MockCircleClient.make(tapClient);
+        const makeMocked = () => {
+            const tapClient = getTapCashClient();
+            if (tapClient instanceof MockTapCashClient) {
+                return MockCircleClient.make(tapClient);
 
-                } else {
-                    throw new Error("Must use MockTapCashClient for MockCircleClient");
-                }
-            },
-            CircleEmulator.ofDefaults,
+            } else {
+                throw new Error("Must use MockTapCashClient for MockCircleClient");
+            }
+        };
+        circleClient = makeSingleton<CircleClient>(
+            makeMocked,
+            () => USE_MOCK_CIRCLE ? makeMocked() : CircleEmulator.ofDefaults(),
             CircleMainClient.ofDefaults,
             CircleMainClient.ofDefaults
         )

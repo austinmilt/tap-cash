@@ -52,7 +52,24 @@ export const SERVER_ENV: ServerEnv = parseEnv(
     }
 )
 export const UNKNOWN_USER_PROFILE: MemberPublicProfile = { name: 'Unknown', email: 'Unknown', profile: 'Unknown' };
-
+export const USE_IN_MEMORY_DB: boolean = parseEnv(
+    "USE_IN_MEMORY_DB",
+    process.env.USE_IN_MEMORY_DB,
+    SERVER_ENV === ServerEnv.TEST,
+    v => stringToBoolean(v) && [ServerEnv.TEST, ServerEnv.LOCAL].includes(SERVER_ENV)
+);
+export const USE_MOCK_TAP_CASH: boolean = parseEnv(
+    "USE_MOCK_TAP_CASH",
+    process.env.USE_MOCK_TAP_CASH,
+    SERVER_ENV === ServerEnv.TEST,
+    v => stringToBoolean(v) && [ServerEnv.TEST, ServerEnv.LOCAL].includes(SERVER_ENV)
+);
+export const USE_MOCK_CIRCLE: boolean = parseEnv(
+    "USE_MOCK_CIRCLE",
+    process.env.USE_MOCK_CIRCLE,
+    SERVER_ENV === ServerEnv.TEST,
+    v => stringToBoolean(v) && [ServerEnv.TEST, ServerEnv.LOCAL].includes(SERVER_ENV)
+);
 
 export function parseEnv<T>(
     name: string,
@@ -108,4 +125,12 @@ export function parsePublicKey(
 
 function castString<T>(value: string): T {
     return value as unknown as T;
+}
+
+
+function stringToBoolean(value: string): boolean {
+    const lower: string = value.toLowerCase();
+    if (lower === "true") return true;
+    if (lower === "false") return false;
+    throw new Error("Invalid boolean string " + value);
 }
