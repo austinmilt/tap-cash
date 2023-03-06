@@ -1,6 +1,6 @@
 import { DatabaseClient } from "./client";
 import { FIRESTORE_MEMBERS_COLLECTION } from "../constants";
-import { MemberPublicProfile, EmailAddress, ProfilePicture } from "../shared/member";
+import { MemberPublicProfile, EmailAddress, ProfilePicture, MemberId } from "../shared/member";
 import { initializeApp } from "firebase-admin/app";
 import {
     CollectionReference,
@@ -38,7 +38,9 @@ export class FirestoreClient implements DatabaseClient {
         signerAddress: PublicKey,
         usdcAddress: PublicKey
     ): Promise<string> {
-        //TODO check that the member doesnt already exist
+        if (await this.isMember(profile.email)) {
+            throw new Error("Member already exists.");
+        }
         const memberDocData: MemberDocument = {
             email: profile.email,
             profile: profile.profile,
@@ -50,6 +52,21 @@ export class FirestoreClient implements DatabaseClient {
         const memberDoc = await this.membersRef.add(memberDocData);
 
         return memberDoc.id;
+    }
+
+
+    public async updateMember(profile: Partial<MemberPublicProfile>): Promise<MemberId> {
+        if (profile.email == null) throw ApiError.invalidParameter("profile.email");
+        const doc = await this.getMemberDocSnapshotByEmail(profile.email);
+        if (doc == null) throw ApiError.noSuchMember(profile.email);
+        await doc.ref.update(profile);
+        return doc.id;
+    }
+
+
+    public async isMember(emailAddress: EmailAddress): Promise<boolean> {
+        const matches: MemberPublicProfile[] = await this.queryMembersByEmail(emailAddress, 1);
+        return matches.length > 0;
     }
 
 

@@ -21,19 +21,16 @@ export class ApiError extends Error {
     }
 
 
-    public static fromApiResponse<T>(response: ApiResponse<T>): ApiError {
-        if (!this.isErrorResponse(response)) {
+    public static fromApiResponse<T>(response: ApiResponse<T>, httpStatus: number): ApiError {
+        if (!this.isErrorResponse(response) || (response.error === undefined)) {
             throw new Error("API response is not an error.")
         }
-        switch (response.error?.code) {
-            case 0: {
-                return this.generalServerError(response.error.message);
-            }
-
-            default: {
-                throw new Error("Unrecognized error code " + response.error?.code);
-            }
-        }
+        return new ApiError(
+            response.error.code,
+            response.error.message,
+            response.status,
+            httpStatus
+        );
     }
 
 
@@ -79,6 +76,15 @@ export class ApiError extends Error {
         return new ApiError(
             ApiErrorCode.INVALID_ARGUMENT,
             `No such member: ${member}`,
+            ApiResponseStatus.CLIENT_ERROR,
+            400
+        );
+    }
+
+    public static memberAlreadyExists(member: EmailAddress): ApiError {
+        return new ApiError(
+            ApiErrorCode.INVALID_ARGUMENT,
+            `Member already exists: ${member}`,
             ApiResponseStatus.CLIENT_ERROR,
             400
         );
@@ -148,6 +154,7 @@ export enum ApiErrorCode {
     MEMBER_SEARCH_ERROR = 4,
     INVALID_ARGUMENT = 5,
     SOLANA_QUERY_ERROR = 6,
+    MEMBER_ALREADY_EXISTS = 7
 }
 
 export enum SolanaTxType {

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import {
     DEPOSIT_URI,
-    NEW_MEMBER_URI,
+    SAVE_MEMBER_URI,
     QUERY_RECIPIENTS_URI,
     RECENT_ACTIVITY_URI,
     SAVED_PAYMENT_METHODS_URI,
@@ -11,7 +11,6 @@ import {
 import * as anchor from "@project-serum/anchor";
 import { MemberActivity } from "../shared/activity";
 import {
-    ApiInitializeMemberRequest,
     ApiDepositRequest,
     ApiSendRequest,
     ApiWithdrawRequest,
@@ -19,7 +18,6 @@ import {
     ApiRecentActivityRequest,
     GetQueryParams,
     ApiResponse,
-    ApiInitializeMemberResult,
     ApiDepositResult,
     ApiSendResult,
     ApiWithdrawResult,
@@ -27,6 +25,7 @@ import {
 } from "../shared/api";
 import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../shared/member";
 import { PaymentMethodSummary } from "../shared/payment";
+import { ApiError } from "../shared/error";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;
@@ -36,7 +35,7 @@ interface QueryContext<Req, Res> {
 }
 
 
-interface InitializeMemberArgs {
+interface SaveMemberArgs {
     email: EmailAddress;
     profile: ProfilePicture;
     name: string;
@@ -44,24 +43,19 @@ interface InitializeMemberArgs {
 }
 
 
-export function useInitializeMember(): QueryContext<InitializeMemberArgs, void> {
-    const queryContext = usePostQuery<ApiInitializeMemberRequest, ApiInitializeMemberResult>(NEW_MEMBER_URI);
-
-    const submit = useCallback((req: InitializeMemberArgs) => {
-        queryContext.submit({
-            emailAddress: req.email,
-            profilePictureUrl: req.profile,
-            name: req.name,
-            signerAddressBase58: req.signerAddress.toBase58()
-        });
-
-    }, [queryContext.submit]);
-
-    return {
-        ...queryContext,
-        submit: submit,
-        data: undefined
-    };
+/**
+ * Adds or updates the member details on the backend, including
+ * creating their accounts if needed.
+ *
+ * @param args
+ */
+export async function saveMember(args: SaveMemberArgs): Promise<void> {
+    await post(SAVE_MEMBER_URI, {
+        emailAddress: args.email,
+        profilePictureUrl: args.profile,
+        name: args.name,
+        signerAddressBase58: args.signerAddress.toBase58()
+    });
 }
 
 
@@ -69,8 +63,6 @@ interface DepositArgs {
     email: EmailAddress;
     destination: AccountId;
     amount: number;
-    //TODO something about handling credit card info
-    //TODO probably the user's private key
 }
 
 
@@ -127,8 +119,6 @@ interface WithdrawArgs {
     email: EmailAddress;
     source: AccountId;
     amount: number;
-    //TODO probably the user's private key
-    //TODO something about destination bank account
 }
 
 
@@ -251,7 +241,7 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
     const [data, setData] = useState<Res | undefined>();
     const [error, setError] = useState<Error | undefined>();
 
-    const submit: (params: Req) => void = useCallback((params) => {
+    const submit: (params: Req) => void = useCallback(async (params) => {
         setLoading(true);
         let uri: string = baseUri;
         if (params !== undefined) {
@@ -264,11 +254,11 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => response.json())
-            .then(body => {
+            .then(async response => [await response.json(), response.status])
+            .then(([body, httpStatus]) => {
                 const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
                 if (apiResponse.error !== undefined) {
-                    setError(new Error(`API responded with error: ${apiResponse.error}`));
+                    setError(ApiError.fromApiResponse(apiResponse, httpStatus));
 
                 } else {
                     setData(apiResponse.result);
@@ -296,27 +286,9 @@ function usePostQuery<Req, Res>(baseUri: string): QueryContext<Req, Res> {
 
     const submit: (body: Req) => void = useCallback((body) => {
         setLoading(true);
-        let uri: string = baseUri;
         // https://reactnative.dev/docs/network
-        fetch(uri, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            // TODO more robust conversion of body
-            body: JSON.stringify(body),
-        })
-            .then(response => response.json())
-            .then(body => {
-                const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
-                if (apiResponse.error !== undefined) {
-                    setError(new Error(`API responded with error: ${apiResponse.error.message}`));
-
-                } else {
-                    setData(apiResponse.result);
-                }
-            })
+        post<Req, Res>(baseUri, body)
+            .then(setData)
             .catch(setError)
             .finally(() => setLoading(false));
     }, [baseUri]);
@@ -327,4 +299,31 @@ function usePostQuery<Req, Res>(baseUri: string): QueryContext<Req, Res> {
         data: data,
         submit: submit
     }
+}
+
+
+async function post<Req, Res>(baseUri: string, body: Req): Promise<Res> {
+    let uri: string = baseUri;
+    // https://reactnative.dev/docs/network
+    const response = await fetch(uri, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        // TODO more robust conversion of body
+        body: JSON.stringify(body),
+    });
+
+    const responseBody = await response.json();
+    const apiResponse: ApiResponse<Res> = responseBody as ApiResponse<Res>;
+    if (apiResponse.error !== undefined) {
+        throw new Error(`API responded with error: ${apiResponse.error.message}`);
+    }
+
+    if (apiResponse.result == null) {
+        throw new Error("API response is empty.");
+    }
+
+    return apiResponse.result;
 }

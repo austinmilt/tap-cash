@@ -32,6 +32,6 @@ const requestData = generateRandomRequest();
 
 const curlCommand = `curl -X POST -H "Content-Type: application/json" -d '${JSON.stringify(
     requestData,
-)}' http://localhost:8080/new-member`;
+)}' http://localhost:8080/save-member`;
 
 console.log(curlCommand);

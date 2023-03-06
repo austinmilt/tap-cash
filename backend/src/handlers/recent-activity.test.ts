@@ -1,9 +1,9 @@
 import { MockHttpResponse } from "../dev/testing/MockHttpResponse";
-import { ApiInitializeMemberRequest, ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
+import { ApiSaveMemberRequest, ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient, setTapCashClient } from "../helpers/singletons";
-import { handleNewMember } from "./new-member";
+import { handleSaveMember } from "./save-member";
 import { buildGetRequest, buildPostRequest } from "../dev/testing/utils";
 import { MockTapCashClient } from "../dev/testing/MockTapCashClient";
 import { Keypair, PublicKey } from "../helpers/solana";
@@ -16,8 +16,8 @@ describe('recent-activity handler', () => {
         const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
         setDatabaseClient(dbClient);
 
-        await handleNewMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+        await handleSaveMember(
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -35,7 +35,7 @@ describe('recent-activity handler', () => {
         );
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
-        expect(mockResponse.mockedNextUse()?.send?.body.result).toStrictEqual([]);
+        expect(mockResponse.mockedNextUse()?.json?.body.result).toStrictEqual([]);
     });
 
 
@@ -49,8 +49,8 @@ describe('recent-activity handler', () => {
 
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
-        await handleNewMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+        await handleSaveMember(
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -62,8 +62,8 @@ describe('recent-activity handler', () => {
         tapClient.setMemberBalance(userWallet.publicKey, 9999999);
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
-        await handleNewMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+        await handleSaveMember(
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "John Doe",
@@ -91,7 +91,7 @@ describe('recent-activity handler', () => {
         );
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
-        const result: ApiRecentActivityResult = mockResponse.mockedNextUse()?.send?.body.result;
+        const result: ApiRecentActivityResult = mockResponse.mockedNextUse()?.json?.body.result;
         expect(result.length).toStrictEqual(10);
         result.forEach(act => expect(act.send?.recipient.email).toStrictEqual("john.doe@gmail.com"));
         result.forEach(act => expect(act.send?.amount).toStrictEqual(1));

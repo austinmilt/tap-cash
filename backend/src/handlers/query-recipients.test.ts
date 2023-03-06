@@ -1,4 +1,3 @@
-import * as ff from "@google-cloud/functions-framework";
 import { handleQueryRecipients } from "./query-recipients";
 import { MockHttpResponse } from "../dev/testing/MockHttpResponse";
 import { ApiQueryRecipientsRequest, ApiQueryRecipientsResult } from "../shared/api";
@@ -23,7 +22,7 @@ describe('query-recipients handler', () => {
         );
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
-        expect(mockResponse.mockedNextUse()?.send?.body.result).toStrictEqual([]);
+        expect(mockResponse.mockedNextUse()?.json?.body.result).toStrictEqual([]);
     });
 
 
@@ -53,7 +52,7 @@ describe('query-recipients handler', () => {
         );
 
         expect(mockResponse.mockedNextUse()?.status?.code).toStrictEqual(200);
-        const result: ApiQueryRecipientsResult = mockResponse.mockedNextUse()?.send?.body.result;
+        const result: ApiQueryRecipientsResult = mockResponse.mockedNextUse()?.json?.body.result;
         expect(result.length).toStrictEqual(1);
         expect(result[0].emailAddress).toStrictEqual("mary.jane@gmail.com");
     });
