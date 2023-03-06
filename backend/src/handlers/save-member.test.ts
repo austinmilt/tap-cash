@@ -9,8 +9,8 @@ import { MockTapCashClient } from "../dev/testing/MockTapCashClient";
 import { PublicKey } from "../helpers/solana";
 
 
-describe('new-member handler', () => {
-    it('new-member - all good - new member added to (mocked) db', async () => {
+describe('save-member handler', () => {
+    it('save-member - all good - new member added to (mocked) db', async () => {
         const mockResponse: MockHttpResponse = new MockHttpResponse();
         const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
         setDatabaseClient(dbClient);
@@ -29,7 +29,7 @@ describe('new-member handler', () => {
     });
 
 
-    it('new-member - all good - new member account initialized on (mock) chain', async () => {
+    it('save-member - all good - new member account initialized on (mock) chain', async () => {
         const mockResponse: MockHttpResponse = new MockHttpResponse();
 
         const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
@@ -54,7 +54,7 @@ describe('new-member handler', () => {
         expect(tapClient.getMemberAccount(userId)?.balance).toStrictEqual(0);
     });
 
-    it('new-member - member already exists - updates member data', async () => {
+    it('save-member - member already exists - updates member data', async () => {
         const mockResponse: MockHttpResponse = new MockHttpResponse();
         const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
         setDatabaseClient(dbClient);

@@ -21,7 +21,7 @@ ff.http('index', (req: ff.Request, res: ff.Response) => {
   }
   if (req.path.startsWith("/query-recipients")) handleQueryRecipients(req, res);
   else if (req.path.startsWith("/deposit")) handleDeposit(req, res);
-  else if (req.path.startsWith("/new-member")) handleSaveMember(req, res);
+  else if (req.path.startsWith("/save-member")) handleSaveMember(req, res);
   else if (req.path.startsWith("/send")) handleSend(req, res);
   else if (req.path.startsWith("/withdraw")) handleWithdraw(req, res);
   else if (req.path.startsWith("/payment-methods")) handlePaymentMethods(req, res);
@@ -32,7 +32,7 @@ ff.http('index', (req: ff.Request, res: ff.Response) => {
 
 // deployed endpoints
 ff.http('deposit', handleDeposit);
-ff.http('new-member', handleSaveMember);
+ff.http('save-member', handleSaveMember);
 ff.http('send', handleSend);
 ff.http('withdraw', handleWithdraw);
 ff.http('payment-methods', handlePaymentMethods);
