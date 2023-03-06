@@ -56,6 +56,9 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
         setImageUrl(user.userInfo?.profileImage);
         setLoggedIn(userWallet !== undefined);
 
+        //TODO temporarily save user info to device so they dont have to log
+        // in every time
+
         const wrappedLogOut = async () => {
             if (userWallet === undefined) return;
             await logOut();

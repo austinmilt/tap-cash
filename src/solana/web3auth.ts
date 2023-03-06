@@ -19,6 +19,10 @@ interface LogInResult {
 const web3auth: Web3Auth = new Web3Auth(WebBrowser, {
     clientId: WEB3_AUTH_CLIENT_ID,
     network: WEB3_AUTH_NETWORK,
+    whiteLabel: {
+        name: "Tap",
+        defaultLanguage: "en",
+    }
 });
 
 export async function logIn(): Promise<LogInResult> {
