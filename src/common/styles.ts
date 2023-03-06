@@ -1,13 +1,6 @@
-import { Colors, Typography, Spacings } from 'react-native-ui-lib';
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { useMemo } from 'react';
 
-//TODO NEXT TIME ON DRAGONBALL Z
-// implement each step of the user flows like they put in
-// the figma (either Round 1 - Hi-fi or something new if he)
-// does it by then (check slack). Dont worry as much about
-// styling until all that is done
-//TODO
 
 export const COLORS = {
     primaryLight: "#3E5FE1",
