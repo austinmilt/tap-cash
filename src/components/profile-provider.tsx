@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from "react";
 import { SolanaWallet } from "../solana/solana";
 import { logIn as web3AuthLogIn } from "../solana/web3auth";
-import { intializeMember } from "../api/client";
+import { saveMember } from "../api/client";
 
 export interface UserProfileContextState {
     wallet: SolanaWallet | undefined;
@@ -43,28 +43,24 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
             throw new Error("User login did not provide required email address.");
         }
 
-        //TODO need to only try to register a member if they arent one
-        try {
-            await intializeMember({
-                email: user.userInfo.email,
-                name: user.userInfo.name,
-                profile: user.userInfo.profileImage,
-                signerAddress: userWallet.getPublicKey()
-            });
-        } catch (e) {
-            //TODO should throw these rather than swallow in case the
-            // user is already registered
-        }
+        await saveMember({
+            email: user.userInfo.email,
+            name: user.userInfo.name,
+            profile: user.userInfo.profileImage,
+            signerAddress: userWallet.getPublicKey()
+        });
 
         setWallet(userWallet);
         setName(user.userInfo?.name);
         setEmail(user.userInfo?.email);
         setImageUrl(user.userInfo?.profileImage);
         setLoggedIn(userWallet !== undefined);
-        setLogOut(async () => {
+
+        const wrappedLogOut = async () => {
             if (userWallet === undefined) return;
             await logOut();
-        });
+        }
+        setLogOut(() => wrappedLogOut);
 
     }, [loggedIn, setName, setEmail, setImageUrl, setWallet]);
 
