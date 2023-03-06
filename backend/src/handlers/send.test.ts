@@ -1,5 +1,5 @@
 import { MockHttpResponse } from "../dev/testing/MockHttpResponse";
-import { ApiInitializeMemberRequest, ApiSendRequest } from "../shared/api";
+import { ApiSaveMemberRequest, ApiSendRequest } from "../shared/api";
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient, setTapCashClient } from "../helpers/singletons";
@@ -22,7 +22,7 @@ describe('send handler', () => {
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -35,7 +35,7 @@ describe('send handler', () => {
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "John Doe",
@@ -70,7 +70,7 @@ describe('send handler', () => {
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -83,7 +83,7 @@ describe('send handler', () => {
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "John Doe",

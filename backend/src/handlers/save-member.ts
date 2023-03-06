@@ -2,7 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { EmailAddress, ProfilePicture, MemberId } from "../shared/member";
 import { ApiError, SolanaTxType } from "../shared/error";
 import { getPublicKeyParam, getRequiredParam, makePostHandler } from "./model";
-import { ApiInitializeMemberRequest, ApiInitializeMemberResult } from "../shared/api";
+import { ApiSaveMemberRequest, ApiSaveMemberResult } from "../shared/api";
 import { getDatabaseClient, getTapCashClient } from "../helpers/singletons";
 import { DatabaseClient } from "../db/client";
 
@@ -48,17 +48,17 @@ async function saveMember(request: SaveMemberArgs): Promise<SaveMemberResult> {
 
 
 
-function transformRequest(body: ApiInitializeMemberRequest): SaveMemberArgs {
+function transformRequest(body: ApiSaveMemberRequest): SaveMemberArgs {
     return {
-        email: getRequiredParam<ApiInitializeMemberRequest, EmailAddress>(body, "emailAddress"),
-        profile: getRequiredParam<ApiInitializeMemberRequest, ProfilePicture>(body, "profilePictureUrl"),
-        name: getRequiredParam<ApiInitializeMemberRequest, string>(body, "name"),
-        signerAddress: getPublicKeyParam<ApiInitializeMemberRequest>(body, "signerAddressBase58")
+        email: getRequiredParam<ApiSaveMemberRequest, EmailAddress>(body, "emailAddress"),
+        profile: getRequiredParam<ApiSaveMemberRequest, ProfilePicture>(body, "profilePictureUrl"),
+        name: getRequiredParam<ApiSaveMemberRequest, string>(body, "name"),
+        signerAddress: getPublicKeyParam<ApiSaveMemberRequest>(body, "signerAddressBase58")
     };
 }
 
 
-function transformResult(result: SaveMemberResult): ApiInitializeMemberResult {
+function transformResult(result: SaveMemberResult): ApiSaveMemberResult {
     // nothing to return
     return {};
 }

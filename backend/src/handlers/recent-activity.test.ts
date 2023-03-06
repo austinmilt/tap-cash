@@ -1,5 +1,5 @@
 import { MockHttpResponse } from "../dev/testing/MockHttpResponse";
-import { ApiInitializeMemberRequest, ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
+import { ApiSaveMemberRequest, ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient, setTapCashClient } from "../helpers/singletons";
@@ -17,7 +17,7 @@ describe('recent-activity handler', () => {
         setDatabaseClient(dbClient);
 
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -50,7 +50,7 @@ describe('recent-activity handler', () => {
         // initialize sender and recipient
         const userWallet: Keypair = Keypair.generate();
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -63,7 +63,7 @@ describe('recent-activity handler', () => {
 
         const recipientId: PublicKey = Keypair.generate().publicKey;
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "john.doe@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "John Doe",

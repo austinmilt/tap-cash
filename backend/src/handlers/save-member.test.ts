@@ -1,5 +1,5 @@
 import { MockHttpResponse, UsedMethod } from "../dev/testing/MockHttpResponse";
-import { ApiInitializeMemberRequest } from "../shared/api";
+import { ApiSaveMemberRequest } from "../shared/api";
 import { DatabaseClient } from "../db/client";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { setDatabaseClient, setTapCashClient } from "../helpers/singletons";
@@ -15,7 +15,7 @@ describe('new-member handler', () => {
         const dbClient: DatabaseClient = InMemoryDatabaseClient.make();
         setDatabaseClient(dbClient);
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -41,7 +41,7 @@ describe('new-member handler', () => {
         const userId: PublicKey = new PublicKey("rand4XuRxdtPS9gDYy6KDeGkEpi69xmkCy5oEmDYfoC");
 
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -60,7 +60,7 @@ describe('new-member handler', () => {
         setDatabaseClient(dbClient);
 
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Jane",
@@ -70,7 +70,7 @@ describe('new-member handler', () => {
         );
 
         await handleSaveMember(
-            buildPostRequest<ApiInitializeMemberRequest>({
+            buildPostRequest<ApiSaveMemberRequest>({
                 emailAddress: "mary.jane@gmail.com",
                 profilePictureUrl: "https://www.google.com",
                 name: "Mary Doe",
