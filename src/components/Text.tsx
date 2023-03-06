@@ -8,7 +8,7 @@ export function Text(props: TextProps): JSX.Element {
     const style = useTextStyle(props);
 
     return (
-        <RNUIText style={style} {...props}>
+        <RNUIText {...props} style={[style, props.style]}>
             {props.children}
         </RNUIText>
     )
