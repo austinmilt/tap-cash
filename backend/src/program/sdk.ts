@@ -62,7 +62,7 @@ export class MainTapCashClient implements TapCashClient {
             tx.feePayer = this.provider.wallet.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            await this.provider.sendAndConfirm(tx);
+            await this.provider.sendAndConfirm(tx,undefined, {commitment: "finalized"});
             return bankPda;
         }
         catch {
@@ -226,12 +226,12 @@ export class MainTapCashClient implements TapCashClient {
                     associatedTokenProgram,
                     systemProgram
                 })
-                .signers([args.fromMember])
+                .signers([this.sdk.payer, args.fromMember ])
                 .transaction();
             tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            const txId = await this.provider.sendAndConfirm(tx);
+            const txId = await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember]);
             return txId
         }
         catch (e) {
