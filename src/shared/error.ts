@@ -83,7 +83,7 @@ export class ApiError extends Error {
 
     public static memberAlreadyExists(member: EmailAddress): ApiError {
         return new ApiError(
-            ApiErrorCode.INVALID_ARGUMENT,
+            ApiErrorCode.MEMBER_ALREADY_EXISTS,
             `Member already exists: ${member}`,
             ApiResponseStatus.CLIENT_ERROR,
             400
