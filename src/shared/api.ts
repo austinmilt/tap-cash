@@ -22,7 +22,7 @@ export enum ApiResponseStatus {
 }
 
 
-export interface ApiInitializeMemberRequest {
+export interface ApiSaveMemberRequest {
     emailAddress: string;
     profilePictureUrl: string;
     name: string;
@@ -30,7 +30,7 @@ export interface ApiInitializeMemberRequest {
 }
 
 
-export interface ApiInitializeMemberResult { }
+export interface ApiSaveMemberResult { }
 
 export interface ApiDepositRequest {
     emailAddress: string;
