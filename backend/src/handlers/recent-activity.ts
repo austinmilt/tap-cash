@@ -26,7 +26,7 @@ export const handleRecentActivity = makeGetHandler(getRecentActivity, transformR
  * @returns { MemberActivity[] }
  */
 async function getRecentActivity(request: RecentActivityArgs): Promise<MemberActivity[]> {
-    const { usdcAddress } = await getDatabaseClient().getMemberAccountsByEmail(request.memberEmail);
+    const { usdcAddress } = await getDatabaseClient().getMemberPrivateProfile(request.memberEmail);
     const recentActivity: TransactionDetail[] = await getTapCashClient().getRecentActivity(usdcAddress, request.limit);
     // Filter only transactions that have a valid otherPartyAddress (to fetch member profiles)
     const addressesToQuery: PublicKey[] = recentActivity.flatMap(a => a.otherPartyAtaAddress !== undefined ? [a.otherPartyAtaAddress] : []);

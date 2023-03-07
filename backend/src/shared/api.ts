@@ -134,3 +134,17 @@ export interface ApiSavedPaymentMethodsRequest extends GetQueryParams {
 
 
 export interface ApiSavedPaymentMethodsResult extends Array<PaymentMethodSummary> { }
+
+
+export interface ApiAccountRequest extends GetQueryParams {
+    memberEmail: string;
+}
+
+
+export interface ApiAccountResult {
+    email: string;
+    name: string;
+    profile: string;
+    signerAddress: string;
+    usdcAddress: string;
+}

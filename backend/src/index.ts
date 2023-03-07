@@ -10,6 +10,7 @@ import { handleRecentActivity } from './handlers/recent-activity';
 import { handlePaymentMethods } from './handlers/payment-methods';
 import { SERVER_ENV } from './constants';
 import { ServerEnv } from './types/types';
+import { handleAccount } from './handlers/account';
 
 // local endpoints
 ff.http('index', (req: ff.Request, res: ff.Response) => {
@@ -26,6 +27,7 @@ ff.http('index', (req: ff.Request, res: ff.Response) => {
   else if (req.path.startsWith("/withdraw")) handleWithdraw(req, res);
   else if (req.path.startsWith("/payment-methods")) handlePaymentMethods(req, res);
   else if (req.path.startsWith("/recent-activity")) handleRecentActivity(req, res);
+  else if (req.path.startsWith("/account")) handleAccount(req, res);
   else res.sendStatus(400);
 });
 
@@ -38,3 +40,4 @@ ff.http('withdraw', handleWithdraw);
 ff.http('payment-methods', handlePaymentMethods);
 ff.http('query-recipients', handleQueryRecipients);
 ff.http('recent-activity', handleRecentActivity);
+ff.http('account', handleAccount);
