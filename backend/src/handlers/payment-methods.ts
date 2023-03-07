@@ -16,7 +16,7 @@ export const handlePaymentMethods = makeGetHandler(getPaymentMethods, transformR
 
 async function getPaymentMethods(request: PaymentMethodArgs): Promise<PaymentMethodSummary[]> {
     const circleCardIds: Set<CircleCardId> = await getDatabaseClient().getCircleCreditCards(request.memberEmail);
-    const cards: Card[] = await Promise.all(Array.from(circleCardIds).map(getCircleClient().fetchCard));
+    const cards: Card[] = await Promise.all(Array.from(circleCardIds).map(id => getCircleClient().fetchCard(id)));
     return cards.map(card => ({
         type: PaymentMethodType.CREDIT_CARD,
         creditCard: {
