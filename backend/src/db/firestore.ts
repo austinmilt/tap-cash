@@ -39,7 +39,7 @@ export class FirestoreClient implements DatabaseClient {
         usdcAddress: PublicKey
     ): Promise<string> {
         if (await this.isMember(profile.email)) {
-            throw new Error("Member already exists.");
+            ApiError.memberAlreadyExists(profile.email);
         }
         const memberDocData: MemberDocument = {
             email: profile.email,

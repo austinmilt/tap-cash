@@ -1,16 +1,15 @@
 import { useEffect } from "react";
-import { NavScreen, Navigation } from "../common/navigation";
+import { TopNavScreen, TopRouteParams } from "../common/navigation";
 import { Screen } from "../components/Screen";
 import { View } from "../components/View";
 import { AppLogo } from "../components/AppLogo";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-interface Props {
-    navigation: Navigation;
-}
+type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.SPLASH>;
 
 export function SplashScreen(props: Props): JSX.Element {
     useEffect(() => {
-        setTimeout(() => props.navigation.navigate(NavScreen.AUTHENTICATE), 1500);
+        setTimeout(() => props.navigation.navigate(TopNavScreen.AUTHENTICATE), 1500);
     }, []);
 
     return (

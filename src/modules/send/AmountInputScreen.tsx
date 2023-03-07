@@ -4,13 +4,12 @@ import { View } from "../../components/View";
 import { NumberInput } from "react-native-ui-lib";
 import { StyleSheet } from "react-native";
 import { COLORS } from "../../common/styles";
+import { SendNavScreen, SendStackRouteParams } from "../../common/navigation";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-interface Props {
-    onCompleted: (amount: number) => void;
-    onCancel: () => void;
-}
+type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.AMOUNT_INPUT>;
 
-export function AmountInput(props: Props): JSX.Element {
+export function AmountInputScreen(props: Props): JSX.Element {
     const [amount, setAmount] = useState<number>(0);
 
     // TODO validation and error messages
@@ -22,7 +21,10 @@ export function AmountInput(props: Props): JSX.Element {
                 {/* @ts-ignore this component's type validation is fucked up*/}
                 <NumberInput
                     onChangeNumber={(v: { number: number }) => setAmount(v.number)}
-                    onSubmitEditing={() => props.onCompleted(amount)}
+                    onSubmitEditing={() => props.navigation.navigate(
+                        SendNavScreen.CONFIRM,
+                        { ...props.route.params, amount: amount }
+                    )}
                     leadingText="$"
                     fractionDigits={2}
                     style={STYLES.text}
@@ -34,7 +36,7 @@ export function AmountInput(props: Props): JSX.Element {
             <Button
                 secondary
                 label="Cancel"
-                onPress={props.onCancel}
+                onPress={props.navigation.pop}
             />
         </View>
     )
