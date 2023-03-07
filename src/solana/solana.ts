@@ -35,12 +35,10 @@ export class SolanaWallet {
     }
 
 
-    public async getUsdcBalance(): Promise<number | null> {
-        const usdcTokenAccount: PublicKey = await anchor.utils.token.associatedAddress({
-            mint: USDC_MINT_ADDRESS,
-            owner: this.keypair.publicKey
-        });
-        const result: anchor.web3.RpcResponseAndContext<anchor.web3.TokenAmount> = await this.connection.getTokenAccountBalance(usdcTokenAccount);
+    public async getUsdcBalance(ataAddress: PublicKey): Promise<number | null> {
+        const result: anchor.web3.RpcResponseAndContext<anchor.web3.TokenAmount> = (
+            await this.connection.getTokenAccountBalance(ataAddress)
+        );
         if (result.value.uiAmount == null) {
             console.warn("User may not have a USDC account.");
         }

@@ -1,7 +1,8 @@
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
-import { SolanaWallet } from "../solana/solana";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { PublicKey, SolanaWallet } from "../solana/solana";
 import { logIn as web3AuthLogIn } from "../solana/web3auth";
-import { saveMember } from "../api/client";
+import { getMember, saveMember, SaveMemberArgs } from "../api/client";
+import { MemberPrivateProfile } from "../shared/member";
 
 export interface UserProfileContextState {
     wallet: SolanaWallet | undefined;
@@ -34,6 +35,25 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
     const [loggedIn, setLoggedIn] = useState<UserProfileContextState["loggedIn"]>(false);
     const [usdcBalance, setUsdcBalance] = useState<UserProfileContextState["usdcBalance"]>(null);
     const [logOut, setLogOut] = useState<UserProfileContextState["logOut"]>(async () => { });
+    const [usdcAddress, setUsdcAddress] = useState<PublicKey | undefined>();
+
+    const getAndUpdateAccountIfNeeded = useCallback(async (profile: SaveMemberArgs) => {
+        const savedProfile: MemberPrivateProfile = await getMember({ member: profile.email });
+        setEmail(profile.email);
+        setName(profile.name);
+        setImageUrl(profile.profile);
+
+        if (
+            (savedProfile.email !== profile.email) ||
+            (savedProfile.name !== profile.name) ||
+            (savedProfile.profile !== profile.profile) ||
+            (savedProfile.signerAddress.toBase58() !== profile.signerAddress.toBase58())
+        ) {
+            await saveMember(profile);
+            const updatedProfile: MemberPrivateProfile = await getMember({ member: profile.email });
+            setUsdcAddress(updatedProfile.usdcAddress);
+        }
+    }, [setUsdcAddress, setEmail, setName, setImageUrl]);
 
     const logIn: UserProfileContextState["logIn"] = useCallback(async () => {
         if (loggedIn) return;
@@ -43,7 +63,7 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
             throw new Error("User login did not provide required email address.");
         }
 
-        await saveMember({
+        await getAndUpdateAccountIfNeeded({
             email: user.userInfo.email,
             name: user.userInfo.name,
             profile: user.userInfo.profileImage,
@@ -51,9 +71,6 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
         });
 
         setWallet(userWallet);
-        setName(user.userInfo?.name);
-        setEmail(user.userInfo?.email);
-        setImageUrl(user.userInfo?.profileImage);
         setLoggedIn(userWallet !== undefined);
 
         //TODO temporarily save user info to device so they dont have to log
@@ -65,14 +82,22 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
         }
         setLogOut(() => wrappedLogOut);
 
-    }, [loggedIn, setName, setEmail, setImageUrl, setWallet]);
+    }, [loggedIn, setWallet, getAndUpdateAccountIfNeeded, setLoggedIn, setLogOut]);
 
 
     const syncUsdcBalance: UserProfileContextState["syncUsdcBalance"] = useCallback(async () => {
-        if (wallet !== undefined) {
-            setUsdcBalance(await wallet.getUsdcBalance());
+        if ((wallet !== undefined) && (usdcAddress !== undefined)) {
+            setUsdcBalance(await wallet.getUsdcBalance(usdcAddress));
         }
-    }, [wallet]);
+    }, [wallet, usdcAddress, setUsdcBalance]);
+
+
+    useEffect(() => {
+        if (loggedIn) {
+            syncUsdcBalance();
+        }
+    }, [loggedIn]);
+
 
     return (
         <UserProfileContext.Provider value={{

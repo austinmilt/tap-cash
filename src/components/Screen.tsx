@@ -7,6 +7,7 @@ export function Screen(props: ViewProps & ViewStyleProps): JSX.Element {
     return (
         <View
             useSafeArea
+            flexG
             {...props}
         >
             {props.children}

@@ -7,6 +7,7 @@ import { Text } from "../components/Text";
 import { View } from "../components/View";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { LoaderScreen } from "react-native-ui-lib";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.AUTHENTICATE>;
 
@@ -27,32 +28,35 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
 
     return (
         <Screen>
-            <View flex center>
-                <View center height="80%">
-                    <AppLogo primary />
+            {loading && <LoaderScreen message="Loading" />}
+            {!loading && (
+                <View flex center>
+                    <View center height="80%">
+                        <AppLogo primary />
+                    </View>
+                    <View flexS centerH bottom gap-md padding-lg>
+                        {loggedIn ? (
+                            <Button
+                                label="G Continue with Google"
+                                primary
+                                onPress={afterLogIn}
+                                disabled={loading}
+                            />
+                        ) : (
+                            <Button
+                                label="G Continue with Google"
+                                primary
+                                onPress={logInSync}
+                                disabled={loading}
+                            />
+                        )}
+                        <Text text-sm>
+                            By continuing, you accept our
+                            Terms of use and Privacy Policy
+                        </Text>
+                    </View>
                 </View>
-                <View flexS centerH bottom gap-md padding-lg>
-                    {loggedIn ? (
-                        <Button
-                            label="G Continue with Google"
-                            primary
-                            onPress={afterLogIn}
-                            disabled={loading}
-                        />
-                    ) : (
-                        <Button
-                            label="G Continue with Google"
-                            primary
-                            onPress={logInSync}
-                            disabled={loading}
-                        />
-                    )}
-                    <Text sm>
-                        By continuing, you accept our
-                        Terms of use and Privacy Policy
-                    </Text>
-                </View>
-            </View>
+            )}
         </Screen>
     )
 }

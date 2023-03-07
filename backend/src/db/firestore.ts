@@ -1,6 +1,6 @@
 import { DatabaseClient } from "./client";
 import { FIRESTORE_MEMBERS_COLLECTION } from "../constants";
-import { MemberPublicProfile, EmailAddress, ProfilePicture, MemberId } from "../shared/member";
+import { MemberPublicProfile, EmailAddress, ProfilePicture, MemberId, MemberPrivateProfile } from "../shared/member";
 import { initializeApp } from "firebase-admin/app";
 import {
     CollectionReference,
@@ -113,16 +113,13 @@ export class FirestoreClient implements DatabaseClient {
     }
 
 
-    public async getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts> {
+    public async getMemberPrivateProfile(email: EmailAddress): Promise<MemberPrivateProfile> {
         const member: MemberDocument | null = await this.getMemberDocByEmail(email);
         if (member === null) {
             throw ApiError.noSuchMember(email);
         }
 
-        return {
-            signerAddress: member.signerAddress,
-            usdcAddress: member.usdcAddress
-        }
+        return member;
     }
 
 

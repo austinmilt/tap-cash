@@ -14,6 +14,8 @@ export const COLORS = {
     grayLight: "#FFFFFF",
     grayMedium: "#808080",
     grayDark: "#000000",
+
+    error: "#E53E3E"
 }
 
 const CORE_TEXT_STYLES = StyleSheet.create({
@@ -44,19 +46,22 @@ const CORE_TEXT_STYLES = StyleSheet.create({
     "gray-dark": {
         color: COLORS.grayDark
     },
-    "sm": {
+    "error": {
+        color: COLORS.error
+    },
+    "text-sm": {
         fontSize: 12,
     },
-    "md": {
+    "text-md": {
         fontSize: 18,
     },
-    "lg": {
+    "text-lg": {
         fontSize: 24,
     },
-    "xl": {
+    "text-xl": {
         fontSize: 36,
     },
-    "xxl": {
+    "text-xxl": {
         fontSize: 48,
     },
     "light-weight": {
@@ -74,6 +79,10 @@ const CORE_TEXT_STYLES = StyleSheet.create({
     "extra-bold": {
         fontFamily: "Jost-ExtraBold"
     },
+    "center": {
+        justifyContent: "center",
+        alignItems: "center"
+    }
 });
 
 const CORE_VIEW_STYLES = StyleSheet.create({
@@ -127,6 +136,21 @@ const CORE_VIEW_STYLES = StyleSheet.create({
     "gray-dark": {
         backgroundColor: COLORS.grayDark
     },
+    "bordered": {
+        borderColor: COLORS.grayMedium,
+        borderRadius: 6,
+        borderWidth: 1
+    },
+    "bordered-focused": {
+        borderColor: COLORS.primaryMedium,
+        borderRadius: 6,
+        borderWidth: 2
+    },
+    "bordered-error": {
+        borderColor: COLORS.error,
+        borderRadius: 6,
+        borderWidth: 2
+    }
 });
 
 

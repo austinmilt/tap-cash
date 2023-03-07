@@ -1,7 +1,7 @@
 import { DatabaseClient } from "../../db/client";
 import { PublicKey } from "../../helpers/solana";
 import { ApiError } from "../../shared/error";
-import { EmailAddress, MemberId, MemberPublicProfile, ProfilePicture } from "../../shared/member";
+import { EmailAddress, MemberId, MemberPrivateProfile, MemberPublicProfile, ProfilePicture } from "../../shared/member";
 import { CircleCardId, MemberAccounts } from "../../types/types";
 import { v4 as uuid } from "uuid";
 
@@ -86,12 +86,8 @@ export class InMemoryDatabaseClient implements DatabaseClient {
         return result;
     }
 
-    public async getMemberAccountsByEmail(email: string): Promise<MemberAccounts> {
-        const member: Member = this.getRequiredMember(email);
-        return {
-            signerAddress: member.signerAddress,
-            usdcAddress: member.usdcAddress
-        };
+    public async getMemberPrivateProfile(email: string): Promise<MemberPrivateProfile> {
+        return this.getRequiredMember(email);
     }
 
     public async getCircleCreditCards(email: string): Promise<Set<string>> {

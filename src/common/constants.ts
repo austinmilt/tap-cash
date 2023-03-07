@@ -9,6 +9,7 @@ export const DEPOSIT_URI: string = parseEnv("DEPOSIT_URI", Config.DEPOSIT_URI);
 export const SEND_URI: string = parseEnv("SEND_URI", Config.SEND_URI);
 export const WITHDRAW_URI: string = parseEnv("WITHDRAW_URI", Config.WITHDRAW_URI);
 export const QUERY_RECIPIENTS_URI: string = parseEnv("QUERY_RECIPIENTS_URI", Config.QUERY_RECIPIENTS_URI);
+export const MEMBER_ACCOUNT_URI: string = parseEnv("MEMBER_ACCOUNT_URI", Config.MEMBER_ACCOUNT_URI);
 export const RECENT_ACTIVITY_URI: string = parseEnv("RECENT_ACTIVITY_URI", Config.RECENT_ACTIVITY_URI);
 export const SAVED_PAYMENT_METHODS_URI: string = parseEnv("SAVED_PAYMENT_METHODS_URI", Config.SAVED_PAYMENT_METHODS_URI);
 export const USDC_MINT_ADDRESS: PublicKey = parseEnv(

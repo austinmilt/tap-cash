@@ -1,5 +1,5 @@
 import { ButtonProps, Button as RNUIButton } from "react-native-ui-lib"
-import { COLORS } from "../common/styles";
+import { COLORS, useTextStyle } from "../common/styles";
 import { useMemo } from "react";
 
 interface Props {
@@ -11,11 +11,16 @@ interface Props {
 }
 
 export function Button(props: Props & ButtonProps): JSX.Element {
+    const labelStyle = useTextStyle({
+        "text-md": true,
+        "gray-light": true
+    });
+
     return (
         <RNUIButton
             color={props.primary ? COLORS.grayLight : COLORS.primaryMedium}
             backgroundColor={props.primary ? COLORS.primaryMedium : COLORS.grayLight}
-            labelStyle={{ fontSize: 18 }}
+            labelStyle={labelStyle}
             borderRadius={5}
             size="large"
             {...props}

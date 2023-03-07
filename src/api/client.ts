@@ -6,7 +6,8 @@ import {
     RECENT_ACTIVITY_URI,
     SAVED_PAYMENT_METHODS_URI,
     SEND_URI,
-    WITHDRAW_URI
+    WITHDRAW_URI,
+    MEMBER_ACCOUNT_URI
 } from "../common/constants";
 import * as anchor from "@project-serum/anchor";
 import { MemberActivity } from "../shared/activity";
@@ -21,11 +22,14 @@ import {
     ApiDepositResult,
     ApiSendResult,
     ApiWithdrawResult,
-    ApiQueryRecipientsResult
+    ApiQueryRecipientsResult,
+    ApiAccountRequest,
+    ApiAccountResult
 } from "../shared/api";
-import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile } from "../shared/member";
+import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile, MemberPrivateProfile } from "../shared/member";
 import { PaymentMethodSummary } from "../shared/payment";
 import { ApiError } from "../shared/error";
+import { PublicKey } from "../solana/solana";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;
@@ -35,7 +39,7 @@ interface QueryContext<Req, Res> {
 }
 
 
-interface SaveMemberArgs {
+export interface SaveMemberArgs {
     email: EmailAddress;
     profile: ProfilePicture;
     name: string;
@@ -56,6 +60,29 @@ export async function saveMember(args: SaveMemberArgs): Promise<void> {
         name: args.name,
         signerAddressBase58: args.signerAddress.toBase58()
     });
+}
+
+
+interface GetMemberArgs {
+    member: EmailAddress;
+}
+
+
+/**
+ * Gets the saved member details from the backend
+ *
+ * @param args
+ */
+export async function getMember(args: GetMemberArgs): Promise<MemberPrivateProfile> {
+    //TODO error handling
+    const result = await get<ApiAccountRequest, ApiAccountResult>(MEMBER_ACCOUNT_URI, { memberEmail: args.member });
+    return {
+        email: result.email,
+        profile: result.profile,
+        name: result.name,
+        usdcAddress: new PublicKey(result.usdcAddress),
+        signerAddress: new PublicKey(result.signerAddress)
+    };
 }
 
 
@@ -175,7 +202,6 @@ export function useQueryRecipients(): QueryContext<QueryRecipientsArgs, MemberPu
 }
 
 
-
 interface RecentActivityArgs {
     memberEmail: EmailAddress;
     limit: number;
@@ -242,30 +268,9 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
 
     const submit: (params: Req) => void = useCallback(async (params) => {
         setLoading(true);
-        let uri: string = baseUri;
-        if (params !== undefined) {
-            uri += `?${new URLSearchParams(params)}`
-        }
-        fetch(uri, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(async response => [await response.json(), response.status])
-            .then(([body, httpStatus]) => {
-                const apiResponse: ApiResponse<Res> = body as ApiResponse<Res>;
-                if (apiResponse.error !== undefined) {
-                    setError(ApiError.fromApiResponse(apiResponse, httpStatus));
-
-                } else {
-                    setData(apiResponse.result);
-                }
-            })
-            .catch(e => {
-                setError(e);
-            })
+        get<Req, Res>(baseUri, params)
+            .then(setData)
+            .catch(setError)
             .finally(() => setLoading(false));
     }, [baseUri]);
 
@@ -275,6 +280,34 @@ function useGetQuery<Req extends GetQueryParams | void, Res>(baseUri: string): Q
         data: data,
         submit: submit
     }
+}
+
+
+async function get<Req extends GetQueryParams | void, Res>(baseUri: string, params: Req): Promise<Res> {
+    let uri: string = baseUri;
+    if (params !== undefined) {
+        uri += `?${new URLSearchParams(params)}`
+    }
+    // https://reactnative.dev/docs/network
+    const response = await fetch(uri, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+    })
+
+    const responseBody = await response.json();
+    const apiResponse: ApiResponse<Res> = responseBody as ApiResponse<Res>;
+    if (apiResponse.error !== undefined) {
+        throw new Error(`API responded with error: ${apiResponse.error.message}`);
+    }
+
+    if (apiResponse.result == null) {
+        throw new Error("API response is empty.");
+    }
+
+    return apiResponse.result;
 }
 
 

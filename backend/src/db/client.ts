@@ -1,6 +1,6 @@
 import { PublicKey } from "../helpers/solana";
-import { EmailAddress, MemberId, MemberPublicProfile } from "../shared/member";
-import { CircleCardId, MemberAccounts } from "../types/types";
+import { EmailAddress, MemberId, MemberPrivateProfile, MemberPublicProfile } from "../shared/member";
+import { CircleCardId } from "../types/types";
 
 export interface DatabaseClient {
 
@@ -39,7 +39,7 @@ export interface DatabaseClient {
 
     getMembersByUsdcAddress(accounts: PublicKey[]): Promise<Map<string, MemberPublicProfile>>;
 
-    getMemberAccountsByEmail(email: EmailAddress): Promise<MemberAccounts>;
+    getMemberPrivateProfile(email: EmailAddress): Promise<MemberPrivateProfile>;
 
     getCircleCreditCards(email: EmailAddress): Promise<Set<CircleCardId>>;
 }

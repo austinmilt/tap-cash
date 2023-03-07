@@ -1,11 +1,5 @@
 
-//TODO tests
-
 import { Card, CardNetworkEnum } from "@circle-fin/circle-sdk";
-import { CircleEmulator } from "../circle/circle-emulator";
-import { CircleClient } from "../circle/client";
-import { DatabaseClient } from "../db/client";
-import { FirestoreClient } from "../db/firestore";
 import { EmailAddress } from "../shared/member";
 import { CreditCardCarrier, PaymentMethodSummary, PaymentMethodType } from "../shared/payment";
 import { CircleCardId } from "../types/types";
@@ -17,6 +11,7 @@ interface PaymentMethodArgs {
     memberEmail: EmailAddress;
 }
 
+//TODO this needs to have authentication
 export const handlePaymentMethods = makeGetHandler(getPaymentMethods, transformRequest, transformResult);
 
 async function getPaymentMethods(request: PaymentMethodArgs): Promise<PaymentMethodSummary[]> {
