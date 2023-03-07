@@ -88,7 +88,6 @@ export function useDeposit(): QueryContext<DepositArgs, void> {
 interface SendArgs {
     sender: EmailAddress;
     recipeient: EmailAddress;
-    senderAccount: AccountId;
     amount: number;
     privateKey: anchor.web3.Keypair;
 }

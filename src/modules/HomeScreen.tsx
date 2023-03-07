@@ -1,16 +1,15 @@
-import { NavScreen, Navigation } from "../common/navigation";
+import { TopNavScreen, TopRouteParams } from "../common/navigation";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
 import { View } from "../components/View";
 import { Text } from "../components/Text";
 import { useUserProfile } from "../components/profile-provider";
 import { Image } from "react-native-ui-lib";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-interface Props {
-    navigation: Navigation;
-}
+type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
-export function Home({ navigation }: Props): JSX.Element {
+export function HomeScreen({ navigation }: Props): JSX.Element {
     const { name, imageUrl, usdcBalance } = useUserProfile();
 
     return (
@@ -30,12 +29,12 @@ export function Home({ navigation }: Props): JSX.Element {
                 <Button
                     primary
                     label="Profile"
-                    onPress={() => navigation.navigate(NavScreen.PROFILE)}
+                    onPress={() => navigation.navigate(TopNavScreen.PROFILE)}
                 />
                 <Button
                     primary
                     label="Send"
-                    onPress={() => navigation.navigate(NavScreen.SEND)}
+                    onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
         </Screen>

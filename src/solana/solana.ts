@@ -46,4 +46,9 @@ export class SolanaWallet {
         }
         return result.value.uiAmount;
     }
+
+
+    public getKeypair(): Keypair {
+        return this.keypair;
+    }
 }

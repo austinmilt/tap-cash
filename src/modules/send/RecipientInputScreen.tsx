@@ -1,5 +1,5 @@
 import { FlatList, Pressable } from "react-native";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Button } from "../../components/Button";
 import { StyleSheet } from "react-native";
 import { TextInput } from "../../components/TextInput";
@@ -9,14 +9,16 @@ import { useQueryRecipients } from "../../api/client";
 import React from "react";
 import { useStateWithDebounce } from "../../common/debounce";
 import { EmailAddress, MemberPublicProfile } from "../../shared/member";
+import { SendNavScreen, SendStackRouteParams } from "../../common/navigation";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useUserProfile } from "../../components/profile-provider";
 
 
-interface Props {
-    onCompleted: (recipient: string) => void;
-    onCancel: () => void;
-}
+type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.RECIPIENT_INPUT>;
 
-export function RecipientInput(props: Props): JSX.Element {
+
+export function RecipientInputScreen(props: Props): JSX.Element {
+    const userProfileContext = useUserProfile();
     const recipientQueryContext = useQueryRecipients();
     const [recipient, setRecipient] = useStateWithDebounce<EmailAddress | undefined>(query => {
         if (query !== undefined) {
@@ -24,15 +26,20 @@ export function RecipientInput(props: Props): JSX.Element {
         }
     }, 250);
 
-    //TODO validation, and error messages
+    const allowedRecipients: MemberPublicProfile[] = useMemo(() => {
+        const members = recipientQueryContext.data;
+        if (members == null) return [];
+        const sender: EmailAddress | undefined = userProfileContext.email?.toLowerCase();
+        return members.filter(m => m.email !== sender);
+    }, [recipientQueryContext.data, userProfileContext.email]);
 
     const onSubmit = useCallback(() => {
-        if (recipient === undefined) {
-            //TODO improve with error message instead of throw
-            throw new Error("Must fill out recipient.");
+        if ((recipient === undefined) || (allowedRecipients.find(m => m.email === recipient) == null)) {
+            //TODO replace with correct UI
+            throw new Error(`${recipient} is not a member of Tap Cash`);
         }
-        props.onCompleted(recipient);
-    }, [props.onCompleted, recipient]);
+        props.navigation.navigate(SendNavScreen.AMOUNT_INPUT, { recipient: recipient });
+    }, [recipient, allowedRecipients, props.navigation]);
 
     return (
         <View center flexG>
@@ -61,7 +68,7 @@ export function RecipientInput(props: Props): JSX.Element {
             <View flex flexS row centerH bottom spread paddingH-30 width="80%" gap-sm>
                 <Button
                     label="Cancel"
-                    onPress={props.onCancel}
+                    onPress={props.navigation.pop}
                     secondary
                 />
                 <Button
