@@ -29,13 +29,18 @@ export function RecipientInputScreen(props: Props): JSX.Element {
     const allowedRecipients: MemberPublicProfile[] = useMemo(() => {
         const members = recipientQueryContext.data;
         if (members == null) return [];
-        const sender: EmailAddress | undefined = userProfileContext.email?.toLowerCase();
-        return members.filter(m => m.email !== sender);
+        return members.filter(m => m.email !== userProfileContext.email);
     }, [recipientQueryContext.data, userProfileContext.email]);
 
     const onSubmit = useCallback(() => {
-        if ((recipient === undefined) || (allowedRecipients.find(m => m.email === recipient) == null)) {
-            //TODO replace with correct UI
+        //TODO replace with correct UI
+        if (recipient === undefined) {
+            throw new Error("Must provide a recipient.");
+        }
+        if (userProfileContext.email === recipient) {
+            throw new Error("Cannot send to yourself.");
+        }
+        if ((allowedRecipients.find(m => m.email === recipient) == null)) {
             throw new Error(`${recipient} is not a member of Tap Cash`);
         }
         props.navigation.navigate(SendNavScreen.AMOUNT_INPUT, { recipient: recipient });
