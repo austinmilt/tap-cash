@@ -70,6 +70,12 @@ export const USE_MOCK_CIRCLE: boolean = parseEnv(
     SERVER_ENV === ServerEnv.TEST,
     v => stringToBoolean(v) && [ServerEnv.TEST, ServerEnv.LOCAL].includes(SERVER_ENV)
 );
+export const USE_DUMMY_CARD: boolean = parseEnv(
+    "USE_DUMMY_CARD",
+    process.env.USE_DUMMY_CARD,
+    false,
+    stringToBoolean
+)
 
 export function parseEnv<T>(
     name: string,

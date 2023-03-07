@@ -54,8 +54,6 @@ export function setTapCashClient(newClient: TapCashClient) {
 }
 
 
-
-
 let circleClient: CircleClient;
 export function getCircleClient(): CircleClient {
     if (circleClient === undefined) {
