@@ -7,7 +7,7 @@ import { Text } from "../components/Text";
 import { View } from "../components/View";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { LoaderScreen } from "react-native-ui-lib";
+import { Loading } from "../components/Loading";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.AUTHENTICATE>;
 
@@ -28,7 +28,7 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
 
     return (
         <Screen>
-            {loading && <LoaderScreen message="Loading" />}
+            {loading && <Loading />}
             {!loading && (
                 <View flex center>
                     <View center height="80%">
