@@ -47,7 +47,7 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
                             disabled={loading}
                         />
                     )}
-                    <Text sm>
+                    <Text text-sm>
                         By continuing, you accept our
                         Terms of use and Privacy Policy
                     </Text>

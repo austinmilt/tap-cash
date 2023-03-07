@@ -38,18 +38,18 @@ export function SendingScreen(props: Props): JSX.Element {
             {
                 sendingContext.loading ? (
                     <View flex center gap-md>
-                        <Text lg>Sending...</Text>
-                        <Text xl primary-light>${amount}</Text>
-                        <Text lg>to</Text>
-                        <Text xl primary-light>{recipient}</Text>
+                        <Text text-lg>Sending...</Text>
+                        <Text text-xl primary-light>${amount}</Text>
+                        <Text text-lg>to</Text>
+                        <Text text-xl primary-light>{recipient}</Text>
                     </View>
                 ) : (
                     <View flex center>
                         <View flex center gap-md>
-                            <Text lg>Sent ✅</Text>
-                            <Text xl primary-light>${amount}</Text>
-                            <Text lg>to</Text>
-                            <Text xl primary-light>{recipient}</Text>
+                            <Text text-lg>Sent ✅</Text>
+                            <Text text-xl primary-light>${amount}</Text>
+                            <Text text-lg>to</Text>
+                            <Text text-xl primary-light>{recipient}</Text>
                         </View>
                         <View flex bottom>
                             <Button
