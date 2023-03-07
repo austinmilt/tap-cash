@@ -1,4 +1,4 @@
-import { FlatList, Pressable } from "react-native";
+import { Pressable } from "react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 import { TextInput } from "../../components/TextInput";
@@ -11,8 +11,9 @@ import { EmailAddress, MemberPublicProfile } from "../../shared/member";
 import { SendNavScreen, SendStackRouteParams } from "../../common/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useUserProfile } from "../../components/profile-provider";
-import { COLORS, ViewStyleProps } from "../../common/styles";
+import { ViewStyleProps } from "../../common/styles";
 import { Avatar, GridList } from "react-native-ui-lib";
+import { Screen } from "../../components/Screen";
 
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.RECIPIENT_INPUT>;
@@ -74,7 +75,7 @@ export function RecipientInputScreen(props: Props): JSX.Element {
 
     //TODO add (x) button to clear input
     return (
-        <View center flexG>
+        <Screen center flexG>
             <View flex flexG padding-30 width="100%" gap-lg>
                 <TextInput
                     onChangeText={setRecipient}
@@ -114,7 +115,7 @@ export function RecipientInputScreen(props: Props): JSX.Element {
                     </View>
                 )}
             </View>
-        </View>
+        </Screen>
     )
 }
 

@@ -46,6 +46,9 @@ const CORE_TEXT_STYLES = StyleSheet.create({
     "gray-dark": {
         color: COLORS.grayDark
     },
+    "error": {
+        color: COLORS.error
+    },
     "text-sm": {
         fontSize: 12,
     },

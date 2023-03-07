@@ -9,6 +9,10 @@ import { SplashScreen } from './src/modules/SplashScreen';
 import { UserProfileProvider } from './src/components/profile-provider';
 import { SendStack } from './src/modules/send/SendStack';
 
+// for using solana utils in the app
+// see https://github.com/uuidjs/uuid#getrandomvalues-not-supported
+import 'react-native-get-random-values';
+
 const Stack = createNativeStackNavigator<TopRouteParams>();
 
 export default function App(): JSX.Element {

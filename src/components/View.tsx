@@ -4,9 +4,13 @@ import { ViewStyleProps, useViewStyle } from "../common/styles";
 export function View(props: ViewProps & ViewStyleProps): JSX.Element {
     const style = useViewStyle(props);
 
+    if (!props.flex && !props.flexG && !props.flexS) {
+        props.flexG = true;
+    }
+
     return (
-        <RNUIView flexG style={style} {...props}>
+        <RNUIView {...props} style={[style, props.style]} >
             {props.children}
-        </RNUIView>
+        </RNUIView >
     );
 }
