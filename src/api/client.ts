@@ -24,11 +24,12 @@ import {
     ApiWithdrawResult,
     ApiQueryRecipientsResult,
     ApiAccountRequest,
-    ApiAccountResult
+    ApiAccountResult,
+    ApiSavedPaymentMethodsRequest,
+    ApiSavedPaymentMethodsResult
 } from "../shared/api";
 import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile, MemberPrivateProfile } from "../shared/member";
 import { PaymentMethodSummary } from "../shared/payment";
-import { ApiError } from "../shared/error";
 import { PublicKey } from "../solana/solana";
 
 interface QueryContext<Req, Res> {
@@ -238,19 +239,18 @@ interface SavedPaymentMethodsArgs {
 
 
 export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, PaymentMethodSummary[]> {
-    const queryContext = useGetQuery<ApiRecentActivityRequest, PaymentMethodSummary[]>(SAVED_PAYMENT_METHODS_URI);
+    const queryContext = useGetQuery<ApiSavedPaymentMethodsRequest, ApiSavedPaymentMethodsResult>(SAVED_PAYMENT_METHODS_URI);
 
-    const submit = useCallback(({ memberEmail, limit }: RecentActivityArgs) => {
+    const submit = useCallback(({ memberEmail }: SavedPaymentMethodsArgs) => {
         queryContext.submit({
-            memberEmail: memberEmail,
-            limit: limit.toString()
+            memberEmail: memberEmail
         });
     }, [queryContext.submit]);
 
 
     const data: PaymentMethodSummary[] | undefined = useMemo(() => {
         if (queryContext.data === undefined) return undefined;
-        return queryContext.data.map(v => v as PaymentMethodSummary);
+        return queryContext.data;
     }, [queryContext.data]);
 
     return {

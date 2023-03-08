@@ -26,11 +26,16 @@ export function AmountInputScreen(props: Props): JSX.Element {
 
     const onSubmit = useCallback(() => {
         //TODO other validation?
+        const depositAmount: number = Math.max(0, amount - accountBalance);
         props.navigation.navigate(
             SendNavScreen.CONFIRM,
-            { ...props.route.params, amount: amount }
+            {
+                ...props.route.params,
+                amount: amount,
+                depositAmount: depositAmount
+            }
         );
-    }, [props.navigation.navigate, amount]);
+    }, [props.navigation.navigate, amount, accountBalance]);
 
     const insufficientBalance: boolean = accountBalance < amount;
     const textColorStyle: TextStyleProps = insufficientBalance ? {
@@ -41,7 +46,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
     const buttonLabel: string = insufficientBalance ? "Deposit funds & Send" : "Send";
 
     return (
-        <Screen spread flexG padding-md>
+        <Screen spread padding-md>
             <View gap-md top left row flexS>
                 <Text gray-medium text-md>To</Text>
                 <Text gray-medium text-md bold>{props.route.params.recipient}</Text>
@@ -50,10 +55,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
                 {/* @ts-ignore this component's type validation is fucked up*/}
                 <NumberInput
                     onChangeNumber={(v: { number: number }) => setAmount(v.number)}
-                    onSubmitEditing={() => props.navigation.navigate(
-                        SendNavScreen.CONFIRM,
-                        { ...props.route.params, amount: amount }
-                    )}
+                    onSubmitEditing={onSubmit}
                     leadingText="$"
                     fractionDigits={2}
                     style={STYLES.text}

@@ -29,8 +29,8 @@ export enum SendNavScreen {
 export type SendStackRouteParams = {
     [SendNavScreen.RECIPIENT_INPUT]: undefined;
     [SendNavScreen.AMOUNT_INPUT]: { recipient: EmailAddress };
-    [SendNavScreen.CONFIRM]: { recipient: EmailAddress, amount: number };
-    [SendNavScreen.SENDING]: { recipient: EmailAddress, amount: number };
+    [SendNavScreen.CONFIRM]: { recipient: EmailAddress, amount: number, depositAmount: number };
+    [SendNavScreen.SENDING]: { recipient: EmailAddress, amount: number, depositAmount: number };
 }
 
 // TODO find the type in react-navigation stuff
