@@ -93,9 +93,7 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
         setUsdcAddress(memberInfo.usdcAddress);
         console.log('member info', memberInfo);
         if ((wallet !== undefined) && (usdcAddress !== undefined)) {
-            const balance = await wallet.getUsdcBalance(usdcAddress);
-            console.log(balance);
-            setUsdcBalance(balance);
+            setUsdcBalance(await wallet.getUsdcBalance(usdcAddress));
         }
     }, [wallet, usdcAddress, setUsdcBalance]);
 

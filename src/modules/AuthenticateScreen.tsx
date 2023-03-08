@@ -15,8 +15,8 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     const [loading, setLoading] = useState<boolean>(false);
     const { logIn, loggedIn } = useUserProfile();
 
-    const afterLogIn = useCallback(() =>navigation.navigate(TopNavScreen.HOME), [navigation]);
-
+    const afterLogIn = useCallback(() => navigation.navigate(TopNavScreen.HOME), [navigation]);
+    
     const logInSync = useCallback(() => {
         setLoading(true);
         //TODO error handling

@@ -15,8 +15,6 @@ export const COLORS = {
     grayMedium: "#808080",
     grayDark: "#000000",
 
-    homeBackground: "#E8EDF6",
-    welcomeBox: "#F7F9FC",
     error: "#E53E3E"
 }
 
@@ -110,9 +108,6 @@ const CORE_VIEW_STYLES = StyleSheet.create({
     },
     "padding-lg": {
         padding: 30
-    },
-    "home": {
-        backgroundColor: COLORS.homeBackground
     },
     "primary-light": {
         backgroundColor: COLORS.primaryLight
