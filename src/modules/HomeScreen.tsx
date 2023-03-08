@@ -1,24 +1,40 @@
 import { TopNavScreen, TopRouteParams } from "../common/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
 import { View } from "../components/View";
 import { Text } from "../components/Text";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Avatar } from "react-native-ui-lib";
+import { Avatar, GridList } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
-import { TouchableOpacity, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { COLORS } from "../common/styles";
 import { formatUsd } from "../common/number";
-
+import { useRecentActivity } from "../api/client";
+import { Activity } from "../components/Activity";
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
-const screenHeight = Dimensions.get('window').height;
-
 export function HomeScreen({ navigation }: Props): JSX.Element {
-    const { name, imageUrl, usdcBalance } = useUserProfile();
+
+
+    const { name, imageUrl, usdcBalance, email, syncUsdcBalance } = useUserProfile();
+    const { loading: loadingActivity, submit: fetchRecentActivity, data, error } = useRecentActivity();
     const [displayWelcome, setDisplayWelcome] = useState(true);
+
+    useEffect(() => {
+        console.log('data: ', data);
+    }, [data]);
+
+    useEffect(() => {
+        console.log('email: ', email,)
+        if (!email) return;
+        fetchRecentActivity({
+            memberEmail: email,
+            limit: 5
+        });
+        syncUsdcBalance();
+    }, [email]);
 
     // TODO - add fetch recent activity
     const history = [];
@@ -60,9 +76,20 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
             {/* history ? txLogs : newCard */}
 
 
-            {history.length ?
+            {data?.length ?
                 <View style={styles.history} >
                     <Text text-lg gray-dark>Recent Activity</Text>
+                    <GridList
+                        data={data}
+                        renderItem={({ item }) => (
+                            <Activity item={item} />
+                        )}
+                        /* keyExtractor={item => item?.unixTimestamp} */
+                        /* contentContainerStyle={STYLES.suggestions} */
+                        itemSpacing={0}
+                        listPadding={0}
+                        numColumns={1}
+                    />
                 </View>
                 :
                 (displayWelcome && <View style={styles.welcome}>
