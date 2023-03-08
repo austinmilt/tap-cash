@@ -38,16 +38,24 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
     const [usdcAddress, setUsdcAddress] = useState<PublicKey | undefined>();
 
     const getAndUpdateAccountIfNeeded = useCallback(async (profile: SaveMemberArgs) => {
-        const savedProfile: MemberPrivateProfile = await getMember({ member: profile.email });
+        let savedProfile: MemberPrivateProfile | undefined;
+        try {
+            savedProfile = await getMember({ member: profile.email });
+
+        } catch (e) {
+            //TODO right now we swallow when the user hasnt been created yet,
+            // but it would be better to not rely on an error
+        }
         setEmail(profile.email);
         setName(profile.name);
         setImageUrl(profile.profile);
+        setUsdcAddress(savedProfile?.usdcAddress);
 
         if (
-            (savedProfile.email !== profile.email) ||
-            (savedProfile.name !== profile.name) ||
-            (savedProfile.profile !== profile.profile) ||
-            (savedProfile.signerAddress.toBase58() !== profile.signerAddress.toBase58())
+            (savedProfile?.email !== profile.email) ||
+            (savedProfile?.name !== profile.name) ||
+            (savedProfile?.profile !== profile.profile) ||
+            (savedProfile?.signerAddress.toBase58() !== profile.signerAddress.toBase58())
         ) {
             await saveMember(profile);
             const updatedProfile: MemberPrivateProfile = await getMember({ member: profile.email });
@@ -69,8 +77,8 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
             profile: user.userInfo.profileImage,
             signerAddress: userWallet.getPublicKey()
         });
-        setWallet(userWallet);
 
+        setWallet(userWallet);
         setLoggedIn(userWallet !== undefined);
 
         //TODO temporarily save user info to device so they dont have to log
@@ -86,12 +94,6 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
 
 
     const syncUsdcBalance: UserProfileContextState["syncUsdcBalance"] = useCallback(async () => {
-        if (!email)return;
-        // TODO check if there's a better place for this
-        // (I added here because it was not firing in the login function)
-        const memberInfo = await getMember({ member: email });
-        setUsdcAddress(memberInfo.usdcAddress);
-        console.log('member info', memberInfo);
         if ((wallet !== undefined) && (usdcAddress !== undefined)) {
             setUsdcBalance(await wallet.getUsdcBalance(usdcAddress));
         }
