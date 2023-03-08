@@ -1,5 +1,5 @@
 import * as anchor from "@project-serum/anchor";
-import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ApiError, SolanaQueryType, SolanaTxType } from "../shared/error";
 import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
 import { BANK_AUTH, BANK_SEED, BANK_USDC_WALLET, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
@@ -255,6 +255,7 @@ export class MainTapCashClient implements TapCashClient {
 
     private async getParsedMemberTransactions(responses: (anchor.web3.VersionedTransactionResponse | null)[], member: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         const memberString = member.toBase58();
+        console.log('memberString', memberString)
         const programString = this.program.programId.toBase58();
         const fakeUsdcString = FAKE_USDC.publicKey.toBase58();
         const bankUsdcString = BANK_USDC_WALLET.toBase58();
@@ -264,15 +265,19 @@ export class MainTapCashClient implements TapCashClient {
             // OR change our emulator to use Transfer instead of MintTo
             if (!tx || !tx.meta || !tx.meta.preTokenBalances || !tx.meta.postTokenBalances) return;
             // TO DO Create generic method that pre or post token balances could be passed in
-            const preTokenBalancesWithAta = tx.meta.preTokenBalances.map((balance) => {
+            const preTokenBalancesWithAta = tx.meta.preTokenBalances.map((balance: anchor.web3.TokenBalance) => {
                 if (!balance.mint || !balance.owner) return;
                 if (balance.mint !== fakeUsdcString) return;
-                const isCurrentMember = balance.owner === memberString;
+                const ata = getAssociatedTokenAddressSync(new PublicKey(balance.mint), new PublicKey(balance.owner), true);
+
+                const isCurrentMember = ata.toBase58() === memberString;
+                // TODO FIX owner of token account is actually member PDA
                 const isUser = balance.owner === programString;
                 const isBank = balance.owner === bankUsdcString;
+
                 return {
                     ...balance,
-                    ata: getAssociatedTokenAddress(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
+                    ata: getAssociatedTokenAddressSync(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
                     isCurrentMember,
                     isUser,
                     isBank
@@ -281,12 +286,15 @@ export class MainTapCashClient implements TapCashClient {
             const postTokenBalancesWithAta = tx.meta.postTokenBalances.map((balance) => {
                 if (!balance.mint || !balance.owner) return;
                 if (balance.mint !== fakeUsdcString) return;
-                const isCurrentMember = balance.owner === memberString;
+                const ata = getAssociatedTokenAddressSync(new PublicKey(balance.mint), new PublicKey(balance.owner), true);
+
+                const isCurrentMember = ata.toBase58() === memberString;
+                // TODO FIX owner of token account is actually member PDA
                 const isUser = balance.owner === programString;
                 const isBank = balance.owner === bankUsdcString;
                 return {
                     ...balance,
-                    ata: getAssociatedTokenAddress(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
+                    ata: getAssociatedTokenAddressSync(new PublicKey(balance.mint), new PublicKey(balance.owner), true),
                     isCurrentMember,
                     isUser,
                     isBank
@@ -295,8 +303,8 @@ export class MainTapCashClient implements TapCashClient {
 
             const memberPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
             const memberPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
-            const otherPartyPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => balance?.isUser && !balance?.isCurrentMember);
-            const otherPartyPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isUser && !balance?.isCurrentMember);
+            const otherPartyPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => !balance?.isCurrentMember);
+            const otherPartyPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => !balance?.isCurrentMember);
             const otherPartyAddress: string | undefined = otherPartyPreBalance?.owner ?? otherPartyPostBalance?.owner;
             const bankPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isBank);
@@ -319,7 +327,7 @@ export class MainTapCashClient implements TapCashClient {
 }
 
 interface TokenBalance {
-    ata: Promise<PublicKey>;
+    ata: PublicKey;
     isCurrentMember: boolean;
     isUser: boolean;
     isBank: boolean;
