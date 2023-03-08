@@ -7,19 +7,29 @@ interface Props {
     onPress: () => void;
     primary?: boolean;
     secondary?: boolean;
+    tertiary?: boolean;
     disabled?: boolean;
 }
 
 export function Button(props: Props & ButtonProps): JSX.Element {
-    const labelStyle = useTextStyle({
-        "text-md": true,
-        "gray-light": true
-    });
+    const [fontColor, bgColor, borderColor]: [string, string, string | undefined] = useMemo(() => {
+        if (props.secondary) return [COLORS.grayLight, COLORS.secondaryMedium, undefined];
+        if (props.tertiary) return [COLORS.grayDark, COLORS.grayLight, COLORS.grayMedium];
+        else return [COLORS.grayLight, COLORS.primaryMedium, undefined];
+    }, [props.secondary, props.tertiary, props.primary]);
+
+    const labelStyle = {
+        ...useTextStyle({
+            "text-md": true,
+        }),
+        color: fontColor
+    };
 
     return (
         <RNUIButton
-            color={props.primary ? COLORS.grayLight : COLORS.secondaryMedium}
-            backgroundColor={props.primary ? COLORS.primaryMedium : COLORS.secondaryMedium}
+            color={fontColor}
+            backgroundColor={bgColor}
+            outlineColor={borderColor}
             labelStyle={labelStyle}
             borderRadius={5}
             size="large"

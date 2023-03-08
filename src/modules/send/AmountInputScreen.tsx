@@ -49,7 +49,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
         <Screen spread padding-md>
             <View gap-md top left row flexS>
                 <Text gray-medium text-md>To</Text>
-                <Text gray-medium text-md bold>{props.route.params.recipient}</Text>
+                <Text gray-medium text-md bold>{props.route.params.recipient.email}</Text>
             </View>
             <View centerV gap-sm flexG>
                 {/* @ts-ignore this component's type validation is fucked up*/}

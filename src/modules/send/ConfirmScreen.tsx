@@ -11,6 +11,7 @@ import { PaymentMethodSummary } from "../../shared/payment";
 import { Loading } from "../../components/Loading";
 import { Screen } from "../../components/Screen";
 import { StyleSheet } from "react-native";
+import { RecipientProfile } from "../../components/RecipientProfile";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.CONFIRM>;
 
@@ -46,35 +47,36 @@ export function ConfirmScreen(props: Props): JSX.Element {
             {!loading && (
                 <View flexG padding-md style={{ paddingBottom: 66 }}>
                     <View flexG center gap-sm>
-                        <Text gray-dark bold style={STYLES.text}>{formatUsd(finalAmount)}</Text>
-                        <Text gray-dark text-lg>Send to {recipient}?</Text>
+                        <Text gray-dark bold center style={STYLES.amount}>{formatUsd(finalAmount)}</Text>
                         {(needsDeposit) && (
-                            <View>
+                            <View center>
                                 <Text text-md gray-dark>{formatUsd(finalAmount - finalDepositAmount)} from your account</Text>
                                 <Text text-md gray-dark>{formatUsd(finalDepositAmount)} charged to card ending in {paymentMethod?.creditCard?.lastFourDigits}</Text>
                             </View>
                         )}
+                        <RecipientProfile {...recipient} />
                     </View>
                     <Button
                         secondary
                         label="Confirm"
-                        onPress={() => props.navigation.navigate(SendNavScreen.SENDING, props.route.params)}
+                        onPress={() => props.navigation.navigate(
+                            SendNavScreen.SENDING,
+                            {
+                                recipient: recipient,
+                                amount: finalAmount,
+                                depositAmount: finalDepositAmount
+                            }
+                        )}
                     />
                 </View>
             )}
         </Screen >
-    )
+    );
 }
 
 
 const STYLES = StyleSheet.create({
-    text: {
+    amount: {
         fontSize: 53,
     },
-
-    leadingText: {
-        fontSize: 40,
-        marginRight: 5,
-        alignSelf: "flex-start"
-    }
 })
