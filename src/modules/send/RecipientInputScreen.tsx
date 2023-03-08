@@ -67,7 +67,7 @@ export function RecipientInputScreen(props: Props): JSX.Element {
             return;
         }
         if ((allowedRecipients.find(m => m.email === finalRecipient) == null)) {
-            setValidationError("Try another email that has registered with Tap Cash.");
+            setValidationError("Try another email that has registered with Tap.");
             return;
         }
         props.navigation.navigate(SendNavScreen.AMOUNT_INPUT, { recipient: finalRecipient });
