@@ -90,11 +90,7 @@ export function SendingScreen(props: Props): JSX.Element {
 
                             <TransactionStatus
                                 {...depositAndSendContext.send}
-                                defaultContent={
-                                    <Text text-md gray-gray-medium>
-                                        waiting for deposit
-                                    </Text>
-                                }
+                                defaultContent={<Text />}
                                 loadingContent={
                                     <Text text-md gray-dark>
                                         sending {formatUsd(amount)} from your account
@@ -138,7 +134,6 @@ interface TransactionStatusProps {
 
 
 function TransactionStatus(props: TransactionStatusProps): JSX.Element {
-    const renderBadge: boolean = props.error || props.loading || props.success;
     const badgeColor: string | undefined = useMemo(() => {
         if (props.loading) return COLORS.primaryMedium;
         return "transparent";
@@ -146,7 +141,6 @@ function TransactionStatus(props: TransactionStatusProps): JSX.Element {
 
     const badgeLabel: string | undefined = useMemo(() => {
         if (props.success) return "✓";
-        if (props.error) return "🕱";
         return undefined;
     }, [props.loading, props.success, props.error]);
 
@@ -155,6 +149,8 @@ function TransactionStatus(props: TransactionStatusProps): JSX.Element {
         if (props.loading) return COLORS.grayLight;
         return COLORS.grayMedium;
     }, [props.loading, props.success, props.error]);
+
+    const renderBadge: boolean = (badgeLabel != null) || (badgeColor != null);
 
     const content: JSX.Element = useMemo(() => {
         if (props.error) return props.errorContent;
