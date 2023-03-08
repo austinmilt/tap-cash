@@ -69,8 +69,8 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
             profile: user.userInfo.profileImage,
             signerAddress: userWallet.getPublicKey()
         });
-
         setWallet(userWallet);
+
         setLoggedIn(userWallet !== undefined);
 
         //TODO temporarily save user info to device so they dont have to log
@@ -86,8 +86,16 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
 
 
     const syncUsdcBalance: UserProfileContextState["syncUsdcBalance"] = useCallback(async () => {
+        if (!email)return;
+        // TODO check if there's a better place for this
+        // (I added here because it was not firing in the login function)
+        const memberInfo = await getMember({ member: email });
+        setUsdcAddress(memberInfo.usdcAddress);
+        console.log('member info', memberInfo);
         if ((wallet !== undefined) && (usdcAddress !== undefined)) {
-            setUsdcBalance(await wallet.getUsdcBalance(usdcAddress));
+            const balance = await wallet.getUsdcBalance(usdcAddress);
+            console.log(balance);
+            setUsdcBalance(balance);
         }
     }, [wallet, usdcAddress, setUsdcBalance]);
 

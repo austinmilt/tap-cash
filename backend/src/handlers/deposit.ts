@@ -24,7 +24,7 @@ async function deposit(request: DepositArgs): Promise<DepositResult> {
     // TODO: delegate the credit card retrieval and processing to Circle client
 
     const { usdcAddress } = await getDatabaseClient().getMemberPrivateProfile(request.emailAddress);
-
+    
     try {
         await getCircleClient().transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
         return {

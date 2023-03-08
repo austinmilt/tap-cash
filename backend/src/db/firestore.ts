@@ -153,7 +153,6 @@ export class FirestoreClient implements DatabaseClient {
         const response: QuerySnapshot<MemberDocument> = await this.buildMemberQuery("email", "==", email)
             .limit(1)
             .get();
-
         if (response.empty) return null;
         return response.docs[0];
     }

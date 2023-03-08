@@ -15,7 +15,7 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     const [loading, setLoading] = useState<boolean>(false);
     const { logIn, loggedIn } = useUserProfile();
 
-    const afterLogIn = useCallback(() => navigation.navigate(TopNavScreen.HOME), [navigation]);
+    const afterLogIn = useCallback(() =>navigation.navigate(TopNavScreen.HOME), [navigation]);
 
     const logInSync = useCallback(() => {
         setLoading(true);
@@ -43,6 +43,7 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
                                 disabled={loading}
                             />
                         ) : (
+                            // TODO - check that afterLogin also fetches latest balance
                             <Button
                                 label="G Continue with Google"
                                 primary
