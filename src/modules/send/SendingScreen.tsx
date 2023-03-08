@@ -44,18 +44,6 @@ export function SendingScreen(props: Props): JSX.Element {
         });
     }, []);
 
-    useEffect(() => {
-        if (depositAndSendContext.deposit.error) {
-            console.error("DEPOSIT ERROR", depositAndSendContext.deposit.error);
-        }
-    }, [depositAndSendContext.deposit.error]);
-
-    useEffect(() => {
-        if (depositAndSendContext.send.error) {
-            console.error("SEND ERROR", depositAndSendContext.send.error);
-        }
-    }, [depositAndSendContext.send.error]);
-
     return (
         <Screen>
             <View flexG padding-md style={{ paddingBottom: 66 }}>
