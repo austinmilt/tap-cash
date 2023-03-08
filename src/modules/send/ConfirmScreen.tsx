@@ -44,12 +44,14 @@ export function ConfirmScreen(props: Props): JSX.Element {
             {loading && <Loading />}
             {!loading && (
                 <View flex center gap-md>
-                    <Text>
-                        You're sending <Text bold>{formatUsd(finalAmount)}</Text>
-                        to {recipient}.
+                    <Text text-md gray-dark>
+                        You're sending
+                        <Text bold text-md gray-dark>
+                            {formatUsd(finalAmount)}
+                        </Text> to {recipient}.
                     </Text>
                     {(needsDeposit) && (
-                        <Text>
+                        <Text text-md gray-dark>
                             {formatUsd(finalDepositAmount)} will be charged
                             to card ending in {paymentMethod?.creditCard?.lastFourDigits}
                             to bring your account up to balance.
