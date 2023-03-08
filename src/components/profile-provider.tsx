@@ -38,16 +38,24 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
     const [usdcAddress, setUsdcAddress] = useState<PublicKey | undefined>();
 
     const getAndUpdateAccountIfNeeded = useCallback(async (profile: SaveMemberArgs) => {
-        const savedProfile: MemberPrivateProfile = await getMember({ member: profile.email });
+        let savedProfile: MemberPrivateProfile | undefined;
+        try {
+            savedProfile = await getMember({ member: profile.email });
+
+        } catch (e) {
+            //TODO right now we swallow when the user hasnt been created yet,
+            // but it would be better to not rely on an error
+        }
         setEmail(profile.email);
         setName(profile.name);
         setImageUrl(profile.profile);
+        setUsdcAddress(savedProfile?.usdcAddress);
 
         if (
-            (savedProfile.email !== profile.email) ||
-            (savedProfile.name !== profile.name) ||
-            (savedProfile.profile !== profile.profile) ||
-            (savedProfile.signerAddress.toBase58() !== profile.signerAddress.toBase58())
+            (savedProfile?.email !== profile.email) ||
+            (savedProfile?.name !== profile.name) ||
+            (savedProfile?.profile !== profile.profile) ||
+            (savedProfile?.signerAddress.toBase58() !== profile.signerAddress.toBase58())
         ) {
             await saveMember(profile);
             const updatedProfile: MemberPrivateProfile = await getMember({ member: profile.email });
