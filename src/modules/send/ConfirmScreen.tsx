@@ -10,6 +10,7 @@ import { useUserProfile } from "../../components/profile-provider";
 import { PaymentMethodSummary } from "../../shared/payment";
 import { Loading } from "../../components/Loading";
 import { Screen } from "../../components/Screen";
+import { StyleSheet } from "react-native";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.CONFIRM>;
 
@@ -43,27 +44,37 @@ export function ConfirmScreen(props: Props): JSX.Element {
         <Screen>
             {loading && <Loading />}
             {!loading && (
-                <View flex center gap-md>
-                    <Text text-md gray-dark>
-                        You're sending
-                        <Text bold text-md gray-dark>
-                            {formatUsd(finalAmount)}
-                        </Text> to {recipient}.
-                    </Text>
-                    {(needsDeposit) && (
-                        <Text text-md gray-dark>
-                            {formatUsd(finalDepositAmount)} will be charged
-                            to card ending in {paymentMethod?.creditCard?.lastFourDigits}
-                            to bring your account up to balance.
-                        </Text>
-                    )}
+                <View flexG padding-md style={{ paddingBottom: 66 }}>
+                    <View flexG center gap-sm>
+                        <Text gray-dark bold style={STYLES.text}>{formatUsd(finalAmount)}</Text>
+                        <Text gray-dark text-lg>Send to {recipient}?</Text>
+                        {(needsDeposit) && (
+                            <View>
+                                <Text text-md gray-dark>{formatUsd(finalAmount - finalDepositAmount)} from your account</Text>
+                                <Text text-md gray-dark>{formatUsd(finalDepositAmount)} charged to card ending in {paymentMethod?.creditCard?.lastFourDigits}</Text>
+                            </View>
+                        )}
+                    </View>
                     <Button
-                        primary
+                        secondary
                         label="Confirm"
                         onPress={() => props.navigation.navigate(SendNavScreen.SENDING, props.route.params)}
                     />
                 </View>
             )}
-        </Screen>
+        </Screen >
     )
 }
+
+
+const STYLES = StyleSheet.create({
+    text: {
+        fontSize: 53,
+    },
+
+    leadingText: {
+        fontSize: 40,
+        marginRight: 5,
+        alignSelf: "flex-start"
+    }
+})

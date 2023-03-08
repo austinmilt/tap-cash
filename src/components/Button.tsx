@@ -18,8 +18,8 @@ export function Button(props: Props & ButtonProps): JSX.Element {
 
     return (
         <RNUIButton
-            color={props.primary ? COLORS.grayLight : COLORS.primaryMedium}
-            backgroundColor={props.primary ? COLORS.primaryMedium : COLORS.grayLight}
+            color={props.primary ? COLORS.grayLight : COLORS.secondaryMedium}
+            backgroundColor={props.primary ? COLORS.primaryMedium : COLORS.secondaryMedium}
             labelStyle={labelStyle}
             borderRadius={5}
             size="large"
