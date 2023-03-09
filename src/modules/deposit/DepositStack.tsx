@@ -1,5 +1,5 @@
 import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ProfileStackRouteParams, ProfileNavScreen, DepositStackRouteParams, DepositNavScreen } from "../../common/navigation";
+import { ProfileStackRouteParams, ProfileNavScreen, DepositStackRouteParams, DepositNavScreen, STACK_DEFAULTS } from "../../common/navigation";
 import { AmountInputScreen } from "./AmountInputScreen";
 import { DepositingScreen } from "./DepositingScreen";
 
@@ -10,7 +10,9 @@ type Props = NativeStackScreenProps<ProfileStackRouteParams, ProfileNavScreen.AD
 export function DepositStack(props: Props): JSX.Element {
     return (
         <Stack.Navigator
-            initialRouteName={DepositNavScreen.AMOUNT_INPUT}>
+            initialRouteName={DepositNavScreen.AMOUNT_INPUT}
+            screenOptions={STACK_DEFAULTS}
+        >
             <Stack.Screen
                 name={DepositNavScreen.AMOUNT_INPUT}
                 component={AmountInputScreen}

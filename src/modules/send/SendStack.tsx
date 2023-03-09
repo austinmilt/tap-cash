@@ -1,5 +1,5 @@
 import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SendNavScreen, SendStackRouteParams, TopNavScreen, TopRouteParams } from "../../common/navigation";
+import { STACK_DEFAULTS, SendNavScreen, SendStackRouteParams, TopNavScreen, TopRouteParams } from "../../common/navigation";
 import { RecipientInputScreen } from "./RecipientInputScreen";
 import { AmountInputScreen } from "./AmountInputScreen";
 import { ConfirmScreen } from "./ConfirmScreen";
@@ -15,7 +15,9 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.SEND>;
 export function SendStack(props: Props): JSX.Element {
     return (
         <Stack.Navigator
-            initialRouteName={SendNavScreen.RECIPIENT_INPUT}>
+            initialRouteName={SendNavScreen.RECIPIENT_INPUT}
+            screenOptions={STACK_DEFAULTS}
+        >
             <Stack.Screen
                 name={SendNavScreen.RECIPIENT_INPUT}
                 component={RecipientInputScreen}

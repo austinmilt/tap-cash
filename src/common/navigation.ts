@@ -1,4 +1,6 @@
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { MemberPublicProfile } from "../shared/member";
+import { COLORS } from "./styles";
 
 export enum TopNavScreen {
     SPLASH = "Splash",
@@ -63,4 +65,16 @@ export enum DepositNavScreen {
 export type DepositStackRouteParams = {
     [DepositNavScreen.AMOUNT_INPUT]: undefined;
     [DepositNavScreen.DEPOSITING]: { amount: number };
+}
+
+
+export const STACK_DEFAULTS: NativeStackNavigationOptions = {
+    headerStyle: {
+        backgroundColor: COLORS.grayLight,
+    },
+    headerTitleStyle: {
+        fontFamily: "Jost-Medium"
+    },
+    headerShadowVisible: false,
+    headerTitleAlign: "center"
 }

@@ -1,5 +1,5 @@
 import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ProfileStackRouteParams, ProfileNavScreen, TopRouteParams, TopNavScreen } from "../../common/navigation";
+import { ProfileStackRouteParams, ProfileNavScreen, TopRouteParams, TopNavScreen, STACK_DEFAULTS } from "../../common/navigation";
 import { ProfileOverviewScreen } from "./ProfileSummaryScreen";
 import { PaymentMethodsScreen } from "./PaymentMethodsScreen";
 import { DepositStack } from "../deposit/DepositStack";
@@ -11,7 +11,9 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.PROFILE>;
 export function ProfileStack(props: Props): JSX.Element {
     return (
         <Stack.Navigator
-            initialRouteName={ProfileNavScreen.OVERVIEW}>
+            initialRouteName={ProfileNavScreen.OVERVIEW}
+            screenOptions={STACK_DEFAULTS}
+        >
             <Stack.Screen
                 name={ProfileNavScreen.OVERVIEW}
                 component={ProfileOverviewScreen}
