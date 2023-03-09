@@ -53,3 +53,14 @@ export type ProfileStackRouteParams = {
     [ProfileNavScreen.LOG_OUT]: undefined;
 }
 
+
+export enum DepositNavScreen {
+    AMOUNT_INPUT = "AmountInput",
+    DEPOSITING = "Depositing"
+}
+
+
+export type DepositStackRouteParams = {
+    [DepositNavScreen.AMOUNT_INPUT]: undefined;
+    [DepositNavScreen.DEPOSITING]: { amount: number };
+}

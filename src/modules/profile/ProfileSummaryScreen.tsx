@@ -51,7 +51,7 @@ export function ProfileOverviewScreen({ navigation }: Props): JSX.Element {
                         <Text>▶</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
-                    <TouchableOpacity style={styles.row} onPress={() => console.log('add')}>
+                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.ADD_FUNDS)}>
                         <Text style={styles.action}>Add Funds</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />

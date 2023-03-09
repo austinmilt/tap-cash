@@ -2,6 +2,7 @@ import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navig
 import { ProfileStackRouteParams, ProfileNavScreen, TopRouteParams, TopNavScreen } from "../../common/navigation";
 import { ProfileOverviewScreen } from "./ProfileSummaryScreen";
 import { PaymentMethodsScreen } from "./PaymentMethodsScreen";
+import { DepositStack } from "../deposit/DepositStack";
 
 const Stack = createNativeStackNavigator<ProfileStackRouteParams>();
 
@@ -20,6 +21,11 @@ export function ProfileStack(props: Props): JSX.Element {
                 name={ProfileNavScreen.PAYMENT_METHODS}
                 component={PaymentMethodsScreen}
                 options={{ title: "Payment Methods" }}
+            />
+            <Stack.Screen
+                name={ProfileNavScreen.ADD_FUNDS}
+                component={DepositStack}
+                options={{ headerShown: false }}
             />
         </Stack.Navigator>
     )
