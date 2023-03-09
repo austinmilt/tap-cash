@@ -255,7 +255,6 @@ export class MainTapCashClient implements TapCashClient {
 
     private async getParsedMemberTransactions(responses: (anchor.web3.VersionedTransactionResponse | null)[], member: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         const memberString = member.toBase58();
-        console.log('memberString', memberString)
         const programString = this.program.programId.toBase58();
         const fakeUsdcString = FAKE_USDC.publicKey.toBase58();
         const bankUsdcString = BANK_USDC_WALLET.toBase58();
@@ -271,7 +270,7 @@ export class MainTapCashClient implements TapCashClient {
                 const ata = getAssociatedTokenAddressSync(new PublicKey(balance.mint), new PublicKey(balance.owner), true);
 
                 const isCurrentMember = ata.toBase58() === memberString;
-                // TODO FIX owner of token account is actually member PDA
+                // TODO Remove isUser (verify on FE)
                 const isUser = balance.owner === programString;
                 const isBank = balance.owner === bankUsdcString;
 
@@ -289,7 +288,7 @@ export class MainTapCashClient implements TapCashClient {
                 const ata = getAssociatedTokenAddressSync(new PublicKey(balance.mint), new PublicKey(balance.owner), true);
 
                 const isCurrentMember = ata.toBase58() === memberString;
-                // TODO FIX owner of token account is actually member PDA
+                // TODO Remove isUser (verify on FE)
                 const isUser = balance.owner === programString;
                 const isBank = balance.owner === bankUsdcString;
                 return {

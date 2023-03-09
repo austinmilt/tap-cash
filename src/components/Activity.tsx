@@ -9,8 +9,6 @@ interface Props {
 }
 
 export function Activity({ item }: Props): JSX.Element {
-
-
     let amount: number | undefined;
     let type: string;
     let color: string;
@@ -43,23 +41,25 @@ export function Activity({ item }: Props): JSX.Element {
         default:
             amount = 0;
             color = 'black';
-            type = 'Unknown';
+            type = '';
             break;
     }
-    console.log('amount:', amount);
 
-    const date = formatDate(item.unixTimestamp || 0);
     return (
         <View style={activityStyles.row}>
             <View style={activityStyles.icon} />
             <View style={activityStyles.info}>
                 <Text gray-dark text-md>{type}</Text>
-                <Text gray-gray-medium text-md>{date}</Text>
+                <Text gray-gray-medium text-md>
+                    {item.unixTimestamp ? formatDate(item.unixTimestamp) : FALLBACK_DATE_VALUE}
+                </Text>
             </View>
             <Text style={{ color }} text-md>{formatUsd(amount || 0)}</Text>
         </View>
     );
 };
+
+const FALLBACK_DATE_VALUE = '';
 
 const activityStyles = StyleSheet.create({
     row: {

@@ -43,7 +43,6 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
                                 disabled={loading}
                             />
                         ) : (
-                            // TODO - check that afterLogin also fetches latest balance
                             <Button
                                 label="G Continue with Google"
                                 primary

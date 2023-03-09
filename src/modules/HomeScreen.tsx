@@ -13,6 +13,7 @@ import { COLORS } from "../common/styles";
 import { formatUsd } from "../common/number";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
+import { MemberActivityType } from "../shared/activity";
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
@@ -23,11 +24,6 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
     const [displayWelcome, setDisplayWelcome] = useState(true);
 
     useEffect(() => {
-        console.log('data: ', data);
-    }, [data]);
-
-    useEffect(() => {
-        console.log('email: ', email,)
         if (!email) return;
         fetchRecentActivity({
             memberEmail: email,
@@ -36,8 +32,6 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
         syncUsdcBalance();
     }, [email]);
 
-    // TODO - add fetch recent activity
-    const history = [];
     return (
         <Screen gap-lg style={styles.home}>
             <View style={styles.header}>
@@ -56,10 +50,9 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     </TouchableOpacity>
                 </View>
             </View>
-            {/* TODO maybe add 20 px margin */}
             <View>
                 <Text style={styles.balance} center>
-                    {formatUsd(usdcBalance || 0)}
+                    {formatUsd(usdcBalance ?? 0)}
                 </Text>
             </View>
             <View style={styles.buttonContainer}>
@@ -71,21 +64,14 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
-            {/* TODO maybe add 20 px margin */}
-
-            {/* history ? txLogs : newCard */}
-
-
             {data?.length ?
                 <View style={styles.history} >
                     <Text text-lg gray-dark>Recent Activity</Text>
                     <GridList
-                        data={data}
+                        data={data.filter(item => item.type !== MemberActivityType.UNKNOWN)}
                         renderItem={({ item }) => (
                             <Activity item={item} />
                         )}
-                        /* keyExtractor={item => item?.unixTimestamp} */
-                        /* contentContainerStyle={STYLES.suggestions} */
                         itemSpacing={0}
                         listPadding={0}
                         numColumns={1}
