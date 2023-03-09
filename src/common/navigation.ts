@@ -1,4 +1,4 @@
-import { EmailAddress } from "../shared/member";
+import { MemberPublicProfile } from "../shared/member";
 
 export enum TopNavScreen {
     SPLASH = "Splash",
@@ -28,9 +28,9 @@ export enum SendNavScreen {
 
 export type SendStackRouteParams = {
     [SendNavScreen.RECIPIENT_INPUT]: undefined;
-    [SendNavScreen.AMOUNT_INPUT]: { recipient: EmailAddress };
-    [SendNavScreen.CONFIRM]: { recipient: EmailAddress, amount: number };
-    [SendNavScreen.SENDING]: { recipient: EmailAddress, amount: number };
+    [SendNavScreen.AMOUNT_INPUT]: { recipient: MemberPublicProfile };
+    [SendNavScreen.CONFIRM]: { recipient: MemberPublicProfile, amount: number, depositAmount: number };
+    [SendNavScreen.SENDING]: { recipient: MemberPublicProfile, amount: number, depositAmount: number };
 }
 
 // TODO find the type in react-navigation stuff

@@ -38,4 +38,9 @@ export class MockCircleClient implements CircleClient {
         return result;
     }
 
+
+    public addCard(card: Card): void {
+        this.cards.set(card.id, card);
+    }
+
 }

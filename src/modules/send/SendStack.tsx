@@ -2,7 +2,7 @@ import { NativeStackScreenProps, createNativeStackNavigator } from "@react-navig
 import { SendNavScreen, SendStackRouteParams, TopNavScreen, TopRouteParams } from "../../common/navigation";
 import { RecipientInputScreen } from "./RecipientInputScreen";
 import { AmountInputScreen } from "./AmountInputScreen";
-import { ConfirmSendScreen } from "./ConfirmSendScreen";
+import { ConfirmScreen } from "./ConfirmScreen";
 import { SendingScreen } from "./SendingScreen";
 
 const Stack = createNativeStackNavigator<SendStackRouteParams>();
@@ -28,7 +28,7 @@ export function SendStack(props: Props): JSX.Element {
             />
             <Stack.Screen
                 name={SendNavScreen.CONFIRM}
-                component={ConfirmSendScreen}
+                component={ConfirmScreen}
                 options={{ title: "Confirm" }}
             />
             <Stack.Screen

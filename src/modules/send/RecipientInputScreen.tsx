@@ -12,8 +12,9 @@ import { SendNavScreen, SendStackRouteParams } from "../../common/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useUserProfile } from "../../components/profile-provider";
 import { ViewStyleProps } from "../../common/styles";
-import { Avatar, GridList } from "react-native-ui-lib";
+import { GridList } from "react-native-ui-lib";
 import { Screen } from "../../components/Screen";
+import { RecipientProfile } from "../../components/RecipientProfile";
 
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.RECIPIENT_INPUT>;
@@ -50,7 +51,7 @@ export function RecipientInputScreen(props: Props): JSX.Element {
         }
     }, [inputFocused, validationError]);
 
-    // reset validation erro when the user changes the input since
+    // reset validation error when the user changes the input since
     // they may have changed it to something valid
     useEffect(() => {
         setValidationError(undefined);
@@ -66,11 +67,12 @@ export function RecipientInputScreen(props: Props): JSX.Element {
             setValidationError("Cannot send to yourself.");
             return;
         }
-        if ((allowedRecipients.find(m => m.email === finalRecipient) == null)) {
+        const recipientProfile: MemberPublicProfile | undefined = allowedRecipients.find(m => m.email === finalRecipient);
+        if (recipientProfile == null) {
             setValidationError("Try another email that has registered with Tap.");
             return;
         }
-        props.navigation.navigate(SendNavScreen.AMOUNT_INPUT, { recipient: finalRecipient });
+        props.navigation.navigate(SendNavScreen.AMOUNT_INPUT, { recipient: recipientProfile });
     }, [recipient, allowedRecipients, props.navigation]);
 
     //TODO add (x) button to clear input
@@ -109,7 +111,7 @@ export function RecipientInputScreen(props: Props): JSX.Element {
                     />
                 )}
                 {validationError && (
-                    <View center gap-sm>
+                    <View flexG center gap-sm>
                         <Text text-lg gray-dark center>No results</Text>
                         <Text text-md gray-medium center>{validationError}</Text>
                     </View>
@@ -127,16 +129,7 @@ interface MemberPublicProfileItemProps {
 function MemberPublicProfileItem(props: MemberPublicProfileItemProps): JSX.Element {
     return (
         <Pressable onPress={() => props.onPress(props.recipient)}>
-            <View centerV left row style={STYLES.suggestionContainer}>
-                <Avatar
-                    source={{ uri: props.recipient.profile }}
-                    size={48}
-                />
-                <View left centerV>
-                    <Text text-md gray-dark>{props.recipient.name}</Text>
-                    <Text gray-medium style={STYLES.suggestionEmail}>{props.recipient.email}</Text>
-                </View>
-            </View>
+            <RecipientProfile {...props.recipient} />
         </Pressable>
     )
 }
@@ -151,11 +144,6 @@ const STYLES = StyleSheet.create({
         fontSize: 18,
         gap: 0,
         justifyContent: "center",
-    },
-
-    suggestionContainer: {
-        paddingVertical: 12,
-        gap: 16,
     },
 
     suggestionEmail: {

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DEPOSIT_URI,
     SAVE_MEMBER_URI,
@@ -24,11 +24,12 @@ import {
     ApiWithdrawResult,
     ApiQueryRecipientsResult,
     ApiAccountRequest,
-    ApiAccountResult
+    ApiAccountResult,
+    ApiSavedPaymentMethodsRequest,
+    ApiSavedPaymentMethodsResult
 } from "../shared/api";
 import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile, MemberPrivateProfile } from "../shared/member";
 import { PaymentMethodSummary } from "../shared/payment";
-import { ApiError } from "../shared/error";
 import { PublicKey } from "../solana/solana";
 
 interface QueryContext<Req, Res> {
@@ -88,7 +89,6 @@ export async function getMember(args: GetMemberArgs): Promise<MemberPrivateProfi
 
 interface DepositArgs {
     email: EmailAddress;
-    destination: AccountId;
     amount: number;
 }
 
@@ -114,7 +114,7 @@ export function useDeposit(): QueryContext<DepositArgs, void> {
 
 interface SendArgs {
     sender: EmailAddress;
-    recipeient: EmailAddress;
+    recipient: EmailAddress;
     amount: number;
     privateKey: anchor.web3.Keypair;
 }
@@ -126,7 +126,7 @@ export function useSend(): QueryContext<SendArgs, void> {
     const submit = useCallback((req: SendArgs) => {
         queryContext.submit({
             senderEmailAddress: req.sender,
-            recipientEmailAddress: req.recipeient,
+            recipientEmailAddress: req.recipient,
             amount: req.amount,
             privateKey: Array.from(req.privateKey.secretKey)
         });
@@ -138,6 +138,111 @@ export function useSend(): QueryContext<SendArgs, void> {
         submit: submit,
         data: undefined
     };
+}
+
+
+interface DepositAndSendArgs {
+    sender: EmailAddress;
+    recipient: EmailAddress;
+    amount: number;
+    depositAmount: number;
+    senderSigner: anchor.web3.Keypair;
+}
+
+
+interface DepositAndSendContext {
+    deposit: {
+        loading: boolean;
+        success: boolean | undefined;
+        error: Error | undefined;
+    };
+    send: {
+        loading: boolean;
+        success: boolean | undefined;
+        error: Error | undefined;
+    };
+    submit: (args: DepositAndSendArgs) => void;
+}
+
+
+export function useDepositAndSend(): DepositAndSendContext {
+    const [args, setArgs] = useState<DepositAndSendArgs | undefined>();
+
+    const [depositSuccess, setDepositSuccess] = useState<boolean | undefined>();
+    const [startDeposit, setStartDeposit] = useState<boolean>(false);
+    const [depositLoading, setDepositLoading] = useState<boolean>(false);
+    const [depositError, setDepositError] = useState<Error | undefined>();
+
+    const [sendSuccess, setSendSuccess] = useState<boolean | undefined>();
+    const [startSend, setStartSend] = useState<boolean>(false);
+    const [sendLoading, setSendLoading] = useState<boolean>(false);
+    const [sendError, setSendError] = useState<Error | undefined>();
+
+    // separating deposit and send into separate useEffect means
+    // we can incrementally update the UI as each completes asynchronously
+    useEffect(() => {
+        // checking for depositSuccess to be defined means we only try once
+        if (startDeposit && (depositSuccess === undefined) && (args !== undefined)) {
+            setDepositLoading(true);
+            post<ApiDepositRequest, ApiDepositResult>(DEPOSIT_URI, {
+                emailAddress: args.sender,
+                amount: args.depositAmount
+            })
+                .then(() => {
+                    setDepositSuccess(true);
+                    setStartSend(true);
+                })
+                .catch(setDepositError)
+                .finally(() => {
+                    setStartDeposit(false);
+                    setDepositLoading(false);
+                })
+        }
+    }, [startDeposit]);
+
+    useEffect(() => {
+        // checking for sendSuccess to be defined means we only try once
+        if (startSend && (sendSuccess === undefined) && (args !== undefined)) {
+            setSendLoading(true);
+            post<ApiSendRequest, ApiSendResult>(SEND_URI, {
+                senderEmailAddress: args.sender,
+                recipientEmailAddress: args.recipient,
+                amount: args.amount,
+                privateKey: Array.from(args.senderSigner.secretKey)
+            })
+                .then(() => setSendSuccess(true))
+                .catch(setSendError)
+                .finally(() => {
+                    setStartSend(false);
+                    setSendLoading(false);
+                })
+        }
+    }, [startSend]);
+
+    const submit: (args: DepositAndSendArgs) => void = useCallback(async (args) => {
+        setArgs(args);
+        if (args.depositAmount > 0) {
+            setStartDeposit(true);
+
+        } else {
+            setStartSend(true);
+        }
+    }, [setArgs, setStartDeposit]);
+
+
+    return {
+        deposit: {
+            success: depositSuccess,
+            loading: depositLoading,
+            error: depositError
+        },
+        send: {
+            success: sendSuccess,
+            loading: sendLoading,
+            error: sendError
+        },
+        submit: submit
+    }
 }
 
 
@@ -238,19 +343,18 @@ interface SavedPaymentMethodsArgs {
 
 
 export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, PaymentMethodSummary[]> {
-    const queryContext = useGetQuery<ApiRecentActivityRequest, PaymentMethodSummary[]>(SAVED_PAYMENT_METHODS_URI);
+    const queryContext = useGetQuery<ApiSavedPaymentMethodsRequest, ApiSavedPaymentMethodsResult>(SAVED_PAYMENT_METHODS_URI);
 
-    const submit = useCallback(({ memberEmail, limit }: RecentActivityArgs) => {
+    const submit = useCallback(({ memberEmail }: SavedPaymentMethodsArgs) => {
         queryContext.submit({
-            memberEmail: memberEmail,
-            limit: limit.toString()
+            memberEmail: memberEmail
         });
     }, [queryContext.submit]);
 
 
     const data: PaymentMethodSummary[] | undefined = useMemo(() => {
         if (queryContext.data === undefined) return undefined;
-        return queryContext.data.map(v => v as PaymentMethodSummary);
+        return queryContext.data;
     }, [queryContext.data]);
 
     return {
