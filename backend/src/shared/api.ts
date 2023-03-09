@@ -90,6 +90,7 @@ export interface ApiMemberActivity {
     send?: ApiSendActivity;
     receive?: ApiReceiveActivity;
     withdraw?: ApiWithdrawActivity;
+    unixTimestamp: number;
 }
 
 export interface ApiDepositActivity {
