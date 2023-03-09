@@ -2,7 +2,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { DepositNavScreen, DepositStackRouteParams } from "../../common/navigation";
 import { Screen } from "../../components/Screen";
 import { Button } from "../../components/Button";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { COLORS } from "../../common/styles";
 import { NumberInput } from "react-native-ui-lib";
@@ -15,9 +15,19 @@ export function AmountInputScreen(props: Props): JSX.Element {
     const [amount, setAmount] = useState<number | undefined>();
     const [error, setError] = useState<string | undefined>();
 
+    // clear errors when the user changes the amount since
+    // it may be valid again
+    useEffect(() => {
+        setError(undefined);
+    }, [amount])
+
     const onSubmit = useCallback(() => {
         if ((amount == null) || (amount <= 0)) {
             setError("Please enter a positive amount.");
+            return;
+        }
+        if (amount > 9000) {
+            setError("It's over 9000!");
             return;
         }
         props.navigation.navigate(DepositNavScreen.DEPOSITING, { amount: amount });
@@ -42,6 +52,12 @@ export function AmountInputScreen(props: Props): JSX.Element {
                     deposited to your Tap account
                 </Text>
             </View>
+            {error && (
+                <View flexG center gap-sm>
+                    <Text text-lg gray-dark center>Try again</Text>
+                    <Text text-md gray-medium center error>{error}</Text>
+                </View>
+            )}
             <Button secondary label="Confirm" onPress={onSubmit} />
         </Screen>
     )
