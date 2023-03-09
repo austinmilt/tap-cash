@@ -16,18 +16,21 @@ interface TransactionStatusProps {
 
 export function TransactionStatus(props: TransactionStatusProps): JSX.Element {
     const badgeColor: string | undefined = useMemo(() => {
-        if (props.loading) return COLORS.primaryMedium;
+        if (props.loading) return COLORS.grayMedium;
+        if (props.success) return COLORS.secondaryMedium;
         return "transparent";
     }, [props.loading, props.success, props.error]);
 
     const badgeLabel: string | undefined = useMemo(() => {
         if (props.success) return "✓";
+        if (props.loading) return "✓";
         return undefined;
     }, [props.loading, props.success, props.error]);
 
     const badgeLabelColor: string | undefined = useMemo(() => {
         if (props.error) return COLORS.error;
         if (props.loading) return COLORS.grayLight;
+        if (props.success) return COLORS.grayLight
         return COLORS.grayMedium;
     }, [props.loading, props.success, props.error]);
 

@@ -13,6 +13,7 @@ import { Badge } from "react-native-ui-lib";
 import { COLORS } from "../../common/styles";
 import { RecipientProfile } from "../../components/RecipientProfile";
 import { TransactionStatus } from "../../components/TransactionStatus";
+import { BigDollars } from "../../components/BigBalance";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.SENDING>;
 
@@ -49,7 +50,7 @@ export function SendingScreen(props: Props): JSX.Element {
         <Screen>
             <View flexG padding-md style={{ paddingBottom: 66 }}>
                 <View flexG center gap-sm>
-                    <Text gray-dark bold style={STYLES.amount}>{formatUsd(amount)}</Text>
+                    <BigDollars>{amount}</BigDollars>
                     <RecipientProfile {...recipient} />
                     {(needsDeposit) && (
                         <View>

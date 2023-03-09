@@ -12,6 +12,7 @@ import { Loading } from "../../components/Loading";
 import { Screen } from "../../components/Screen";
 import { StyleSheet } from "react-native";
 import { RecipientProfile } from "../../components/RecipientProfile";
+import { BigDollars } from "../../components/BigBalance";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.CONFIRM>;
 
@@ -47,7 +48,7 @@ export function ConfirmScreen(props: Props): JSX.Element {
             {!loading && (
                 <View flexG padding-md style={{ paddingBottom: 66 }}>
                     <View flexG center gap-sm>
-                        <Text gray-dark bold center style={STYLES.amount}>{formatUsd(finalAmount)}</Text>
+                        <BigDollars>{finalAmount}</BigDollars>
                         {(needsDeposit) && (
                             <View center>
                                 <Text text-md gray-dark>{formatUsd(finalAmount - finalDepositAmount)} from your account</Text>

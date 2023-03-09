@@ -73,7 +73,8 @@ export const STACK_DEFAULTS: NativeStackNavigationOptions = {
         backgroundColor: COLORS.grayLight,
     },
     headerTitleStyle: {
-        fontFamily: "Jost-Medium"
+        fontFamily: "Jost-Medium",
+        fontSize: 20
     },
     headerShadowVisible: false,
     headerTitleAlign: "center"

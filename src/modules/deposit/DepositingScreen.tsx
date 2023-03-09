@@ -10,6 +10,7 @@ import { Screen } from "../../components/Screen";
 import { formatUsd } from "../../common/number";
 import { StyleSheet } from "react-native";
 import { TransactionStatus } from "../../components/TransactionStatus";
+import { BigDollars } from "../../components/BigBalance";
 
 type Props = NativeStackScreenProps<DepositStackRouteParams, DepositNavScreen.DEPOSITING>;
 
@@ -38,7 +39,7 @@ export function DepositingScreen(props: Props): JSX.Element {
     return (
         <Screen spread padding-md>
             <View flexG center gap-sm>
-                <Text gray-dark bold style={STYLES.amount}>{formatUsd(amount)}</Text>
+                <BigDollars>{amount}</BigDollars>
                 <View>
                     <TransactionStatus
                         {...depositContext}
@@ -59,7 +60,7 @@ export function DepositingScreen(props: Props): JSX.Element {
                             </Text>
                         }
                         successContent={
-                            <Text text-md gray-gray-medium>
+                            <Text text-md gray-dark>
                                 deposited {formatUsd(amount)} to your account
                             </Text>
                         }

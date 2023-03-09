@@ -14,6 +14,7 @@ import { formatUsd } from "../common/number";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
 import { MemberActivityType } from "../shared/activity";
+import { BigDollars } from "../components/BigBalance";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
@@ -52,9 +53,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 </View>
             </View>
             <View>
-                <Text style={styles.balance} center>
-                    {formatUsd(usdcBalance ?? 0)}
-                </Text>
+                <BigDollars>{usdcBalance ?? 0}</BigDollars>
             </View>
             <View style={styles.buttonContainer}>
                 <Button
