@@ -9,6 +9,7 @@ import { Screen } from "../../components/Screen";
 import { PaymentMethodType } from "../../shared/payment";
 import { EnrichedPaymentMethodSummary, useSavedPaymentMethods } from "../../api/client";
 import { useUserProfile } from "../../components/profile-provider";
+import { Button } from "../../components/Button";
 
 type Props = NativeStackScreenProps<ProfileStackRouteParams, ProfileNavScreen.PAYMENT_METHODS>;
 
@@ -25,7 +26,7 @@ export function PaymentMethodsScreen(props: Props): JSX.Element {
     }, [userProfileContext.email])
 
     return (
-        <Screen center flexG padding-md>
+        <Screen padding-md spread>
             <View>
                 <Text gray-medium text-sm>
                     ADDED
@@ -36,6 +37,7 @@ export function PaymentMethodsScreen(props: Props): JSX.Element {
                     renderItem={item => <PaymentMethodItem {...item.item} />}
                 />
             </View>
+            <Button primary label="Add Payment Method" disabled onPress={() => { }} />
         </Screen>
     )
 }
