@@ -32,7 +32,7 @@ export function Button(props: Props & ButtonProps): JSX.Element {
             outlineColor={borderColor}
             labelStyle={labelStyle}
             borderRadius={5}
-            size="large"
+            style={{ height: 48 }}
             {...props}
         />
     )
