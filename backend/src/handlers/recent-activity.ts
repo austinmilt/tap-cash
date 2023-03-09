@@ -48,6 +48,10 @@ async function getRecentActivity(request: RecentActivityArgs): Promise<MemberAct
         else if (otherPartyChange < 0 && memberChange > 0) { txType = MemberActivityType.RECEIVE }
         else if (otherPartyChange > 0 && memberChange < 0) { txType = MemberActivityType.SEND }
 
+        // TODO fix deposits showing up as unknown
+        // Added this to handle Devnet MintTo transactions
+        else if (memberChange > 0) { txType = MemberActivityType.DEPOSIT }
+
         let memberActivity: MemberActivity;
         switch (txType) {
             case MemberActivityType.DEPOSIT:
