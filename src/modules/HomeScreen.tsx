@@ -14,6 +14,7 @@ import { formatUsd } from "../common/number";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
 import { MemberActivityType } from "../shared/activity";
+
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {

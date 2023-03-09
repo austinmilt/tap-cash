@@ -1,9 +1,10 @@
 import { View } from "../components/View";
 import { Text } from "../components/Text";
-import {  StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { formatDate, formatUsd } from "../common/number";
 import { MemberActivity, MemberActivityType } from "../shared/activity";
 import { Image } from 'react-native-ui-lib';
+import { IMAGES } from "../images/images";
 
 interface Props {
     item: MemberActivity;
@@ -20,14 +21,14 @@ export function Activity({ item }: Props): JSX.Element {
             amount = item.deposit?.amount;
             type = 'Deposit';
             color = 'black';
-            iconSource = require('../images/activity/deposit.png');
+            iconSource = IMAGES.activity.deposit;
             break;
 
         case MemberActivityType.WITHDRAW:
             amount = item.withdraw?.amount;
             type = 'Withdraw';
             color = 'red';
-            iconSource = require('../images/activity/withdraw.png');
+            iconSource = IMAGES.activity.withdraw;
 
             break;
 
@@ -35,7 +36,7 @@ export function Activity({ item }: Props): JSX.Element {
             amount = item.receive?.amount;
             type = 'Receive';
             color = 'green';
-            iconSource = require('../images/activity/recieve.png');
+            iconSource = IMAGES.activity.receive;
 
             break;
 
@@ -43,15 +44,11 @@ export function Activity({ item }: Props): JSX.Element {
             amount = item.send?.amount;
             type = 'Send';
             color = 'blue';
-            iconSource = require('../images/activity/send.png');
+            iconSource = IMAGES.activity.send;
             break;
 
         default:
-            amount = 0;
-            color = 'black';
-            type = '';
-            iconSource = null;
-            break;
+            throw new Error("Dont know how to display " + MemberActivityType[MemberActivityType.WITHDRAW]);
     }
 
     return (

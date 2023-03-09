@@ -33,16 +33,23 @@ export type SendStackRouteParams = {
     [SendNavScreen.SENDING]: { recipient: EmailAddress, amount: number };
 }
 
-// TODO find the type in react-navigation stuff
-// https://reactnavigation.org/docs/navigation-prop
-export interface Navigation {
-    navigate: (screen: string, params?: object) => void;
-    goBack: () => void;
-    pop: () => void;
+
+export enum ProfileNavScreen {
+    OVERVIEW = "Overview",
+    PAYMENT_METHODS = "PaymentMethods",
+    CONNECTED_ACCOUNTS = "ConnectedAccounts",
+    ADD_FUNDS = "AddFunds",
+    WITHDRAW = "Withdraw",
+    LOG_OUT = "LogOut"
 }
 
 
-// TODO find the type in react-navigation stuff
-export interface Route {
-    params: { [param: string]: any };
+export type ProfileStackRouteParams = {
+    [ProfileNavScreen.OVERVIEW]: undefined;
+    [ProfileNavScreen.PAYMENT_METHODS]: undefined;
+    [ProfileNavScreen.CONNECTED_ACCOUNTS]: undefined;
+    [ProfileNavScreen.ADD_FUNDS]: undefined;
+    [ProfileNavScreen.WITHDRAW]: undefined;
+    [ProfileNavScreen.LOG_OUT]: undefined;
 }
+

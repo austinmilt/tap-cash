@@ -1,19 +1,19 @@
 import { Avatar, Image } from "react-native-ui-lib";
-import { TopNavScreen, TopRouteParams } from "../common/navigation";
-import { Button } from "../components/Button";
-import { Screen } from "../components/Screen";
-import { View } from "../components/View";
-import { useUserProfile } from "../components/profile-provider";
-import { Text } from "../components/Text";
+import { ProfileNavScreen, ProfileStackRouteParams, TopNavScreen, TopRouteParams } from "../../common/navigation";
+import { Screen } from "../../components/Screen";
+import { View } from "../../components/View";
+import { useUserProfile } from "../../components/profile-provider";
+import { Text } from "../../components/Text";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TouchableOpacity, StyleSheet } from 'react-native';
+import { IMAGES } from "../../images/images";
+import { useMemo } from "react";
 
 
-type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.PROFILE>;
+type Props = NativeStackScreenProps<ProfileStackRouteParams, ProfileNavScreen.OVERVIEW>;
 
-export function Profile({ navigation }: Props): JSX.Element {
+export function ProfileOverviewScreen({ navigation }: Props): JSX.Element {
     const { imageUrl, name, email } = useUserProfile();
-    const ccnum = '1234 5678 9012 3456';
 
     return (
         <Screen>
@@ -38,15 +38,15 @@ export function Profile({ navigation }: Props): JSX.Element {
                 </View>
                 <View style={styles.settings}>
                     <Text>SETTINGS</Text>
-                    <TouchableOpacity style={styles.row}>
+                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.PAYMENT_METHODS)}>
                         <View style={styles.iconWrapper}>
                             <Image
-                                source={require('../images/payments/visa.png')}
+                                source={IMAGES.payments.visaMini}
                                 resizeMode="contain"
                             />
                         </View>
                         <View style={styles.ccnumWrapper}>
-                        <Text style={styles.ccnum}>{`•••• •••• •••• ${ccnum.slice(-4)}`}</Text>
+                            <Text style={styles.ccnum}>{`•••• •••• •••• 4567`}</Text>
                         </View>
                         <Text>▶</Text>
                     </TouchableOpacity>
@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
         marginRight: 32,
     },
     profileInfo: {
-        flex: 1,    
+        flex: 1,
         width: 0,
         padding: 20
-      },
+    },
     name: {
         fontSize: 20,
         fontWeight: 'bold',
