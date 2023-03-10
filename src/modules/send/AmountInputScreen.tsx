@@ -10,6 +10,7 @@ import { Text } from "../../components/Text";
 import { Screen } from "../../components/Screen";
 import { useUserProfile } from "../../components/profile-provider";
 import { formatUsd } from "../../common/number";
+import { MAX_TX_AMOUNT } from "../../common/constants";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.AMOUNT_INPUT>;
 
@@ -32,14 +33,22 @@ export function AmountInputScreen(props: Props): JSX.Element {
     }, [amount]);
 
     const amountValid: boolean = (amount != null) && amount > 0;
+    const handleValueChange = (newValue: number) => {
+        if (newValue <= MAX_TX_AMOUNT) {
+            setAmount(newValue);
+        }
+        else {
+            setAmount(9999.99);
+        }
+    };
 
     const onSubmit = useCallback(() => {
         if ((amount == null) || (amount <= 0)) {
             setError("Please enter a positive amount.");
             return;
         }
-        if (amount > 9000) {
-            setError("It's over 9000!");
+        if (amount > MAX_TX_AMOUNT) {
+            setError(`Unable to send more than ${MAX_TX_AMOUNT}!`);
             return;
         }
         const depositAmount: number = Math.max(0, amount - accountBalance);
@@ -70,7 +79,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
             <View centerV gap-sm flexG>
                 {/* @ts-ignore this component's type validation is fucked up*/}
                 <NumberInput
-                    onChangeNumber={(v: { number: number }) => setAmount(v.number)}
+                    onChangeNumber={(v: { number: number }) => handleValueChange(v.number)}
                     onSubmitEditing={onSubmit}
                     leadingText="$"
                     fractionDigits={2}
@@ -79,6 +88,8 @@ export function AmountInputScreen(props: Props): JSX.Element {
                     placeholder={"0"}
                     centered
                     autoFocus
+                    maxLength={7}
+                    // TODO ADD value here
                 />
                 <Text center text-md {...textColorStyle}>
                     Balance: {formatUsd(accountBalance)}

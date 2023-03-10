@@ -8,6 +8,7 @@ import { COLORS } from "../../common/styles";
 import { NumberInput } from "react-native-ui-lib";
 import { View } from "../../components/View";
 import { Text } from "../../components/Text";
+import { MAX_TX_AMOUNT } from "../../common/constants";
 
 type Props = NativeStackScreenProps<DepositStackRouteParams, DepositNavScreen.AMOUNT_INPUT>;
 
@@ -21,13 +22,21 @@ export function AmountInputScreen(props: Props): JSX.Element {
         setError(undefined);
     }, [amount]);
 
+    const handleValueChange = (newValue: number) => {
+        if (newValue <= MAX_TX_AMOUNT) {
+            setAmount(newValue);
+        }
+        else {
+            setAmount(9999.99);
+        }
+    };
     const onSubmit = useCallback(() => {
         if ((amount == null) || (amount <= 0)) {
             setError("Please enter a positive amount.");
             return;
         }
-        if (amount > 9000) {
-            setError("It's over 9000!");
+        if (amount > MAX_TX_AMOUNT) {
+            setError(`Unable to deposit more than ${MAX_TX_AMOUNT}!`);
             return;
         }
         props.navigation.navigate(DepositNavScreen.DEPOSITING, { amount: amount });
@@ -38,7 +47,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
             <View center flexG>
                 {/* @ts-ignore this component's type validation is fucked up */}
                 <NumberInput
-                    onChangeNumber={(v: { number: number }) => setAmount(v.number)}
+                    onChangeNumber={(v: { number: number }) => handleValueChange(v.number)}
                     onSubmitEditing={onSubmit}
                     leadingText="$"
                     fractionDigits={2}
@@ -47,6 +56,8 @@ export function AmountInputScreen(props: Props): JSX.Element {
                     placeholder={"0"}
                     centered
                     autoFocus
+                    maxLength={7}
+                // TODO ADD value here
                 />
                 <Text text-md gray-dark>
                     deposited to your Tap account
