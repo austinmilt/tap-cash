@@ -49,7 +49,7 @@ export function Activity({ item }: Props): JSX.Element {
             break;
 
         default:
-            throw new Error("Dont know how to display " + MemberActivityType[MemberActivityType.WITHDRAW]);
+            throw new Error("Unexpected activity type");
     }
 
     return (

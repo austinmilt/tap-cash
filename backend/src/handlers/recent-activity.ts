@@ -42,17 +42,17 @@ async function getRecentActivity(request: RecentActivityArgs): Promise<MemberAct
 
         const memberString = member.toBase58();
 
-        let txType: MemberActivityType = MemberActivityType.UNKNOWN;
+        let txType: MemberActivityType;
         if (bankChange < 0) { txType = MemberActivityType.DEPOSIT }
         else if (bankChange > 0) { txType = MemberActivityType.WITHDRAW }
         else if (otherPartyChange < 0 && memberChange > 0) { txType = MemberActivityType.RECEIVE }
         else if (otherPartyChange > 0 && memberChange < 0) { txType = MemberActivityType.SEND }
-
         // TODO fix deposits showing up as unknown
         // Added this to handle Devnet MintTo transactions
         else if (memberChange > 0) { txType = MemberActivityType.DEPOSIT }
+        else continue;
 
-        let memberActivity: MemberActivity;
+        let memberActivity: MemberActivity | undefined;
         switch (txType) {
             case MemberActivityType.DEPOSIT:
                 memberActivity = {
@@ -105,18 +105,13 @@ async function getRecentActivity(request: RecentActivityArgs): Promise<MemberAct
                 break;
 
             default:
-                memberActivity = {
-                    type: MemberActivityType.UNKNOWN,
-                    unixTimestamp
-                }
                 break;
         }
 
         // TODO: remove this once we have a better way to handle unknown transactions
         // This is a temporary fix to prevent the app from crashing when it encounters an unknown transaction
-        if (memberActivity.type === MemberActivityType.UNKNOWN) {
+        if (!memberActivity) {
            console.warn("Unknown activity", activity);
-
         } else {
             recentActivityWithMemberDetail.push(memberActivity);
         }

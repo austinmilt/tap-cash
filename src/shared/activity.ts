@@ -19,10 +19,7 @@ export enum MemberActivityType {
     DEPOSIT,
     SEND,
     RECEIVE,
-    WITHDRAW,
-    // This is a catch-all for any activity that doesn't fit the above categories.
-    // We do not expect to see this in the UI, but it's here in case we need it.
-    UNKNOWN
+    WITHDRAW
 }
 
 export interface DepositActivity {

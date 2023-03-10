@@ -36,7 +36,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
         });
 
         return unsubscribe;
-    }, [navigation]);
+    }, [navigation, loggedIn, email, fetchRecentActivity, syncUsdcBalance]);
 
     return (
         <Screen gap-lg style={styles.home}>
@@ -72,7 +72,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 <View style={styles.history} >
                     <Text text-lg gray-dark>Recent Activity</Text>
                     <GridList
-                        data={recentActivity.filter(item => item.type !== MemberActivityType.UNKNOWN)}
+                        data={recentActivity}
                         renderItem={({ item }) => (
                             <Activity item={item} />
                         )}
