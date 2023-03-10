@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../../components/Button";
 import { View } from "../../components/View";
-import { NumberInput } from "react-native-ui-lib";
 import { StyleSheet } from "react-native";
 import { COLORS, TextStyleProps } from "../../common/styles";
 import { SendNavScreen, SendStackRouteParams } from "../../common/navigation";
@@ -11,6 +10,7 @@ import { Screen } from "../../components/Screen";
 import { useUserProfile } from "../../components/profile-provider";
 import { formatUsd } from "../../common/number";
 import { MAX_TX_AMOUNT } from "../../common/constants";
+import { DollarInput } from "../../components/DollarInput";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.AMOUNT_INPUT>;
 
@@ -33,14 +33,6 @@ export function AmountInputScreen(props: Props): JSX.Element {
     }, [amount]);
 
     const amountValid: boolean = (amount != null) && amount > 0;
-    const handleValueChange = (newValue: number) => {
-        if (newValue <= MAX_TX_AMOUNT) {
-            setAmount(newValue);
-        }
-        else {
-            setAmount(9999.99);
-        }
-    };
 
     const onSubmit = useCallback(() => {
         if ((amount == null) || (amount <= 0)) {
@@ -77,19 +69,10 @@ export function AmountInputScreen(props: Props): JSX.Element {
                 <Text gray-medium text-md bold>{props.route.params.recipient.email}</Text>
             </View>
             <View centerV gap-sm flexG>
-                {/* @ts-ignore this component's type validation is fucked up*/}
-                <NumberInput
-                    onChangeNumber={(v: { number: number }) => handleValueChange(v.number)}
-                    onSubmitEditing={onSubmit}
-                    leadingText="$"
-                    fractionDigits={2}
-                    style={STYLES.text}
-                    leadingTextStyle={STYLES.leadingText}
-                    placeholder={"0"}
-                    centered
-                    autoFocus
-                    maxLength={7}
-                    // TODO ADD value here
+                <DollarInput
+                    onSubmit={onSubmit}
+                    maxValue={MAX_TX_AMOUNT}
+                    onValueChange={setAmount}
                 />
                 <Text center text-md {...textColorStyle}>
                     Balance: {formatUsd(accountBalance)}
