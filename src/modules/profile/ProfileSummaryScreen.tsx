@@ -61,7 +61,7 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                     </TouchableOpacity>
                     <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} disabled>
-                        <Text style={styles.action}>Log Out (coming soon)</Text>
+                        <Text style={styles.disabled}>Log Out (coming soon)</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
 
