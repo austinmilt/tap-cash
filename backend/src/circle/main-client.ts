@@ -1,9 +1,9 @@
 import {
     Circle,
-    PaymentCreationRequest,
     CardCreationRequest,
     Card,
     PaymentCreationRequestVerificationEnum,
+    PublicKey,
 } from "@circle-fin/circle-sdk";
 import { ApiError } from "../shared/error";
 import { CIRCLE_API_KEY, CIRCLE_ENVIRONMENT, CIRCLE_MASTER_WALLET, SERVER_ENV } from "../constants";
@@ -24,16 +24,6 @@ export class CircleMainClient implements CircleClient {
         return new CircleMainClient(new Circle(CIRCLE_API_KEY, CIRCLE_ENVIRONMENT));
     }
 
-    /**
-     *
-     * @param paymentDetail PaymentCreationRequest
-     * @returns a payment ID as a string
-     */
-    private async createAndSendPayment(paymentDetail: PaymentCreationRequest): Promise<string | undefined> {
-        let payementResponse = await this.sdk.payments.createPayment(paymentDetail);
-        return payementResponse.data.data?.id;
-    }
-
 
     private async addRandomCard(): Promise<CircleCardId> {
         if (SERVER_ENV === ServerEnv.PROD) {
@@ -45,11 +35,7 @@ export class CircleMainClient implements CircleClient {
 
     // https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
     private async addCreditCard(args: CardDetails): Promise<CircleCardId> {
-        const publicKey = (await this.sdk.encryption.getPublicKey()).data.data;
-        if (publicKey === undefined) {
-            //TODO replace with API error
-            throw new Error("Unable to add card.");
-        }
+        const publicKey: PublicKey = await this.getCircleRsaKey();
         const verificationDetails: CardVerificationDetails = {
             number: args.cardNumber,
             cvv: args.cvv
@@ -74,7 +60,7 @@ export class CircleMainClient implements CircleClient {
             metadata: {
                 email: args.email,
                 phoneNumber: args.phoneNumber,
-                //TODO
+                //TODO copied from example
                 sessionId: 'xxx',
                 ipAddress: '172.33.222.1',
             },
@@ -82,8 +68,8 @@ export class CircleMainClient implements CircleClient {
         let cardResponse = await this.sdk.cards.createCard(payload);
         const cardId: string | undefined = cardResponse.data.data?.id;
         if (cardId === undefined) {
-            //TODO replace with API error
-            throw new Error(`Couldnt make card: status: ${cardResponse.statusText}, code: ${cardResponse.data.data?.errorCode}`);
+            //TODO better error
+            throw ApiError.generalServerError(`Couldnt make card: status: ${cardResponse.statusText}, code: ${cardResponse.data.data?.errorCode}`);
         }
         return cardId;
     }
@@ -101,28 +87,16 @@ export class CircleMainClient implements CircleClient {
 
     public async depositUsdc(args: CircleDepositArgs): Promise<void> {
         //TODO replace when going to prod
-        let cardId: string = "1";
-        try {
-            cardId = await this.addRandomCard();
-
-        } catch (e) {
-            console.error(e);
-            throw e;
-        }
+        const cardId: string = await this.addRandomCard();
         const cardCvv: string = "123"; // all the example cards have this cvv
 
         // https://developers.circle.com/developer/reference/createpayment
-        const publicKey = (await this.sdk.encryption.getPublicKey()).data.data;
-        if (publicKey === undefined) {
-            //TODO replace with API error
-            throw new Error("Unable to add card.");
-        }
+        const publicKey: PublicKey = await this.getCircleRsaKey();
         const verificationDetails: Partial<CardVerificationDetails> = {
             cvv: cardCvv
         };
         const encryptedData = await pgpEncrypt(verificationDetails, publicKey);
         const { encryptedMessage, keyId } = encryptedData;
-
 
         const transactionId: string = uuid();
         const response = await this.sdk.payments.createPayment({
@@ -165,8 +139,6 @@ export class CircleMainClient implements CircleClient {
                     }
                 });
 
-                console.log("DONE!", transfer.statusText, transfer.data.data?.status);
-
                 if (transfer.status >= 400) {
                     //TODO better error
                     throw ApiError.generalServerError("Unable to transfer funds to user.");
@@ -175,6 +147,15 @@ export class CircleMainClient implements CircleClient {
                 ApiError.generalServerError("Failed to transfer funds to user.");
             }
         }
+    }
+
+
+    private async getCircleRsaKey(): Promise<PublicKey> {
+        const publicKey = (await this.sdk.encryption.getPublicKey()).data.data;
+        if (publicKey === undefined) {
+            throw ApiError.generalServerError("Unable to get Circle credentials.");
+        }
+        return publicKey;
     }
 }
 
@@ -185,25 +166,6 @@ interface MetaData {
     phoneNumber?: string;
     sessionId: string;
     ipAddress: string;
-}
-
-
-interface CreateCardPayload {
-    idempotencyKey: string;
-    keyId: string;
-    encryptedData: string;
-    billingDetails: {
-        name: string;
-        city: string;
-        country: string;
-        line1: string;
-        line2: string;
-        district: string;
-        postalCode: string;
-    };
-    expMonth: number;
-    expYear: number;
-    metadata: MetaData
 }
 
 
