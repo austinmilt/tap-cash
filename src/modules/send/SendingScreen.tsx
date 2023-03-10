@@ -13,7 +13,7 @@ import { Badge } from "react-native-ui-lib";
 import { COLORS } from "../../common/styles";
 import { RecipientProfile } from "../../components/RecipientProfile";
 import { TransactionStatus } from "../../components/TransactionStatus";
-import { BigDollars } from "../../components/BigBalance";
+import { BigDollars } from "../../components/BigDollars";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.SENDING>;
 

@@ -10,7 +10,7 @@ import { Screen } from "../../components/Screen";
 import { formatUsd } from "../../common/number";
 import { StyleSheet } from "react-native";
 import { TransactionStatus } from "../../components/TransactionStatus";
-import { BigDollars } from "../../components/BigBalance";
+import { BigDollars } from "../../components/BigDollars";
 
 type Props = NativeStackScreenProps<DepositStackRouteParams, DepositNavScreen.DEPOSITING>;
 

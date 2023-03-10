@@ -12,7 +12,7 @@ import { Loading } from "../../components/Loading";
 import { Screen } from "../../components/Screen";
 import { StyleSheet } from "react-native";
 import { RecipientProfile } from "../../components/RecipientProfile";
-import { BigDollars } from "../../components/BigBalance";
+import { BigDollars } from "../../components/BigDollars";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.CONFIRM>;
 
