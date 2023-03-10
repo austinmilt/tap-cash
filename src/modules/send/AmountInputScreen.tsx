@@ -54,7 +54,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
         );
     }, [props.navigation.navigate, amount]);
 
-    const insufficientBalance: boolean = (amount != null) && (accountBalance < amount);
+    const insufficientBalance: boolean = accountBalance < amount;
     const textColorStyle: TextStyleProps = insufficientBalance ? {
         "error": true
     } : {

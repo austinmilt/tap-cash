@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: "Jost-Bold",
         marginBottom: 4,
     },
     email: {
