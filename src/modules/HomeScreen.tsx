@@ -12,7 +12,6 @@ import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-na
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
-import { MemberActivityType } from "../shared/activity";
 import { BigDollars } from "../components/BigDollars";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
@@ -29,7 +28,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
             if (loggedIn && email) {
                 fetchRecentActivity({
                     memberEmail: email,
-                    limit: 5
+                    limit: 10
                 });
                 syncUsdcBalance();
             }
