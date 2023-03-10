@@ -1,4 +1,4 @@
-import { TopNavScreen, TopRouteParams } from "../common/navigation";
+import { ProfileNavScreen, TopNavScreen, TopRouteParams } from "../common/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
@@ -19,7 +19,7 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
     const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
-    const { submit: fetchRecentActivity, data } = useRecentActivity();
+    const { submit: fetchRecentActivity, data: recentActivity } = useRecentActivity();
     const [displayWelcome, setDisplayWelcome] = useState(true);
 
     // update home data each time the user returns to the screen
@@ -68,11 +68,11 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
-            {data?.length ?
+            {recentActivity?.length ?
                 <View style={styles.history} >
                     <Text text-lg gray-dark>Recent Activity</Text>
                     <GridList
-                        data={data.filter(item => item.type !== MemberActivityType.UNKNOWN)}
+                        data={recentActivity.filter(item => item.type !== MemberActivityType.UNKNOWN)}
                         renderItem={({ item }) => (
                             <Activity item={item} />
                         )}
@@ -94,8 +94,10 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                             Deposit cash
                             to start sending money to friends.
                         </Text>
-                        {/* TODO Add navigate to deposit workflow */}
-                        <TouchableOpacity onPress={() => navigation.navigate(TopNavScreen.HOME)}>
+                        <TouchableOpacity onPress={() => navigation.navigate(
+                            TopNavScreen.PROFILE,
+                            { screen: ProfileNavScreen.ADD_FUNDS }
+                        )}>
                             <Text text-lg primary-medium>Add funds</Text>
                         </TouchableOpacity>
                     </View>

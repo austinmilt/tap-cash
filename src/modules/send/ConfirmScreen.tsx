@@ -50,7 +50,7 @@ export function ConfirmScreen(props: Props): JSX.Element {
                     <View flexG centerV gap-sm >
                         <BigDollars>{finalAmount}</BigDollars>
                         {!needsDeposit && (
-                            <Text text-md gray-dark>from your Tap account</Text>
+                            <Text text-md gray-dark center>from your Tap account</Text>
                         )}
                         <Text text-md gray-dark center>to</Text>
                         <RecipientProfile {...recipient} bordered padding-sm style={{ width: "100%", gap: 16 }} />

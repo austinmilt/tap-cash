@@ -12,7 +12,7 @@ import { useMemo } from "react";
 
 type Props = NativeStackScreenProps<ProfileStackRouteParams, ProfileNavScreen.OVERVIEW>;
 
-export function ProfileOverviewScreen({ navigation }: Props): JSX.Element {
+export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element {
     const { imageUrl, name, email } = useUserProfile();
 
     return (
@@ -55,12 +55,12 @@ export function ProfileOverviewScreen({ navigation }: Props): JSX.Element {
                         <Text style={styles.action}>Add Funds</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
-                    <TouchableOpacity style={styles.row} onPress={() => console.log('remove')}>
-                        <Text style={styles.action}>Withdraw Funds</Text>
+                    <TouchableOpacity style={styles.row} disabled>
+                        <Text style={styles.action}>Withdraw Funds (coming soon)</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
-                    <TouchableOpacity style={styles.row} onPress={() => console.log('logout')}>
-                        <Text style={styles.action}>Log Out</Text>
+                    <TouchableOpacity style={styles.row} disabled>
+                        <Text style={styles.action}>Log Out (coming soon)</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
 

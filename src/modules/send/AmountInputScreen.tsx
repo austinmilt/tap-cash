@@ -14,7 +14,7 @@ import { formatUsd } from "../../common/number";
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.AMOUNT_INPUT>;
 
 export function AmountInputScreen(props: Props): JSX.Element {
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<number | undefined>();
     const [error, setError] = useState<string | undefined>();
     const userProfileContext = useUserProfile();
     const accountBalance: number = useMemo(() => (
@@ -30,6 +30,8 @@ export function AmountInputScreen(props: Props): JSX.Element {
     useEffect(() => {
         setError(undefined);
     }, [amount]);
+
+    const amountValid: boolean = (amount != null) && amount > 0;
 
     const onSubmit = useCallback(() => {
         if ((amount == null) || (amount <= 0)) {
@@ -51,7 +53,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
         );
     }, [props.navigation.navigate, amount]);
 
-    const insufficientBalance: boolean = accountBalance < amount;
+    const insufficientBalance: boolean = (amount != null) && (accountBalance < amount);
     const textColorStyle: TextStyleProps = insufficientBalance ? {
         "error": true
     } : {
@@ -88,7 +90,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
                     <Text text-md gray-medium center error>{error}</Text>
                 </View>
             )}
-            <Button primary label={buttonLabel} onPress={onSubmit} />
+            <Button primary label={buttonLabel} onPress={onSubmit} disabled={!amountValid} />
         </Screen>
     )
 }

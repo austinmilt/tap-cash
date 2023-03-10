@@ -14,7 +14,7 @@ export enum TopNavScreen {
 export type TopRouteParams = {
     [TopNavScreen.HOME]: undefined;
     [TopNavScreen.AUTHENTICATE]: undefined;
-    [TopNavScreen.PROFILE]: undefined;
+    [TopNavScreen.PROFILE]: { screen?: ProfileNavScreen } | undefined;
     [TopNavScreen.SEND]: undefined;
     [TopNavScreen.SPLASH]: undefined;
 }
