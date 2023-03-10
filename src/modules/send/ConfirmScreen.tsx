@@ -12,6 +12,7 @@ import { Loading } from "../../components/Loading";
 import { Screen } from "../../components/Screen";
 import { StyleSheet } from "react-native";
 import { RecipientProfile } from "../../components/RecipientProfile";
+import { BigDollars } from "../../components/BigDollars";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.CONFIRM>;
 
@@ -46,15 +47,19 @@ export function ConfirmScreen(props: Props): JSX.Element {
             {loading && <Loading />}
             {!loading && (
                 <View flexG padding-md style={{ paddingBottom: 66 }}>
-                    <View flexG center gap-sm>
-                        <Text gray-dark bold center style={STYLES.amount}>{formatUsd(finalAmount)}</Text>
-                        {(needsDeposit) && (
-                            <View center>
-                                <Text text-md gray-dark>{formatUsd(finalAmount - finalDepositAmount)} from your account</Text>
+                    <View flexG centerV gap-sm >
+                        <BigDollars>{finalAmount}</BigDollars>
+                        {!needsDeposit && (
+                            <Text text-md gray-dark center>from your Tap account</Text>
+                        )}
+                        <Text text-md gray-dark center>to</Text>
+                        <RecipientProfile {...recipient} bordered padding-sm style={{ width: "100%", gap: 16 }} />
+                        {needsDeposit && (
+                            <View gap-md style={{ marginTop: 24 }}>
+                                <Text text-md gray-dark>{formatUsd(finalAmount - finalDepositAmount)} from your Tap account</Text>
                                 <Text text-md gray-dark>{formatUsd(finalDepositAmount)} charged to card ending in {paymentMethod?.creditCard?.lastFourDigits}</Text>
                             </View>
                         )}
-                        <RecipientProfile {...recipient} />
                     </View>
                     <Button
                         secondary

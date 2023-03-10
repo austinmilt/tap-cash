@@ -13,9 +13,9 @@ interface Props {
 
 export function Button(props: Props & ButtonProps): JSX.Element {
     const [fontColor, bgColor, borderColor]: [string, string, string | undefined] = useMemo(() => {
-        if (props.secondary) return [COLORS.grayLight, COLORS.secondaryMedium, undefined];
-        if (props.tertiary) return [COLORS.grayDark, COLORS.grayLight, COLORS.grayMedium];
-        else return [COLORS.grayLight, COLORS.primaryMedium, undefined];
+        if (props.secondary) return [COLORS.whiteish, COLORS.secondaryMedium, undefined];
+        if (props.tertiary) return [COLORS.grayDark, COLORS.whiteish, COLORS.grayLight];
+        else return [COLORS.whiteish, COLORS.primaryMedium, undefined];
     }, [props.secondary, props.tertiary, props.primary]);
 
     const labelStyle = {
@@ -32,7 +32,7 @@ export function Button(props: Props & ButtonProps): JSX.Element {
             outlineColor={borderColor}
             labelStyle={labelStyle}
             borderRadius={5}
-            size="large"
+            style={{ height: 48 }}
             {...props}
         />
     )

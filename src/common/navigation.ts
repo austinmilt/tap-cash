@@ -1,4 +1,6 @@
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { MemberPublicProfile } from "../shared/member";
+import { COLORS } from "./styles";
 
 export enum TopNavScreen {
     SPLASH = "Splash",
@@ -12,7 +14,7 @@ export enum TopNavScreen {
 export type TopRouteParams = {
     [TopNavScreen.HOME]: undefined;
     [TopNavScreen.AUTHENTICATE]: undefined;
-    [TopNavScreen.PROFILE]: undefined;
+    [TopNavScreen.PROFILE]: { screen?: ProfileNavScreen } | undefined;
     [TopNavScreen.SEND]: undefined;
     [TopNavScreen.SPLASH]: undefined;
 }
@@ -33,16 +35,47 @@ export type SendStackRouteParams = {
     [SendNavScreen.SENDING]: { recipient: MemberPublicProfile, amount: number, depositAmount: number };
 }
 
-// TODO find the type in react-navigation stuff
-// https://reactnavigation.org/docs/navigation-prop
-export interface Navigation {
-    navigate: (screen: string, params?: object) => void;
-    goBack: () => void;
-    pop: () => void;
+
+export enum ProfileNavScreen {
+    OVERVIEW = "Overview",
+    PAYMENT_METHODS = "PaymentMethods",
+    CONNECTED_ACCOUNTS = "ConnectedAccounts",
+    ADD_FUNDS = "AddFunds",
+    WITHDRAW = "Withdraw",
+    LOG_OUT = "LogOut"
 }
 
 
-// TODO find the type in react-navigation stuff
-export interface Route {
-    params: { [param: string]: any };
+export type ProfileStackRouteParams = {
+    [ProfileNavScreen.OVERVIEW]: undefined;
+    [ProfileNavScreen.PAYMENT_METHODS]: undefined;
+    [ProfileNavScreen.CONNECTED_ACCOUNTS]: undefined;
+    [ProfileNavScreen.ADD_FUNDS]: undefined;
+    [ProfileNavScreen.WITHDRAW]: undefined;
+    [ProfileNavScreen.LOG_OUT]: undefined;
+}
+
+
+export enum DepositNavScreen {
+    AMOUNT_INPUT = "AmountInput",
+    DEPOSITING = "Depositing"
+}
+
+
+export type DepositStackRouteParams = {
+    [DepositNavScreen.AMOUNT_INPUT]: undefined;
+    [DepositNavScreen.DEPOSITING]: { amount: number };
+}
+
+
+export const STACK_DEFAULTS: NativeStackNavigationOptions = {
+    headerStyle: {
+        backgroundColor: COLORS.whiteish,
+    },
+    headerTitleStyle: {
+        fontFamily: "Jost-Medium",
+        fontSize: 20
+    },
+    headerShadowVisible: false,
+    headerTitleAlign: "center"
 }

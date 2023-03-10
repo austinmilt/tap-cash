@@ -13,11 +13,11 @@ const defaultProps: Props = {
 };
 
 export function AppLogo(props: Props): JSX.Element {
-    const finalProps: Props = {...defaultProps, ...props};
+    const finalProps: Props = { ...defaultProps, ...props };
     const extraProps = useMemo(() => {
         const textProps: TextStyleProps = {};
         if (props.primary) textProps["primary-medium"] = true;
-        if (props.secondary) textProps["gray-light"] = true;
+        if (props.secondary) textProps["whiteish"] = true;
         return textProps;
     }, [props]);
 

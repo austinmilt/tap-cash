@@ -25,12 +25,12 @@ import {
     ApiQueryRecipientsResult,
     ApiAccountRequest,
     ApiAccountResult,
-    ApiSavedPaymentMethodsRequest,
-    ApiSavedPaymentMethodsResult
+    ApiSavedPaymentMethodsRequest
 } from "../shared/api";
-import { EmailAddress, ProfilePicture, AccountId, MemberPublicProfile, MemberPrivateProfile } from "../shared/member";
-import { PaymentMethodSummary } from "../shared/payment";
 import { PublicKey } from "../solana/solana";
+import { IMAGES } from "../images/images";
+import { EmailAddress, ProfilePicture, MemberPrivateProfile, AccountId, MemberPublicProfile } from "../shared/member";
+import { PaymentMethodSummary, PaymentMethodType, CreditCardCarrier } from "../shared/payment";
 
 interface QueryContext<Req, Res> {
     submit(request: Req): void;
@@ -342,8 +342,16 @@ interface SavedPaymentMethodsArgs {
 }
 
 
-export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, PaymentMethodSummary[]> {
-    const queryContext = useGetQuery<ApiSavedPaymentMethodsRequest, ApiSavedPaymentMethodsResult>(SAVED_PAYMENT_METHODS_URI);
+export interface EnrichedPaymentMethodSummary extends PaymentMethodSummary {
+    iconSource: {
+        mini: string;
+        square: string;
+    }
+}
+
+
+export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, EnrichedPaymentMethodSummary[]> {
+    const queryContext = useGetQuery<ApiSavedPaymentMethodsRequest, EnrichedPaymentMethodSummary[]>(SAVED_PAYMENT_METHODS_URI);
 
     const submit = useCallback(({ memberEmail }: SavedPaymentMethodsArgs) => {
         queryContext.submit({
@@ -352,9 +360,12 @@ export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, 
     }, [queryContext.submit]);
 
 
-    const data: PaymentMethodSummary[] | undefined = useMemo(() => {
+    const data: EnrichedPaymentMethodSummary[] | undefined = useMemo(() => {
         if (queryContext.data === undefined) return undefined;
-        return queryContext.data;
+        return queryContext.data.map(v => ({
+            ...v,
+            iconSource: getPaymentMethodIconSource(v)
+        }));
     }, [queryContext.data]);
 
     return {
@@ -362,6 +373,27 @@ export function useSavedPaymentMethods(): QueryContext<SavedPaymentMethodsArgs, 
         submit: submit,
         data: data
     };
+}
+
+
+function getPaymentMethodIconSource(method: PaymentMethodSummary): EnrichedPaymentMethodSummary['iconSource'] {
+    switch (method.type) {
+        case PaymentMethodType.CREDIT_CARD: {
+            switch (method.creditCard?.carrier) {
+                case CreditCardCarrier.VISA: return {
+                    mini: IMAGES.payments.visaMini,
+                    square: IMAGES.payments.visaSquare
+                }
+
+                default: return {
+                    mini: IMAGES.payments.unknownMini,
+                    square: IMAGES.payments.unknownSquare
+                }
+            }
+        }
+
+        default: throw new Error("Cannot process " + PaymentMethodType[method.type]);
+    }
 }
 
 

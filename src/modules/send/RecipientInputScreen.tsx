@@ -111,7 +111,7 @@ export function RecipientInputScreen(props: Props): JSX.Element {
                     />
                 )}
                 {validationError && (
-                    <View flexG center gap-sm>
+                    <View flexG center gap-sm style={{ paddingHorizontal: "15%" }}>
                         <Text text-lg gray-dark center>No results</Text>
                         <Text text-md gray-medium center>{validationError}</Text>
                     </View>

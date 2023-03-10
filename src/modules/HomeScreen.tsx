@@ -1,4 +1,4 @@
-import { TopNavScreen, TopRouteParams } from "../common/navigation";
+import { ProfileNavScreen, TopNavScreen, TopRouteParams } from "../common/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
@@ -10,27 +10,32 @@ import { Avatar, GridList } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
 import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { COLORS } from "../common/styles";
-import { formatUsd } from "../common/number";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
-import { MemberActivityType } from "../shared/activity";
+import { BigDollars } from "../components/BigDollars";
+
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
-
-
-    const { name, imageUrl, usdcBalance, email, syncUsdcBalance } = useUserProfile();
-    const { loading: loadingActivity, submit: fetchRecentActivity, data, error } = useRecentActivity();
+    const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
+    const { submit: fetchRecentActivity, data: recentActivity } = useRecentActivity();
     const [displayWelcome, setDisplayWelcome] = useState(true);
 
+    // update home data each time the user returns to the screen
+    // https://reactnavigation.org/docs/navigation-lifecycle
     useEffect(() => {
-        if (!email) return;
-        fetchRecentActivity({
-            memberEmail: email,
-            limit: 5
+        const unsubscribe = navigation.addListener('focus', () => {
+            if (loggedIn && email) {
+                fetchRecentActivity({
+                    memberEmail: email,
+                    limit: 10
+                });
+                syncUsdcBalance();
+            }
         });
-        syncUsdcBalance();
-    }, [email]);
+
+        return unsubscribe;
+    }, [navigation, loggedIn, email, fetchRecentActivity, syncUsdcBalance]);
 
     return (
         <Screen gap-lg style={styles.home}>
@@ -39,7 +44,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     <AppLogo primary fontSize={48} />
                 </View>
                 <View style={styles.user} gap-sm>
-                    <Text gray-dark>
+                    <Text gray-dark text-md>
                         Hello, {name}
                     </Text>
                     <TouchableOpacity onPress={() => navigation.navigate(TopNavScreen.PROFILE)}>
@@ -51,9 +56,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 </View>
             </View>
             <View>
-                <Text style={styles.balance} center>
-                    {formatUsd(usdcBalance ?? 0)}
-                </Text>
+                <BigDollars>{usdcBalance ?? 0}</BigDollars>
             </View>
             <View style={styles.buttonContainer}>
                 <Button
@@ -64,11 +67,11 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
-            {data?.length ?
+            {recentActivity?.length ?
                 <View style={styles.history} >
                     <Text text-lg gray-dark>Recent Activity</Text>
                     <GridList
-                        data={data.filter(item => item.type !== MemberActivityType.UNKNOWN)}
+                        data={recentActivity}
                         renderItem={({ item }) => (
                             <Activity item={item} />
                         )}
@@ -90,8 +93,10 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                             Deposit cash
                             to start sending money to friends.
                         </Text>
-                        {/* TODO Add navigate to deposit workflow */}
-                        <TouchableOpacity onPress={() => navigation.navigate(TopNavScreen.HOME)}>
+                        <TouchableOpacity onPress={() => navigation.navigate(
+                            TopNavScreen.PROFILE,
+                            { screen: ProfileNavScreen.ADD_FUNDS }
+                        )}>
                             <Text text-lg primary-medium>Add funds</Text>
                         </TouchableOpacity>
                     </View>

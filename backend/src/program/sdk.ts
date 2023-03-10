@@ -304,7 +304,14 @@ export class MainTapCashClient implements TapCashClient {
             const memberPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
             const otherPartyPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => !balance?.isCurrentMember);
             const otherPartyPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => !balance?.isCurrentMember);
-            const otherPartyAddress: string | undefined = otherPartyPreBalance?.owner ?? otherPartyPostBalance?.owner;
+            let otherPartyAddress: PublicKey | undefined;
+            if (otherPartyPreBalance?.owner) {
+                otherPartyAddress = getAssociatedTokenAddressSync(FAKE_USDC.publicKey, new PublicKey(otherPartyPreBalance?.owner), true);
+            }
+            else if (otherPartyPostBalance?.owner) {
+                otherPartyAddress = getAssociatedTokenAddressSync(FAKE_USDC.publicKey, new PublicKey(otherPartyPostBalance?.owner), true);
+            }
+            else {otherPartyAddress = undefined}
             const bankPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankChange: number = (bankPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (bankPreBalance?.uiTokenAmount?.uiAmount ?? 0);
@@ -314,7 +321,7 @@ export class MainTapCashClient implements TapCashClient {
                 bankChange,
                 otherPartyChange,
                 memberChange,
-                otherPartyAtaAddress: otherPartyAddress ? new PublicKey(otherPartyAddress) : undefined,
+                otherPartyAtaAddress: otherPartyAddress ? otherPartyAddress : undefined,
                 memberAtaAddress: member,
                 unixTimestamp: tx.blockTime ?? undefined,
             };

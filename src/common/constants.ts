@@ -61,3 +61,5 @@ function parseEnv<T>(
 function castString<T>(value: string): T {
     return value as unknown as T;
 }
+
+export const MAX_TX_AMOUNT = 9999;

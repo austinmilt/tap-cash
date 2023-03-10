@@ -4,14 +4,14 @@ import { View } from "../../components/View";
 import { SendNavScreen, SendStackRouteParams, TopNavScreen } from "../../common/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDepositAndSend } from "../../api/client";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useUserProfile } from "../../components/profile-provider";
 import { Screen } from "../../components/Screen";
 import { formatUsd } from "../../common/number";
 import { StyleSheet } from "react-native";
-import { Badge } from "react-native-ui-lib";
-import { COLORS } from "../../common/styles";
 import { RecipientProfile } from "../../components/RecipientProfile";
+import { TransactionStatus } from "../../components/TransactionStatus";
+import { BigDollars } from "../../components/BigDollars";
 
 type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.SENDING>;
 
@@ -45,125 +45,66 @@ export function SendingScreen(props: Props): JSX.Element {
     }, []);
 
     return (
-        <Screen>
-            <View flexG padding-md style={{ paddingBottom: 66 }}>
-                <View flexG center gap-sm>
-                    <Text gray-dark bold style={STYLES.amount}>{formatUsd(amount)}</Text>
-                    <RecipientProfile {...recipient} />
+        <Screen padding-md style={{ paddingBottom: 66 }}>
+            <View flexG centerV gap-sm>
+                <BigDollars>{amount}</BigDollars>
+                <Text text-md gray-dark center>to</Text>
+                <RecipientProfile {...recipient} bordered padding-sm style={{ width: "100%", gap: 16 }} />
+                <View left gap-md style={{ marginTop: 24 }}>
                     {(needsDeposit) && (
-                        <View>
-                            <TransactionStatus
-                                {...depositAndSendContext.deposit}
-                                defaultContent={
-                                    <Text text-md gray-gray-medium>
-                                        loading
-                                    </Text>
-                                }
-                                loadingContent={
-                                    <Text text-md gray-dark>
-                                        depositing {formatUsd(depositAmount)} to your account
-                                    </Text>
-                                }
-                                errorContent={
-                                    <Text text-md error>
-                                        failed to deposit {formatUsd(depositAmount)} to your account
-                                    </Text>
-                                }
-                                successContent={
-                                    <Text text-md gray-gray-medium>
-                                        deposited {formatUsd(depositAmount)} to your account
-                                    </Text>
-                                }
-                            />
-
-                            <TransactionStatus
-                                {...depositAndSendContext.send}
-                                defaultContent={<Text />}
-                                loadingContent={
-                                    <Text text-md gray-dark>
-                                        sending {formatUsd(amount)} from your account
-                                    </Text>
-                                }
-                                errorContent={
-                                    <Text text-md error>
-                                        failed to send {formatUsd(amount)} from your account
-                                    </Text>
-                                }
-                                successContent={
-                                    <Text text-md gray-gray-medium>
-                                        sent {formatUsd(amount)} from your account
-                                    </Text>
-                                }
-                            />
-                        </View>
+                        <TransactionStatus
+                            {...depositAndSendContext.deposit}
+                            defaultContent={
+                                <Text text-md gray-medium>
+                                    loading
+                                </Text>
+                            }
+                            loadingContent={
+                                <Text text-md gray-dark>
+                                    depositing {formatUsd(depositAmount)} to your Tap account
+                                </Text>
+                            }
+                            errorContent={
+                                <Text text-md error>
+                                    failed to deposit {formatUsd(depositAmount)} to your Tap account
+                                </Text>
+                            }
+                            successContent={
+                                <Text text-md gray-dark>
+                                    deposited {formatUsd(depositAmount)} to your Tap account
+                                </Text>
+                            }
+                        />
                     )}
+                    <TransactionStatus
+                        {...depositAndSendContext.send}
+                        defaultContent={<Text />}
+                        loadingContent={
+                            <Text text-md gray-dark>
+                                sending {formatUsd(amount)} from your Tap account
+                            </Text>
+                        }
+                        errorContent={
+                            <Text text-md error>
+                                failed to send {formatUsd(amount)} from your Tap account
+                            </Text>
+                        }
+                        successContent={
+                            <Text text-md gray-dark>
+                                sent {formatUsd(amount)} from your Tap account
+                            </Text>
+                        }
+                    />
                 </View>
-                <Button
-                    tertiary
-                    label="Done"
-                    disabled={loading}
-                    onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
-                />
             </View>
+            <Button
+                tertiary
+                label="Home"
+                disabled={loading}
+                onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
+            />
         </Screen>
     )
-}
-
-
-interface TransactionStatusProps {
-    loading: boolean;
-    success: boolean | undefined;
-    error: any | undefined;
-    defaultContent: JSX.Element;
-    loadingContent: JSX.Element;
-    successContent: JSX.Element;
-    errorContent: JSX.Element;
-}
-
-
-function TransactionStatus(props: TransactionStatusProps): JSX.Element {
-    const badgeColor: string | undefined = useMemo(() => {
-        if (props.loading) return COLORS.primaryMedium;
-        return "transparent";
-    }, [props.loading, props.success, props.error]);
-
-    const badgeLabel: string | undefined = useMemo(() => {
-        if (props.success) return "✓";
-        return undefined;
-    }, [props.loading, props.success, props.error]);
-
-    const badgeLabelColor: string | undefined = useMemo(() => {
-        if (props.error) return COLORS.error;
-        if (props.loading) return COLORS.grayLight;
-        return COLORS.grayMedium;
-    }, [props.loading, props.success, props.error]);
-
-    const renderBadge: boolean = (badgeLabel != null) || (badgeColor != null);
-
-    const content: JSX.Element = useMemo(() => {
-        if (props.error) return props.errorContent;
-        if (props.loading) return props.loadingContent;
-        if (props.success) return props.successContent;
-        return props.defaultContent;
-    }, [
-        props.loadingContent,
-        props.successContent,
-        props.errorContent,
-        props.defaultContent
-    ]);
-
-    return (
-        <View row gap-sm center>
-            {renderBadge && (
-                <Badge
-                    backgroundColor={badgeColor}
-                    label={badgeLabel}
-                    labelStyle={{ color: badgeLabelColor }}
-                />
-            )}
-            {content}
-        </View>
-    );
 }
 
 
