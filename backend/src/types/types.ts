@@ -23,3 +23,10 @@ export enum ServerEnv {
     PROD,
     TEST
 }
+
+
+export enum CircleClientType {
+    MOCK,
+    EMULATOR,
+    MAIN
+}

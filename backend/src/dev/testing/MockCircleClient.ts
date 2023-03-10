@@ -17,7 +17,7 @@ export class MockCircleClient implements CircleClient {
         return new MockCircleClient(tapClient);
     }
 
-    public async transferUsdc(args: CircleDepositArgs): Promise<void> {
+    public async depositUsdc(args: CircleDepositArgs): Promise<void> {
         this.balances.set(
             args.destinationAtaString,
             this.balances.get(args.destinationAtaString) ?? 0 + args.amount

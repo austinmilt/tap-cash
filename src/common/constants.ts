@@ -12,12 +12,6 @@ export const QUERY_RECIPIENTS_URI: string = parseEnv("QUERY_RECIPIENTS_URI", Con
 export const MEMBER_ACCOUNT_URI: string = parseEnv("MEMBER_ACCOUNT_URI", Config.MEMBER_ACCOUNT_URI);
 export const RECENT_ACTIVITY_URI: string = parseEnv("RECENT_ACTIVITY_URI", Config.RECENT_ACTIVITY_URI);
 export const SAVED_PAYMENT_METHODS_URI: string = parseEnv("SAVED_PAYMENT_METHODS_URI", Config.SAVED_PAYMENT_METHODS_URI);
-export const USDC_MINT_ADDRESS: PublicKey = parseEnv(
-    "USDC_MINT_ADDRESS",
-    Config.USDC_MINT_ADDRESS,
-    undefined,
-    v => new PublicKey(v)
-);
 export const WEB3_AUTH_NETWORK: string = parseEnv(
     "WEB3_AUTH_NETWORK",
     Config.WEB3_AUTH_NETWORK,

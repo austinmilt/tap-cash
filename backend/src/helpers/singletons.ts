@@ -1,14 +1,14 @@
 import { CircleEmulator } from "../circle/circle-emulator";
 import { CircleClient } from "../circle/client";
 import { CircleMainClient } from "../circle/main-client";
-import { SERVER_ENV, USE_IN_MEMORY_DB, USE_MOCK_CIRCLE, USE_MOCK_TAP_CASH } from "../constants";
+import { SERVER_ENV, USE_IN_MEMORY_DB, CIRCLE_CLIENT_TYPE, USE_MOCK_TAP_CASH } from "../constants";
 import { DatabaseClient } from "../db/client";
 import { FirestoreClient } from "../db/firestore";
 import { InMemoryDatabaseClient } from "../dev/testing/InMemoryDatabaseClient";
 import { MockCircleClient } from "../dev/testing/MockCircleClient";
 import { MockTapCashClient } from "../dev/testing/MockTapCashClient";
 import { MainTapCashClient, TapCashClient } from "../program/sdk";
-import { ServerEnv } from "../types/types";
+import { CircleClientType, ServerEnv } from "../types/types";
 
 let dbClient: DatabaseClient;
 export function getDatabaseClient(): DatabaseClient {
@@ -66,11 +66,26 @@ export function getCircleClient(): CircleClient {
                 throw new Error("Must use MockTapCashClient for MockCircleClient");
             }
         };
+        let constructor: () => CircleClient;
+        switch (CIRCLE_CLIENT_TYPE) {
+            case CircleClientType.MOCK: {
+                constructor = makeMocked;
+                break;
+            }
+            case CircleClientType.EMULATOR: {
+                constructor = CircleEmulator.ofDefaults;
+                break;
+            }
+            case CircleClientType.MAIN: {
+                constructor = CircleMainClient.ofDefaults;
+                break;
+            }
+        }
         circleClient = makeSingleton<CircleClient>(
-            makeMocked,
-            () => USE_MOCK_CIRCLE ? makeMocked() : CircleEmulator.ofDefaults(),
-            CircleMainClient.ofDefaults,
-            CircleMainClient.ofDefaults
+            constructor,
+            constructor,
+            constructor,
+            constructor
         )
     }
     return circleClient;

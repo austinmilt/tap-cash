@@ -4,7 +4,6 @@ import {
     PublicKey,
 } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
-import { USDC_MINT_ADDRESS } from "../common/constants";
 
 export { Connection, PublicKey, Keypair };
 
