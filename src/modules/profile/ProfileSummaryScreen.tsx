@@ -5,7 +5,7 @@ import { View } from "../../components/View";
 import { useUserProfile } from "../../components/profile-provider";
 import { Text } from "../../components/Text";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { IMAGES } from "../../images/images";
 import { useMemo } from "react";
 import { COLORS } from "../../common/styles";
@@ -64,7 +64,13 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                         <Text style={styles.disabled}>Log Out (coming soon)</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
-
+                    <TouchableOpacity
+                        style={styles.row}
+                        onPress={() => Linking.openURL('https://airtable.com/shrbYDC8A1MqFjSH3')}
+                    >
+                        <Text style={styles.action}>Provide feedback</Text>
+                    </TouchableOpacity>
+                    <View style={styles.divider} />
                 </View>
             </View>
 
