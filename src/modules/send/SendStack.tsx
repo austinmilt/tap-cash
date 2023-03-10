@@ -31,7 +31,7 @@ export function SendStack(props: Props): JSX.Element {
             <Stack.Screen
                 name={SendNavScreen.CONFIRM}
                 component={ConfirmScreen}
-                options={{ title: "Confirm" }}
+                options={{ title: "Confirmation" }}
             />
             <Stack.Screen
                 name={SendNavScreen.SENDING}

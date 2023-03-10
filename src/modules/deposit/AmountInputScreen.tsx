@@ -19,7 +19,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
     // it may be valid again
     useEffect(() => {
         setError(undefined);
-    }, [amount])
+    }, [amount]);
 
     const onSubmit = useCallback(() => {
         if ((amount == null) || (amount <= 0)) {
@@ -34,7 +34,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
     }, [props.navigation.navigate, amount]);
 
     return (
-        <Screen padding-md spread>
+        <Screen padding-md spread style={{ paddingBottom: 66 }}>
             <View center flexG>
                 {/* @ts-ignore this component's type validation is fucked up */}
                 <NumberInput

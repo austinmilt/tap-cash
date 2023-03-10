@@ -47,66 +47,64 @@ export function SendingScreen(props: Props): JSX.Element {
     }, []);
 
     return (
-        <Screen>
-            <View flexG padding-md style={{ paddingBottom: 66 }}>
-                <View flexG center gap-sm>
-                    <BigDollars>{amount}</BigDollars>
-                    <RecipientProfile {...recipient} />
+        <Screen padding-md style={{ paddingBottom: 66 }}>
+            <View flexG centerV gap-sm>
+                <BigDollars>{amount}</BigDollars>
+                <Text text-md gray-dark center>to</Text>
+                <RecipientProfile {...recipient} bordered padding-sm style={{ width: "100%", gap: 16 }} />
+                <View left gap-md style={{ marginTop: 24 }}>
+                    <TransactionStatus
+                        {...depositAndSendContext.deposit}
+                        defaultContent={
+                            <Text text-md gray-medium>
+                                loading
+                            </Text>
+                        }
+                        loadingContent={
+                            <Text text-md gray-dark>
+                                depositing {formatUsd(depositAmount)} to your Tap account
+                            </Text>
+                        }
+                        errorContent={
+                            <Text text-md error>
+                                failed to deposit {formatUsd(depositAmount)} to your Tap account
+                            </Text>
+                        }
+                        successContent={
+                            <Text text-md gray-dark>
+                                deposited {formatUsd(depositAmount)} to your Tap account
+                            </Text>
+                        }
+                    />
                     {(needsDeposit) && (
-                        <View>
-                            <TransactionStatus
-                                {...depositAndSendContext.deposit}
-                                defaultContent={
-                                    <Text text-md gray-gray-medium>
-                                        loading
-                                    </Text>
-                                }
-                                loadingContent={
-                                    <Text text-md gray-dark>
-                                        depositing {formatUsd(depositAmount)} to your account
-                                    </Text>
-                                }
-                                errorContent={
-                                    <Text text-md error>
-                                        failed to deposit {formatUsd(depositAmount)} to your account
-                                    </Text>
-                                }
-                                successContent={
-                                    <Text text-md gray-gray-medium>
-                                        deposited {formatUsd(depositAmount)} to your account
-                                    </Text>
-                                }
-                            />
-
-                            <TransactionStatus
-                                {...depositAndSendContext.send}
-                                defaultContent={<Text />}
-                                loadingContent={
-                                    <Text text-md gray-dark>
-                                        sending {formatUsd(amount)} from your account
-                                    </Text>
-                                }
-                                errorContent={
-                                    <Text text-md error>
-                                        failed to send {formatUsd(amount)} from your account
-                                    </Text>
-                                }
-                                successContent={
-                                    <Text text-md gray-gray-medium>
-                                        sent {formatUsd(amount)} from your account
-                                    </Text>
-                                }
-                            />
-                        </View>
+                        <TransactionStatus
+                            {...depositAndSendContext.send}
+                            defaultContent={<Text />}
+                            loadingContent={
+                                <Text text-md gray-dark>
+                                    sending {formatUsd(amount)} from your Tap account
+                                </Text>
+                            }
+                            errorContent={
+                                <Text text-md error>
+                                    failed to send {formatUsd(amount)} from your Tap account
+                                </Text>
+                            }
+                            successContent={
+                                <Text text-md gray-dark>
+                                    sent {formatUsd(amount)} from your Tap account
+                                </Text>
+                            }
+                        />
                     )}
                 </View>
-                <Button
-                    tertiary
-                    label="Done"
-                    disabled={loading}
-                    onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
-                />
             </View>
+            <Button
+                tertiary
+                label="Done"
+                disabled={loading}
+                onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
+            />
         </Screen>
     )
 }

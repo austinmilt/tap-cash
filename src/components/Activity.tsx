@@ -5,6 +5,7 @@ import { formatDate, formatUsd } from "../common/number";
 import { MemberActivity, MemberActivityType } from "../shared/activity";
 import { Image } from 'react-native-ui-lib';
 import { IMAGES } from "../images/images";
+import { COLORS } from "../common/styles";
 
 interface Props {
     item: MemberActivity;
@@ -20,14 +21,14 @@ export function Activity({ item }: Props): JSX.Element {
         case MemberActivityType.DEPOSIT:
             amount = item.deposit?.amount;
             type = 'Deposit';
-            color = 'black';
+            color = COLORS.grayDark;
             iconSource = IMAGES.activity.deposit;
             break;
 
         case MemberActivityType.WITHDRAW:
             amount = item.withdraw?.amount;
             type = 'Withdraw';
-            color = 'red';
+            color = COLORS.grayDark;
             iconSource = IMAGES.activity.withdraw;
 
             break;
@@ -35,7 +36,7 @@ export function Activity({ item }: Props): JSX.Element {
         case MemberActivityType.RECEIVE:
             amount = item.receive?.amount;
             type = 'Receive';
-            color = 'green';
+            color = COLORS.secondaryMedium;
             iconSource = IMAGES.activity.receive;
 
             break;
@@ -43,7 +44,7 @@ export function Activity({ item }: Props): JSX.Element {
         case MemberActivityType.SEND:
             amount = item.send?.amount;
             type = 'Send';
-            color = 'blue';
+            color = COLORS.primaryMedium;
             iconSource = IMAGES.activity.send;
             break;
 
@@ -60,7 +61,7 @@ export function Activity({ item }: Props): JSX.Element {
             />
             <View style={activityStyles.info}>
                 <Text gray-dark text-md>{type}</Text>
-                <Text gray-gray-medium text-md>
+                <Text gray-medium text-md>
                     {item.unixTimestamp ? formatDate(item.unixTimestamp) : FALLBACK_DATE_VALUE}
                 </Text>
             </View>

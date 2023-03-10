@@ -45,7 +45,7 @@ export function DepositingScreen(props: Props): JSX.Element {
                         {...depositContext}
                         success={!depositContext.loading && (depositContext.error == null)}
                         defaultContent={
-                            <Text text-md gray-gray-medium>
+                            <Text text-md gray-medium>
                                 loading
                             </Text>
                         }

@@ -70,7 +70,7 @@ export type DepositStackRouteParams = {
 
 export const STACK_DEFAULTS: NativeStackNavigationOptions = {
     headerStyle: {
-        backgroundColor: COLORS.grayLight,
+        backgroundColor: COLORS.whiteish,
     },
     headerTitleStyle: {
         fontFamily: "Jost-Medium",

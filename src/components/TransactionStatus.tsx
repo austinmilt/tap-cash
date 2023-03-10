@@ -16,7 +16,7 @@ interface TransactionStatusProps {
 
 export function TransactionStatus(props: TransactionStatusProps): JSX.Element {
     const badgeColor: string | undefined = useMemo(() => {
-        if (props.loading) return COLORS.grayMedium;
+        if (props.loading) return COLORS.grayLight;
         if (props.success) return COLORS.secondaryMedium;
         return "transparent";
     }, [props.loading, props.success, props.error]);
@@ -29,8 +29,8 @@ export function TransactionStatus(props: TransactionStatusProps): JSX.Element {
 
     const badgeLabelColor: string | undefined = useMemo(() => {
         if (props.error) return COLORS.error;
-        if (props.loading) return COLORS.grayLight;
-        if (props.success) return COLORS.grayLight
+        if (props.loading) return COLORS.whiteish;
+        if (props.success) return COLORS.whiteish
         return COLORS.grayMedium;
     }, [props.loading, props.success, props.error]);
 

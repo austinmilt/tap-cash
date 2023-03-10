@@ -10,7 +10,6 @@ import { Avatar, GridList } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
 import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { COLORS } from "../common/styles";
-import { formatUsd } from "../common/number";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
 import { MemberActivityType } from "../shared/activity";
@@ -19,20 +18,25 @@ import { BigDollars } from "../components/BigBalance";
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
-
-
-    const { name, imageUrl, usdcBalance, email, syncUsdcBalance } = useUserProfile();
-    const { loading: loadingActivity, submit: fetchRecentActivity, data, error } = useRecentActivity();
+    const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
+    const { submit: fetchRecentActivity, data } = useRecentActivity();
     const [displayWelcome, setDisplayWelcome] = useState(true);
 
+    // update home data each time the user returns to the screen
+    // https://reactnavigation.org/docs/navigation-lifecycle
     useEffect(() => {
-        if (!email) return;
-        fetchRecentActivity({
-            memberEmail: email,
-            limit: 5
+        const unsubscribe = navigation.addListener('focus', () => {
+            if (loggedIn && email) {
+                fetchRecentActivity({
+                    memberEmail: email,
+                    limit: 5
+                });
+                syncUsdcBalance();
+            }
         });
-        syncUsdcBalance();
-    }, [email]);
+
+        return unsubscribe;
+    }, [navigation]);
 
     return (
         <Screen gap-lg style={styles.home}>
@@ -41,7 +45,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     <AppLogo primary fontSize={48} />
                 </View>
                 <View style={styles.user} gap-sm>
-                    <Text gray-dark>
+                    <Text gray-dark text-md>
                         Hello, {name}
                     </Text>
                     <TouchableOpacity onPress={() => navigation.navigate(TopNavScreen.PROFILE)}>

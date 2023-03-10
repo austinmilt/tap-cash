@@ -11,9 +11,11 @@ export const COLORS = {
     secondaryMedium: "#14AE5C",
     secondaryDark: "#14AE5C",
 
-    grayLight: "#FFFFFF",
+    grayLight: "#E2E8F0",
     grayMedium: "#808080",
     grayDark: "#000000",
+
+    whiteish: "white",
 
     error: "#E53E3E"
 }
@@ -37,8 +39,8 @@ const CORE_TEXT_STYLES = StyleSheet.create({
     "secondary-dark": {
         color: COLORS.secondaryDark
     },
-    "gray-light": {
-        color: COLORS.grayLight
+    "whiteish": {
+        color: COLORS.whiteish
     },
     "gray-medium": {
         color: COLORS.grayMedium
@@ -127,8 +129,8 @@ const CORE_VIEW_STYLES = StyleSheet.create({
     "secondary-dark": {
         backgroundColor: COLORS.secondaryDark
     },
-    "gray-light": {
-        backgroundColor: COLORS.grayLight
+    "whiteish": {
+        backgroundColor: COLORS.whiteish
     },
     "gray-medium": {
         backgroundColor: COLORS.grayMedium
@@ -137,7 +139,7 @@ const CORE_VIEW_STYLES = StyleSheet.create({
         backgroundColor: COLORS.grayDark
     },
     "bordered": {
-        borderColor: COLORS.grayMedium,
+        borderColor: "#E2E8F0",
         borderRadius: 6,
         borderWidth: 1
     },
@@ -160,7 +162,7 @@ export function useTextStyle(props: TextStyleProps): TextStyle {
     return useMemo(() => {
         let result: TextStyle = {
             fontFamily: "Jost-Medium",
-            color: COLORS.grayMedium
+            color: COLORS.grayDark,
         };
         for (const key of Object.keys(props)) {
             result = { ...result, ...CORE_TEXT_STYLES[key as TextStyleKey] }

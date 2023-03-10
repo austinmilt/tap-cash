@@ -15,6 +15,7 @@ type Props = NativeStackScreenProps<SendStackRouteParams, SendNavScreen.AMOUNT_I
 
 export function AmountInputScreen(props: Props): JSX.Element {
     const [amount, setAmount] = useState<number>(0);
+    const [error, setError] = useState<string | undefined>();
     const userProfileContext = useUserProfile();
     const accountBalance: number = useMemo(() => (
         userProfileContext.usdcBalance ?? 0
@@ -24,8 +25,21 @@ export function AmountInputScreen(props: Props): JSX.Element {
         userProfileContext.syncUsdcBalance();
     }, [userProfileContext.email]);
 
+    // clear errors when the user changes the amount since
+    // it may be valid again
+    useEffect(() => {
+        setError(undefined);
+    }, [amount]);
+
     const onSubmit = useCallback(() => {
-        //TODO other validation?
+        if ((amount == null) || (amount <= 0)) {
+            setError("Please enter a positive amount.");
+            return;
+        }
+        if (amount > 9000) {
+            setError("It's over 9000!");
+            return;
+        }
         const depositAmount: number = Math.max(0, amount - accountBalance);
         props.navigation.navigate(
             SendNavScreen.CONFIRM,
@@ -35,7 +49,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
                 depositAmount: depositAmount
             }
         );
-    }, [props.navigation.navigate, amount, accountBalance]);
+    }, [props.navigation.navigate, amount]);
 
     const insufficientBalance: boolean = accountBalance < amount;
     const textColorStyle: TextStyleProps = insufficientBalance ? {
@@ -60,6 +74,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
                     fractionDigits={2}
                     style={STYLES.text}
                     leadingTextStyle={STYLES.leadingText}
+                    placeholder={"0"}
                     centered
                     autoFocus
                 />
@@ -67,6 +82,12 @@ export function AmountInputScreen(props: Props): JSX.Element {
                     Balance: {formatUsd(accountBalance)}
                 </Text>
             </View>
+            {error && (
+                <View flexG center gap-sm>
+                    <Text text-lg gray-dark center>Try again</Text>
+                    <Text text-md gray-medium center error>{error}</Text>
+                </View>
+            )}
             <Button primary label={buttonLabel} onPress={onSubmit} />
         </Screen>
     )
