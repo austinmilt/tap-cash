@@ -48,7 +48,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
             return;
         }
         if (amount > MAX_TX_AMOUNT) {
-            setError(`Unable to send more than ${MAX_TX_AMOUNT}!`);
+            setError(`Unable to send more than ${formatUsd(MAX_TX_AMOUNT)}!`);
             return;
         }
         const depositAmount: number = Math.max(0, amount - accountBalance);

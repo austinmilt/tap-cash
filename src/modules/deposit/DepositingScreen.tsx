@@ -69,7 +69,7 @@ export function DepositingScreen(props: Props): JSX.Element {
             </View>
             <Button
                 tertiary
-                label="Done"
+                label="Home"
                 disabled={depositContext.loading}
                 onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
             />
