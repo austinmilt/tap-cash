@@ -5,11 +5,12 @@ import { Button } from "../../components/Button";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { COLORS } from "../../common/styles";
-import { NumberInput } from "react-native-ui-lib";
+import { Image, NumberInput } from "react-native-ui-lib";
 import { View } from "../../components/View";
 import { Text } from "../../components/Text";
 import { MAX_TX_AMOUNT } from "../../common/constants";
 import { formatUsd } from "../../common/number";
+import { IMAGES } from "../../images/images";
 
 type Props = NativeStackScreenProps<DepositStackRouteParams, DepositNavScreen.AMOUNT_INPUT>;
 
@@ -61,8 +62,14 @@ export function AmountInputScreen(props: Props): JSX.Element {
                 // TODO ADD value here
                 />
                 <Text text-md gray-dark>
-                    deposited to your Tap account
+                    deposit to your Tap account
                 </Text>
+                <View style={styles.iconWrapper}>
+                </View>
+                {/* TODO Replace dummy CC */}
+                <View >
+                    <Text text-md gray-dark>{`from: •••• •••• •••• 4567`}</Text>
+                </View>
             </View>
             {error && (
                 <View flexG center gap-sm>
@@ -92,3 +99,14 @@ const STYLES = StyleSheet.create({
         alignSelf: "flex-start"
     }
 })
+
+
+const styles = StyleSheet.create({
+    iconWrapper: {
+        width: 48,
+        height: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
+    }
+});
