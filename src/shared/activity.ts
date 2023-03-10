@@ -19,7 +19,7 @@ export enum MemberActivityType {
     DEPOSIT,
     SEND,
     RECEIVE,
-    WITHDRAW
+    WITHDRAW,
 }
 
 export interface DepositActivity {

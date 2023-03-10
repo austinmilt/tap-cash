@@ -1,4 +1,4 @@
-import { PublicKey } from "../solana/solana";
+import { PublicKey } from "../helpers/solana";
 
 export type EmailAddress = string;
 export type MemberId = string;
