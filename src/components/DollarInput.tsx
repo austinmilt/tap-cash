@@ -1,7 +1,7 @@
 import { TextStyleProps, ViewStyleProps } from "../common/styles";
 import { Text, TextProps } from "./Text";
 import { StyleSheet } from "react-native";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { View } from "./View";
 import { TextInput } from "./TextInput";
 import { formatUsd } from "../common/number";
@@ -11,6 +11,7 @@ type Props = TextProps & TextStyleProps & {
     onValueChange?: (value: number) => void;
     inputFieldStyle?: ViewStyleProps;
     maxValue?: number;
+    allowCents?: boolean;
 }
 
 const NUMBER_CHARS: string[] = "0123456789".split("");
@@ -18,6 +19,7 @@ const NUMBER_CHARS: string[] = "0123456789".split("");
 export function DollarInput(props: Props): JSX.Element {
     const [value, setValue] = useState<string | undefined>();
     const [validationError, setValidationError] = useState<string | undefined>();
+    const allowCents: boolean = useMemo(() => props.allowCents ?? false, [props.allowCents]);
 
     const onUserInput: (value: string) => void = useCallback((v) => {
         setValidationError(undefined);
@@ -25,20 +27,14 @@ export function DollarInput(props: Props): JSX.Element {
         // if user hasnt done any editing then dont try to validate
         if (v === undefined) return;
 
-        const parts: string[] = v.split("").filter(c => NUMBER_CHARS.includes(c));
-        if (parts.length === 0) return;
-        if (parts.length === 1) {
-            v = `0.0${parts[0]}`;
-
-        } else if (parts.length === 2) {
-            v = `0.${parts[0]}${parts[1]}`;
-
-        } else {
-            v = `${parts.slice(0, -2).join("")}.${parts.slice(-2).join("")}`;
+        if (!allowCents && v.includes(".")) {
+            setValidationError("Whole dollars only.");
+            return;
         }
 
-        const valueAsNumber: number = Number.parseFloat(v);
-        if (valueAsNumber === 0) {
+        const valueAsNumber: number | undefined = parseDollars(v, allowCents);
+
+        if ((valueAsNumber === undefined) || (valueAsNumber === 0)) {
             setValue(undefined);
             return;
         }
@@ -55,23 +51,28 @@ export function DollarInput(props: Props): JSX.Element {
 
         if (v !== undefined) {
             const formatter = Intl.NumberFormat("en-US", {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2,
+                maximumFractionDigits: allowCents ? 2 : 0,
+                minimumFractionDigits: allowCents ? 2 : 0,
                 notation: "standard"
             });
-            v = formatter.format(Number.parseFloat(v));
+            v = formatter.format(valueAsNumber);
         }
 
         setValue(v);
         if ((v !== undefined) && (props.onValueChange !== undefined)) {
-            props.onValueChange(Number.parseFloat(v));
+            props.onValueChange(valueAsNumber);
         }
-    }, [value]);
+    }, [value, allowCents]);
 
 
     const onSubmit: () => void = useCallback(() => {
-        if (value !== undefined) props.onSubmit(Number.parseFloat(value));
-    }, [value, props.onSubmit]);
+        if (value !== undefined) {
+            const valueAsNumber: number | undefined = parseDollars(value, allowCents);
+            if ((valueAsNumber !== undefined) && (valueAsNumber > 0)) {
+                props.onSubmit(valueAsNumber);
+            }
+        };
+    }, [value, props.onSubmit, allowCents]);
 
 
     return (
@@ -80,7 +81,7 @@ export function DollarInput(props: Props): JSX.Element {
             <TextInput
                 keyboardType="number-pad"
                 value={value}
-                placeholder="0.00"
+                placeholder={allowCents ? "0.00" : "0"}
                 onChangeText={onUserInput}
                 onSubmitEditing={onSubmit}
                 leadingAccessory={<Text gray-dark style={STYLES.leadingText}>$</Text>}
@@ -105,3 +106,23 @@ const STYLES = StyleSheet.create({
         alignSelf: "flex-start"
     }
 })
+
+
+function parseDollars(value: string, allowCents: boolean = false): number | undefined {
+    const parts: string[] = value.split("").filter(c => NUMBER_CHARS.includes(c));
+    if (parts.length === 0) return undefined;
+    if (allowCents) {
+        if (parts.length === 1) {
+            value = `0.0${parts[0]}`;
+
+        } else if (parts.length === 2) {
+            value = `0.${parts[0]}${parts[1]}`;
+
+        } else {
+            value = `${parts.slice(0, -2).join("")}.${parts.slice(-2).join("")}`;
+        }
+    } else {
+        value = parts.join("");
+    }
+    return Number.parseFloat(value);
+}

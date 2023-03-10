@@ -51,17 +51,17 @@ export function DepositingScreen(props: Props): JSX.Element {
                         }
                         loadingContent={
                             <Text text-md gray-dark>
-                                depositing {formatUsd(amount)} to your account
+                                depositing {formatUsd(amount)} to your Tap account
                             </Text>
                         }
                         errorContent={
                             <Text text-md error>
-                                failed to deposit {formatUsd(amount)} to your account
+                                failed to deposit {formatUsd(amount)} to your Tap account
                             </Text>
                         }
                         successContent={
                             <Text text-md gray-dark>
-                                deposited {formatUsd(amount)} to your account
+                                deposited {formatUsd(amount)} to your Tap account
                             </Text>
                         }
                     />
