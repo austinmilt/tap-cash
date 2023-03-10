@@ -8,6 +8,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { IMAGES } from "../../images/images";
 import { useMemo } from "react";
+import { COLORS } from "../../common/styles";
 
 
 type Props = NativeStackScreenProps<ProfileStackRouteParams, ProfileNavScreen.OVERVIEW>;
@@ -46,9 +47,9 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                             />
                         </View>
                         <View style={styles.ccnumWrapper}>
-                            <Text style={styles.ccnum}>{`•••• •••• •••• 4567`}</Text>
+                            <Text style={styles.disabled}>{`•••• •••• •••• 4567`}</Text>
                         </View>
-                        <Text style={styles.ccnum}>▶</Text>
+                        <Text style={styles.disabled}>▶</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.ADD_FUNDS)}>
@@ -56,7 +57,7 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                     </TouchableOpacity>
                     <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} disabled>
-                        <Text style={styles.action}>Withdraw Funds (coming soon)</Text>
+                        <Text style={styles.disabled}>Withdraw Funds (coming soon)</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} disabled>
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     ccnum: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#E2E8F0'
+        color: '#000'
     },
     action: {
         fontSize: 18,
@@ -141,6 +142,10 @@ const styles = StyleSheet.create({
     },
     ccnumWrapper: {
         flex: 1,
+    },
+    disabled: {
+        fontSize: 18,
+       color: '#E2E8F0' 
     }
 });
 
