@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 import { useCallback, useState } from "react";
 import { View } from "./View";
 import { TextInput } from "./TextInput";
+import { formatUsd } from "../common/number";
 
 type Props = TextProps & TextStyleProps & {
     onSubmit: (value: number) => void;
@@ -43,12 +44,12 @@ export function DollarInput(props: Props): JSX.Element {
         }
 
         if (valueAsNumber < 0) {
-            setValidationError("Value must be positive.");
+            setValidationError("Amount must be positive.");
             return;
         }
 
         if ((props.maxValue != null) && (valueAsNumber > props.maxValue)) {
-            setValidationError("Value cannot exceed " + props.maxValue);
+            setValidationError("Amount cannot exceed " + formatUsd(props.maxValue));
             return;
         }
 
