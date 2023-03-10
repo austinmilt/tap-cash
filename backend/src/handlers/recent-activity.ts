@@ -1,6 +1,4 @@
 
-//TODO tests
-
 import { ApiMemberActivity, ApiRecentActivityRequest, ApiRecentActivityResult } from "../shared/api";
 import { UNKNOWN_USER_PROFILE } from "../constants";
 import { PublicKey } from "../helpers/solana";
@@ -111,7 +109,8 @@ async function getRecentActivity(request: RecentActivityArgs): Promise<MemberAct
         // TODO: remove this once we have a better way to handle unknown transactions
         // This is a temporary fix to prevent the app from crashing when it encounters an unknown transaction
         if (!memberActivity) {
-           console.warn("Unknown activity", activity);
+            console.warn("Unknown activity", activity);
+
         } else {
             recentActivityWithMemberDetail.push(memberActivity);
         }
@@ -131,8 +130,8 @@ function transformRequest(params: ApiRecentActivityRequest): RecentActivityArgs 
 function transformResult(result: MemberActivity[]): ApiRecentActivityResult {
     return result.map(act => {
         const activityType: MemberActivityType = act.type;
-        const transformed: ApiMemberActivity = { 
-            type: act.type, 
+        const transformed: ApiMemberActivity = {
+            type: act.type,
             unixTimestamp: act.unixTimestamp ?? 0
         };
 
