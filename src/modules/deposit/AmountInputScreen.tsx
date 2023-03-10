@@ -9,6 +9,7 @@ import { NumberInput } from "react-native-ui-lib";
 import { View } from "../../components/View";
 import { Text } from "../../components/Text";
 import { MAX_TX_AMOUNT } from "../../common/constants";
+import { formatUsd } from "../../common/number";
 
 type Props = NativeStackScreenProps<DepositStackRouteParams, DepositNavScreen.AMOUNT_INPUT>;
 
@@ -36,7 +37,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
             return;
         }
         if (amount > MAX_TX_AMOUNT) {
-            setError(`Unable to deposit more than ${MAX_TX_AMOUNT}!`);
+            setError(`Unable to deposit more than ${formatUsd(MAX_TX_AMOUNT)}!`);
             return;
         }
         props.navigation.navigate(DepositNavScreen.DEPOSITING, { amount: amount });

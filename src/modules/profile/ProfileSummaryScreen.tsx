@@ -38,7 +38,7 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                 </View>
                 <View style={styles.settings}>
                     <Text>SETTINGS</Text>
-                    <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.PAYMENT_METHODS)}>
+                    <TouchableOpacity disabled style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.PAYMENT_METHODS)}>
                         <View style={styles.iconWrapper}>
                             <Image
                                 source={IMAGES.payments.visaMini}
@@ -48,7 +48,7 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                         <View style={styles.ccnumWrapper}>
                             <Text style={styles.ccnum}>{`•••• •••• •••• 4567`}</Text>
                         </View>
-                        <Text>▶</Text>
+                        <Text style={styles.ccnum}>▶</Text>
                     </TouchableOpacity>
                     <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.ADD_FUNDS)}>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     ccnum: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#555',
+        color: '#E2E8F0'
     },
     action: {
         fontSize: 18,

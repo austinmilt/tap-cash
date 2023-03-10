@@ -101,7 +101,7 @@ export function SendingScreen(props: Props): JSX.Element {
             </View>
             <Button
                 tertiary
-                label="Done"
+                label="Home"
                 disabled={loading}
                 onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
             />
