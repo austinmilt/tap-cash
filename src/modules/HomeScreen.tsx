@@ -28,7 +28,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
             if (loggedIn && email) {
                 fetchRecentActivity({
                     memberEmail: email,
-                    limit: 5
+                    limit: 10
                 });
                 syncUsdcBalance();
             }

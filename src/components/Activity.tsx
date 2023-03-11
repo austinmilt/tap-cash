@@ -6,6 +6,7 @@ import { MemberActivity, MemberActivityType } from "../shared/activity";
 import { Image } from 'react-native-ui-lib';
 import { IMAGES } from "../images/images";
 import { COLORS } from "../common/styles";
+import { truncateName } from "../common/text";
 
 interface Props {
     item: MemberActivity;
@@ -16,6 +17,8 @@ export function Activity({ item }: Props): JSX.Element {
     let type: string;
     let color: string;
     let iconSource;
+    let name: string | undefined;
+    let displayMessage: string;
 
     switch (item.type) {
         case MemberActivityType.DEPOSIT:
@@ -30,7 +33,6 @@ export function Activity({ item }: Props): JSX.Element {
             type = 'Withdraw';
             color = COLORS.grayDark;
             iconSource = IMAGES.activity.withdraw;
-
             break;
 
         case MemberActivityType.RECEIVE:
@@ -38,7 +40,7 @@ export function Activity({ item }: Props): JSX.Element {
             type = 'Receive';
             color = COLORS.secondaryMedium;
             iconSource = IMAGES.activity.receive;
-
+            name = item.receive?.sender.name;
             break;
 
         case MemberActivityType.SEND:
@@ -46,12 +48,13 @@ export function Activity({ item }: Props): JSX.Element {
             type = 'Send';
             color = COLORS.primaryMedium;
             iconSource = IMAGES.activity.send;
+            name = item.send?.recipient.name;
             break;
 
         default:
             throw new Error("Unexpected activity type");
     }
-
+    displayMessage = name ? `${type} from ${truncateName(name)}` : type;
     return (
         <View style={activityStyles.row}>
             <Image
@@ -60,7 +63,7 @@ export function Activity({ item }: Props): JSX.Element {
                 resizeMode="contain"
             />
             <View style={activityStyles.info}>
-                <Text gray-dark text-md>{type}</Text>
+                <Text gray-dark text-md>{displayMessage}</Text>
                 <Text gray-medium text-md>
                     {item.unixTimestamp ? formatDate(item.unixTimestamp) : FALLBACK_DATE_VALUE}
                 </Text>
@@ -78,7 +81,7 @@ const activityStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: 8,
-        paddingHorizontal: 16,
+        paddingRight: 8,
         width: '90%'
     },
     icon: {

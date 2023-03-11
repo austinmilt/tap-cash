@@ -57,3 +57,7 @@ You will see an error like
 - This is _not_ the APK you would upload to the app store. See [Generating the release AAB](https://reactnative.dev/docs/signed-apk-android#generating-the-release-aab) for that.
 - This process will also open the emulator and run there.
 You can close the emulator and other windows.
+
+### Program Info
+- PROGRAM: `TAPAPp2YoguQQDkicGyzTzkA3t4AgECvR1eL1hbx9qz`
+- BANK: `AU88yciXy2Rz2DJkUUFu2gpYqaPRLngd3sevSfAH8KyS`

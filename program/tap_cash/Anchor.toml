@@ -2,10 +2,10 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-tap_cash = "TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz"
+tap_cash = "TAPAPp2YoguQQDkicGyzTzkA3t4AgECvR1eL1hbx9qz"
 
 [programs.devnet]
-tap_cash = "TAPyxAHSs72DNFzhxmWhD9cVJjYqcgH2kHuDsq2NzEz"
+tap_cash = "TAPAPp2YoguQQDkicGyzTzkA3t4AgECvR1eL1hbx9qz"
 
 [registry]
 url = "https://api.apr.dev"

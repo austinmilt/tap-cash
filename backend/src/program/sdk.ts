@@ -1,10 +1,10 @@
 import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ApiError, SolanaQueryType, SolanaTxType } from "../shared/error";
-import { FAKE_USDC, RPC_URL, USDC_DECIMALS } from "../constants";
+import { RPC_URL, USDC_DECIMALS, USDC_MINT_ADDRESS } from "../constants";
 import { BANK_AUTH, BANK_SEED, BANK_USDC_WALLET, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
 import { createWorkspace, WorkSpace } from "./workspace";
-import { airdropIfNeeded, getOrCreateUsdc, PublicKey } from "../helpers/solana";
+import { airdropIfNeeded, PublicKey } from "../helpers/solana";
 import { TapCash } from "../types/tap-cash";
 import { BN } from "bn.js";
 
@@ -12,6 +12,7 @@ export interface TapCashClient {
     initializeNewMember(userId: PublicKey): Promise<PublicKey | undefined>;
     sendTokens(args: SendTokensArgs): Promise<string | undefined>;
     getRecentActivity(member: PublicKey, maxNumberTx: number): Promise<TransactionDetail[]>;
+    fetchAtaIfInitialized(memberPubkey: PublicKey): Promise<PublicKey | undefined>;
 }
 
 export class MainTapCashClient implements TapCashClient {
@@ -162,12 +163,13 @@ export class MainTapCashClient implements TapCashClient {
         const rent: PublicKey = anchor.web3.SYSVAR_RENT_PUBKEY;
         const tokenProgram = TOKEN_PROGRAM_ID;
         const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
-        const tokenMint: PublicKey = FAKE_USDC.publicKey;
+        const tokenMint: PublicKey = USDC_MINT_ADDRESS;
         const accountNumber: number = 1;
 
         if (PROGRAM_ENV !== 'mainnet') {
             await airdropIfNeeded(this.sdk);
-            await getOrCreateUsdc(this.connection, BANK_AUTH);
+            // NOTE: No longer needed w/ circle added
+            //await getOrCreateUsdc(this.connection, BANK_AUTH);
         }
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
@@ -204,7 +206,7 @@ export class MainTapCashClient implements TapCashClient {
         const systemProgram: PublicKey = anchor.web3.SystemProgram.programId;
         const tokenProgram = TOKEN_PROGRAM_ID;
         const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
-        const tokenMint: PublicKey = FAKE_USDC.publicKey;
+        const tokenMint: PublicKey = USDC_MINT_ADDRESS;
         const accountNumber: number = 1;
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
@@ -256,7 +258,7 @@ export class MainTapCashClient implements TapCashClient {
     private async getParsedMemberTransactions(responses: (anchor.web3.VersionedTransactionResponse | null)[], member: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         const memberString = member.toBase58();
         const programString = this.program.programId.toBase58();
-        const fakeUsdcString = FAKE_USDC.publicKey.toBase58();
+        const fakeUsdcString = USDC_MINT_ADDRESS.toBase58();
         const bankUsdcString = BANK_USDC_WALLET.toBase58();
         const parsedTxs = responses.map(tx => {
             // TO DO Update this to account for null preTokenBalances (for CircleEmulator, which uses MintTo Tx)
@@ -304,7 +306,14 @@ export class MainTapCashClient implements TapCashClient {
             const memberPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isCurrentMember);
             const otherPartyPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => !balance?.isCurrentMember);
             const otherPartyPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => !balance?.isCurrentMember);
-            const otherPartyAddress: string | undefined = otherPartyPreBalance?.owner ?? otherPartyPostBalance?.owner;
+            let otherPartyAddress: PublicKey | undefined;
+            if (otherPartyPreBalance?.owner) {
+                otherPartyAddress = getAssociatedTokenAddressSync(USDC_MINT_ADDRESS, new PublicKey(otherPartyPreBalance?.owner), true);
+            }
+            else if (otherPartyPostBalance?.owner) {
+                otherPartyAddress = getAssociatedTokenAddressSync(USDC_MINT_ADDRESS, new PublicKey(otherPartyPostBalance?.owner), true);
+            }
+            else {otherPartyAddress = undefined}
             const bankPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankChange: number = (bankPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (bankPreBalance?.uiTokenAmount?.uiAmount ?? 0);
@@ -314,7 +323,7 @@ export class MainTapCashClient implements TapCashClient {
                 bankChange,
                 otherPartyChange,
                 memberChange,
-                otherPartyAtaAddress: otherPartyAddress ? new PublicKey(otherPartyAddress) : undefined,
+                otherPartyAtaAddress: otherPartyAddress ? otherPartyAddress : undefined,
                 memberAtaAddress: member,
                 unixTimestamp: tx.blockTime ?? undefined,
             };
@@ -323,6 +332,21 @@ export class MainTapCashClient implements TapCashClient {
         }).filter((tx) => tx).filter((tx, i) => i < maxNumberTx) as TransactionDetail[];
         return parsedTxs;
     }
+
+    public async fetchAtaIfInitialized(memberPubkey: PublicKey): Promise<PublicKey | undefined> {
+        const memberPda = await this.getMemberPda(memberPubkey);
+        try {
+            const member = await this.sdk.program.account.member.fetchNullable(memberPda);
+            if (member?.userId.toBase58() !== memberPubkey.toBase58()) return undefined;
+            const memberAccount = await this.getMemberAta({accountNumber: 1, tokenMint: USDC_MINT_ADDRESS, memberPda})
+            // TODO Probably want to add one more check on ata account info
+            return memberAccount.accountAta;
+        }
+        catch {
+            return undefined;
+        }     
+    }
+
 }
 
 interface TokenBalance {

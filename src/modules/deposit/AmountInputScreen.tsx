@@ -16,7 +16,7 @@ export function AmountInputScreen(props: Props): JSX.Element {
     const [amount, setAmount] = useState<number | undefined>();
 
     const onSubmit = useCallback(() => {
-        props.navigation.navigate(DepositNavScreen.DEPOSITING, { amount: amount });
+        props.navigation.navigate(DepositNavScreen.DEPOSITING, { amount: (amount ?? 0) });
     }, [props.navigation.navigate, amount]);
 
     return (

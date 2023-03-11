@@ -6,7 +6,9 @@ const USDC_FORMATTER = Intl.NumberFormat(undefined, {
 
 const USDC_FORMATTER_SHORT = Intl.NumberFormat(undefined, {
     notation: "compact",
-    compactDisplay: "short"
+    compactDisplay: "short",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
 });
 
 export function formatUsd(amount: number, options?: {
