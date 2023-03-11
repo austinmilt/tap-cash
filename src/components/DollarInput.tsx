@@ -76,7 +76,7 @@ export function DollarInput(props: Props): JSX.Element {
 
 
     return (
-        <View center>
+        <View center debug>
             <Text text-md gray-medium center error>{validationError}</Text>
             <TextInput
                 keyboardType="number-pad"

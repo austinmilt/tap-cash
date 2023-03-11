@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TopNavScreen, TopRouteParams } from "../common/navigation";
 import { AppLogo } from "../components/AppLogo";
 import { Button } from "../components/Button";
@@ -13,15 +13,17 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.AUTHENTICATE>;
 
 export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<Error | undefined>();
     const { logIn, loggedIn } = useUserProfile();
 
     const afterLogIn = useCallback(() => navigation.navigate(TopNavScreen.HOME), [navigation]);
-    
+
     const logInSync = useCallback(() => {
         setLoading(true);
         //TODO error handling
         logIn()
             .then(afterLogIn)
+            .catch(setError)
             .finally(() => setLoading(false));
 
     }, [setLoading, logIn, afterLogIn]);
@@ -56,6 +58,9 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
                         </Text>
                     </View>
                 </View>
+            )}
+            {(error !== undefined) && (
+                <Text error>{error.message}</Text>
             )}
         </Screen>
     )

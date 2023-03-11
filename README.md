@@ -49,6 +49,11 @@ sideload on your phone or distribute to others for testing.
 Note:
 - Before installing, you need to uninstall other versions of the
 app running on your phone as this will prevent it from being installed.
+You will see an error like
+
+    > Execution failed for task ':app:installRelease'.
+    > java.util.concurrent.ExecutionException: com.android.builder.testing.api.DeviceException: com.android.ddmlib.InstallException: INSTALL_FAILED_UPDATE_INCOMPATIBLE: Existing package com.tapcash signatures do not match newer version; ignoring!
+
 - This is _not_ the APK you would upload to the app store. See [Generating the release AAB](https://reactnative.dev/docs/signed-apk-android#generating-the-release-aab) for that.
 - This process will also open the emulator and run there.
 You can close the emulator and other windows.

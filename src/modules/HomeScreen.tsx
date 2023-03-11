@@ -12,7 +12,6 @@ import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-na
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
-import { MemberActivityType } from "../shared/activity";
 import { BigDollars } from "../components/BigDollars";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
@@ -39,7 +38,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
     }, [navigation, loggedIn, email, fetchRecentActivity, syncUsdcBalance]);
 
     return (
-        <Screen gap-lg style={styles.home}>
+        <Screen gap-lg center style={styles.home}>
             <View style={styles.header}>
                 <View style={styles.logo}>
                     <AppLogo primary fontSize={48} />
@@ -56,10 +55,8 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View>
+            <View padding-md flexG gap-lg centerV style={{ width: "90%" }}>
                 <BigDollars>{usdcBalance ?? 0}</BigDollars>
-            </View>
-            <View style={styles.buttonContainer}>
                 <Button
                     primary
                     text-lg
@@ -84,16 +81,18 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 :
                 (displayWelcome && <View style={styles.welcome}>
                     <TouchableWithoutFeedback onPress={() => setDisplayWelcome(false)}>
-                        <Text style={styles.closeButton}>X</Text>
+                        <Text style={styles.closeButton}>✖</Text>
                     </TouchableWithoutFeedback>
-                    <View center padding-lg gap-sm>
+                    <View centerH padding-lg gap-md style={{ width: "100%" }}>
                         {/* TODO Add Icon */}
                         <View style={styles.welcomeIcon}></View>
                         <Text text-lg gray-dark>Welcome to Tap!</Text>
-                        <Text text-md gray-medium center padding-sm>
-                            Deposit cash
-                            to start sending money to friends.
-                        </Text>
+                        <View style={{ width: "80%" }}>
+                            <Text text-md gray-medium center padding-sm>
+                                Deposit cash
+                                to start sending money to friends.
+                            </Text>
+                        </View>
                         <TouchableOpacity onPress={() => navigation.navigate(
                             TopNavScreen.PROFILE,
                             { screen: ProfileNavScreen.ADD_FUNDS }
@@ -117,7 +116,6 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         width: '90%',
-        alignSelf: 'center',
     },
     button: {
         height: 55,
@@ -127,10 +125,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 30,
+        paddingHorizontal: 20,
+        paddingTop: 15
     },
     logo: {
         flex: 1,
+        paddingLeft: 18
     },
     user: {
         flex: 1,
@@ -144,34 +144,30 @@ const styles = StyleSheet.create({
         fontFamily: "Jost-ExtraBold",
     },
     history: {
-        position: 'absolute',
-        bottom: 0,
         width: '100%',
         height: "50%",
-        backgroundColor: 'white',
+        backgroundColor: COLORS.whiteish,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         padding: 20
     },
     welcome: {
-        position: 'absolute',
-        bottom: "8%",
-        alignSelf: 'center',
-        width: '90%',
+        position: "relative",
+        marginBottom: "8%",
+        width: "90%",
         aspectRatio: 1,
         backgroundColor: HOME_COLORS.welcomeBox,
         borderRadius: 8,
         borderWidth: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 5
+        justifyContent: "center",
+        alignItems: "center"
     },
     closeButton: {
-        position: 'absolute',
+        position: "absolute",
         top: 10,
-        right: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
+        right: 20,
+        fontSize: 30,
+        color: COLORS.grayLight,
     },
     welcomeIcon: {
         alignSelf: 'center',

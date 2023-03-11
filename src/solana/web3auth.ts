@@ -27,13 +27,19 @@ const web3auth: Web3Auth = new Web3Auth(WebBrowser, {
 
 export async function logIn(): Promise<LogInResult> {
 
-    const info: State = await web3auth.login({
-        redirectUrl: resolvedRedirectUrl,
-        mfaLevel: MFA_LEVELS.DEFAULT as MfaLevelType,
-        loginProvider: LOGIN_PROVIDER.GOOGLE,
-    });
+    let info: State | undefined;
+    try {
+        info = await web3auth.login({
+            redirectUrl: resolvedRedirectUrl,
+            mfaLevel: MFA_LEVELS.DEFAULT as MfaLevelType,
+            loginProvider: LOGIN_PROVIDER.GOOGLE,
+        });
+    } catch (e) {
+        //TODO temporary
+        throw new Error(JSON.stringify({ "OH NO": "bro", ...info, url: resolvedRedirectUrl }));
+    }
 
-    if (info.ed25519PrivKey === undefined) {
+    if (info?.ed25519PrivKey === undefined) {
         throw new Error("Missing required ed25519 private key for login.");
     }
     const wallet: SolanaWallet = SolanaWallet.of(info.ed25519PrivKey, SOLANA_RPC_URL);

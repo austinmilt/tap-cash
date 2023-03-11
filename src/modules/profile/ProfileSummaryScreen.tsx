@@ -1,5 +1,5 @@
 import { Avatar, Image } from "react-native-ui-lib";
-import { ProfileNavScreen, ProfileStackRouteParams, TopNavScreen, TopRouteParams } from "../../common/navigation";
+import { ProfileNavScreen, ProfileStackRouteParams } from "../../common/navigation";
 import { Screen } from "../../components/Screen";
 import { View } from "../../components/View";
 import { useUserProfile } from "../../components/profile-provider";
@@ -7,7 +7,6 @@ import { Text } from "../../components/Text";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { IMAGES } from "../../images/images";
-import { useMemo } from "react";
 import { COLORS } from "../../common/styles";
 
 
@@ -22,7 +21,6 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                 <View style={styles.account}>
                     <Text>ACCOUNT</Text>
                     <View style={styles.profile}>
-
                         <Avatar
                             imageStyle={styles.profileImg}
                             source={{ uri: imageUrl }}
@@ -35,7 +33,6 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                             <Text style={styles.email}>{email}</Text>
                         </View>
                     </View>
-                    <View style={styles.divider} />
                 </View>
                 <View style={styles.settings}>
                     <Text>SETTINGS</Text>
@@ -51,26 +48,21 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                         </View>
                         <Text style={styles.disabled}>▶</Text>
                     </TouchableOpacity>
-                    <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.ADD_FUNDS)}>
                         <Text style={styles.action}>Add Funds</Text>
                     </TouchableOpacity>
-                    <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} disabled>
                         <Text style={styles.disabled}>Withdraw Funds (coming soon)</Text>
                     </TouchableOpacity>
-                    <View style={styles.divider} />
                     <TouchableOpacity style={styles.row} disabled>
                         <Text style={styles.disabled}>Log Out (coming soon)</Text>
                     </TouchableOpacity>
-                    <View style={styles.divider} />
                     <TouchableOpacity
                         style={styles.row}
                         onPress={() => Linking.openURL('https://airtable.com/shrbYDC8A1MqFjSH3')}
                     >
                         <Text style={styles.action}>Provide feedback</Text>
                     </TouchableOpacity>
-                    <View style={styles.divider} />
                 </View>
             </View>
 
@@ -82,7 +74,6 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
     },
     account: {
         paddingVertical: 30,
@@ -91,6 +82,10 @@ const styles = StyleSheet.create({
     profile: {
         flexDirection: 'row',
         alignItems: 'center',
+        borderBottomColor: COLORS.grayLight,
+        borderBottomWidth: 2,
+        borderStyle: "solid",
+        marginBottom: 20,
     },
     profileImg: {
 
@@ -111,11 +106,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#666',
     },
-    divider: {
-        height: 2,
-        backgroundColor: '#f0f0f0',
-        marginVertical: 10,
-    },
     settings: {
         paddingTop: 30,
         paddingHorizontal: 20,
@@ -125,6 +115,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: 12,
+        borderBottomColor: COLORS.grayLight,
+        borderBottomWidth: 2,
+        borderStyle: "solid",
+        marginBottom: 20
     },
     iconWrapper: {
         width: 48,
@@ -151,7 +145,7 @@ const styles = StyleSheet.create({
     },
     disabled: {
         fontSize: 18,
-       color: '#E2E8F0' 
+        color: '#E2E8F0'
     }
 });
 

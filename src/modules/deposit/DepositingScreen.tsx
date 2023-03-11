@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { useUserProfile } from "../../components/profile-provider";
 import { Screen } from "../../components/Screen";
 import { formatUsd } from "../../common/number";
-import { StyleSheet } from "react-native";
 import { TransactionStatus } from "../../components/TransactionStatus";
 import { BigDollars } from "../../components/BigDollars";
 
@@ -37,49 +36,57 @@ export function DepositingScreen(props: Props): JSX.Element {
     }, []);
 
     return (
-        <Screen spread padding-md>
-            <View flexG center gap-sm>
+        <Screen style={{ paddingBottom: 66, paddingHorizontal: 30 }}>
+            <View center flexG gap-lg>
                 <BigDollars>{amount}</BigDollars>
-                <View>
-                    <TransactionStatus
-                        {...depositContext}
-                        success={!depositContext.loading && (depositContext.error == null)}
-                        defaultContent={
-                            <Text text-md gray-medium>
-                                loading
-                            </Text>
-                        }
-                        loadingContent={
-                            <Text text-md gray-dark>
-                                depositing {formatUsd(amount)} to your Tap account
-                            </Text>
-                        }
-                        errorContent={
-                            <Text text-md error>
-                                failed to deposit {formatUsd(amount)} to your Tap account
-                            </Text>
-                        }
-                        successContent={
-                            <Text text-md gray-dark>
-                                deposited {formatUsd(amount)} to your Tap account
-                            </Text>
-                        }
-                    />
-                </View>
+                <TransactionStatus
+                    {...depositContext}
+                    success={!depositContext.loading && (depositContext.error == null)}
+                    defaultContent={
+                        <Text text-md gray-medium>
+                            loading
+                        </Text>
+                    }
+                    loadingContent={
+                        <Text text-md gray-dark>
+                            depositing {formatUsd(amount)} to your Tap account
+                        </Text>
+                    }
+                    errorContent={
+                        <Text text-md error>
+                            failed to deposit {formatUsd(amount)} to your Tap account
+                        </Text>
+                    }
+                    successContent={
+                        <Text text-md gray-dark>
+                            deposited {formatUsd(amount)} to your Tap account
+                        </Text>
+                    }
+                />
             </View>
-            <Button
-                tertiary
-                label="Home"
-                disabled={depositContext.loading}
-                onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
-            />
-        </Screen>
+            <View>
+                <Button
+                    tertiary
+                    label="Home"
+                    disabled={depositContext.loading}
+                    onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
+                />
+            </View>
+        </Screen >
     )
 }
 
 
-const STYLES = StyleSheet.create({
-    amount: {
-        fontSize: 53,
-    },
-})
+// const STYLES = StyleSheet.create({
+//     main: {
+//         display: "flex",
+//         flexDirection: "column",
+//         justifyContent: "center",
+//         alignItems: "center",
+//         gap: 30,
+
+//         borderColor: "red",
+//         borderWidth: 1,
+//         borderStyle: "solid"
+//     },
+// })

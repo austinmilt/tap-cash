@@ -9,8 +9,10 @@ export function BigDollars(props: { children: number } & ViewStyleProps): JSX.El
         "bold": true,
         "gray-dark": true
     });
+
+
     return (
-        <View row center {...props}>
+        <View style={STYLES.container} {...props}>
             <Text style={[STYLES.leadingText, style]}>$</Text>
             <Text style={[STYLES.text, style]}>{formatUsd(props.children, { leadingSymbol: false, short: true })}</Text>
         </View>
@@ -21,11 +23,24 @@ export function BigDollars(props: { children: number } & ViewStyleProps): JSX.El
 const STYLES = StyleSheet.create({
     text: {
         fontSize: 53,
+        lineHeight: 53,
+        textAlignVertical: "center"
     },
 
     leadingText: {
         fontSize: 40,
         marginRight: 5,
-        alignSelf: "flex-start"
+        textAlignVertical: "top",
+        lineHeight: 53
+    },
+
+    container: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        height: 53,
+        borderColor: "red",
+        borderStyle: "solid",
+        borderWidth: 1
     }
 })
