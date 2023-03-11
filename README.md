@@ -23,3 +23,32 @@ You must have run the setup steps already.
 testing on a physical device, get your physical device connected to `abd`.
 3. In a second terminal, start Metro: `npm start-windows` or `npm start`.
 Choose one of the options that pop up (probably pressing `a` to run on Android).
+
+
+### Building the APK (for testing)
+Follow all setup steps above.
+
+1. Get the app signing password from one of the Tap devs, to use in the next step.
+2. At https://reactnative.dev/docs/signed-apk-android, follow the steps for
+[Setting up Gradle Variables](https://reactnative.dev/docs/signed-apk-android#setting-up-gradle-variables),
+using the password above for `MYAPP_UPLOAD_STORE_PASSWORD` and `MYAPP_UPLOAD_KEY_PASSWORD`. Do NOT save the variables in `android/gradle.properties` as the secret will be committed to git.
+3. In a terminal the repo root directory, run the command for generating the APK
+ (see [Testing the release build of your app](https://reactnative.dev/docs/signed-apk-android#testing-the-release-build-of-your-app)):
+
+    ```bash
+    # windows
+    npm run build-apk-windows
+
+    # unix
+    npm run build-apk
+    ```
+
+This will create an APK in `android/app/build/outputs/release` which you can then
+sideload on your phone or distribute to others for testing.
+
+Note:
+- Before installing, you need to uninstall other versions of the
+app running on your phone as this will prevent it from being installed.
+- This is _not_ the APK you would upload to the app store. See [Generating the release AAB](https://reactnative.dev/docs/signed-apk-android#generating-the-release-aab) for that.
+- This process will also open the emulator and run there.
+You can close the emulator and other windows.
