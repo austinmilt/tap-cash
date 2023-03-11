@@ -23,3 +23,8 @@ You must have run the setup steps already.
 testing on a physical device, get your physical device connected to `abd`.
 3. In a second terminal, start Metro: `npm start-windows` or `npm start`.
 Choose one of the options that pop up (probably pressing `a` to run on Android).
+
+
+### Program Info
+- PROGRAM: `TAPAPp2YoguQQDkicGyzTzkA3t4AgECvR1eL1hbx9qz`
+- BANK: `AU88yciXy2Rz2DJkUUFu2gpYqaPRLngd3sevSfAH8KyS`
