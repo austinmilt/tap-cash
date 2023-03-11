@@ -112,6 +112,17 @@ export class MockTapCashClient implements TapCashClient {
         );
         return memberPda;
     }
+    public async fetchAtaIfInitialized(memberPubkey: PublicKey): Promise<PublicKey | undefined> {
+        try {
+            let account = this.getMemberAccount(memberPubkey);
+            if (!account) return undefined;
+            let ata = this.getMemberAta(memberPubkey);
+            return ata;
+        }
+        catch {
+            return undefined;
+        }
+    }
 
 }
 
