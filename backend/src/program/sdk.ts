@@ -336,8 +336,8 @@ export class MainTapCashClient implements TapCashClient {
     public async fetchAtaIfInitialized(memberPubkey: PublicKey): Promise<PublicKey | undefined> {
         const memberPda = await this.getMemberPda(memberPubkey);
         try {
-            const member = await this.sdk.program.account.member.fetch(memberPda);
-            if (member.userId.toBase58() !== memberPubkey.toBase58()) return undefined;
+            const member = await this.sdk.program.account.member.fetchNullable(memberPda);
+            if (member?.userId.toBase58() !== memberPubkey.toBase58()) return undefined;
             const memberAccount = await this.getMemberAta({accountNumber: 1, tokenMint: USDC_MINT_ADDRESS, memberPda})
             // TODO Probably want to add one more check on ata account info
             return memberAccount.accountAta;
