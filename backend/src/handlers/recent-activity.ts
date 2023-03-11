@@ -56,7 +56,7 @@ async function getRecentActivity(request: RecentActivityArgs): Promise<MemberAct
                 memberActivity = {
                     type: MemberActivityType.DEPOSIT,
                     deposit: {
-                        amount: bankChange,
+                        amount: bankChange * -1,
                         account: memberString,
                         currency: Currency.USD
                     },

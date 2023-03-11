@@ -112,6 +112,10 @@ export class MockTapCashClient implements TapCashClient {
         );
         return memberPda;
     }
+    public async fetchAtaIfInitialized(memberPubkey: PublicKey): Promise<PublicKey | undefined> {
+        //TODO Talk to Austin
+        return undefined;
+    }
 
 }
 
