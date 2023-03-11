@@ -1,8 +1,9 @@
 import { CircleEnvironments } from "@circle-fin/circle-sdk";
 import * as yamlenv from "yamlenv";
-import { ServerEnv } from "./types/types";
+import { CircleClientType, ServerEnv } from "./types/types";
 import { MemberPublicProfile } from "./shared/member";
 import * as anchor from "@project-serum/anchor";
+import { PublicKey } from "./helpers/solana";
 
 
 // For loading yaml variables locally. In deployed functions (on GCP), the envs are set in the node process
@@ -64,11 +65,18 @@ export const USE_MOCK_TAP_CASH: boolean = parseEnv(
     SERVER_ENV === ServerEnv.TEST,
     v => stringToBoolean(v) && [ServerEnv.TEST, ServerEnv.LOCAL].includes(SERVER_ENV)
 );
-export const USE_MOCK_CIRCLE: boolean = parseEnv(
-    "USE_MOCK_CIRCLE",
-    process.env.USE_MOCK_CIRCLE,
-    SERVER_ENV === ServerEnv.TEST,
-    v => stringToBoolean(v) && [ServerEnv.TEST, ServerEnv.LOCAL].includes(SERVER_ENV)
+export const CIRCLE_CLIENT_TYPE: CircleClientType = parseEnv(
+    "CIRCLE_CLIENT_TYPE",
+    process.env.CIRCLE_CLIENT_TYPE,
+    CircleClientType.MOCK,
+    v => {
+        switch (v) {
+            case "emulator": return CircleClientType.EMULATOR;
+            case "mock": return CircleClientType.MOCK;
+            case "main": return CircleClientType.MAIN;
+            default: throw new Error("Unrecognized Circle client type: " + v);
+        }
+    }
 );
 export const USE_DUMMY_CARD: boolean = parseEnv(
     "USE_DUMMY_CARD",
@@ -76,6 +84,14 @@ export const USE_DUMMY_CARD: boolean = parseEnv(
     false,
     stringToBoolean
 )
+export const USDC_MINT_ADDRESS: PublicKey = parsePublicKey(
+    "USDC_MINT_ADDRESS",
+    process.env.USDC_MINT_ADDRESS
+);
+export const CIRCLE_MASTER_WALLET: string = parseEnv(
+    "CIRCLE_MASTER_WALLET",
+    process.env.CIRCLE_MASTER_WALLET
+);
 
 export function parseEnv<T>(
     name: string,

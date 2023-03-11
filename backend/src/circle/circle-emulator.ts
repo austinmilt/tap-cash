@@ -26,7 +26,7 @@ export class CircleEmulator implements CircleClient {
         return new CircleEmulator(sdk);
     }
 
-    public async transferUsdc(args: CircleDepositArgs): Promise<void> {
+    public async depositUsdc(args: CircleDepositArgs): Promise<void> {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
         const destination: anchor.web3.PublicKey = new anchor.web3.PublicKey(args.destinationAtaString);
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);

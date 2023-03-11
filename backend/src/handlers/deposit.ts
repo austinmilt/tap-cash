@@ -1,5 +1,5 @@
 import { ApiDepositRequest, ApiDepositResult, ApiResponseStatus } from "../shared/api";
-import { EmailAddress, AccountId } from "../shared/member";
+import { EmailAddress } from "../shared/member";
 import { getRequiredParam, makePostHandler } from "./model";
 import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 
@@ -9,8 +9,6 @@ import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 export interface DepositArgs {
     emailAddress: EmailAddress;
     amount: number;
-    //TODO something about handling credit card info
-    //TODO probably the user's private key
 }
 
 
@@ -21,12 +19,17 @@ export const handleDeposit = makePostHandler(deposit, transformRequest, transfor
 
 
 async function deposit(request: DepositArgs): Promise<DepositResult> {
-    // TODO: delegate the credit card retrieval and processing to Circle client
-
     const { usdcAddress } = await getDatabaseClient().getMemberPrivateProfile(request.emailAddress);
-    
+
+
     try {
-        await getCircleClient().transferUsdc({ destinationAtaString: usdcAddress.toString(), amount: request.amount });
+        await getCircleClient().depositUsdc({
+            destinationAtaString: usdcAddress.toString(),
+            amount: request.amount,
+            member: request.emailAddress,
+            cardId: "1", //TODO ignored atm
+            cardCvv: "123", //TODO ignored atm
+        });
         return {
             result: ApiResponseStatus.SUCCESS,
             amount: request.amount
