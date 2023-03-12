@@ -9,8 +9,14 @@ import { requestAirdrops } from "./helpers/airdrop";
 const logAllTx = false;
 const { SystemProgram, SYSVAR_RENT_PUBKEY, PublicKey, Keypair } = web3;
 
+/**
+ * 
+ * @param program Anchor Program object
+ * @param auth usdc mint authority
+ * @returns USDC Mint Key
+ */
 async function createOrFetchUsdc(program, auth) {
-  let USDC = Keypair.fromSecretKey(new Uint8Array([37,52,157,165,252,151,175,4,244,19,4,251,245,112,139,69,80,214,98,210,39,216,160,31,240,217,229,98,190,20,78,66,7,7,47,237,59,254,203,59,13,235,59,174,143,214,168,200,222,254,238,182,126,132,119,223,206,180,122,70,123,187,96,237]))
+  let USDC = Keypair.generate();
 
   let MINT_KEY;
   try {
