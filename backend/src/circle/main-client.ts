@@ -168,16 +168,6 @@ export class CircleMainClient implements CircleClient {
     }
 }
 
-
-
-/**
- * User session metadata
- * Ref Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardsApi.ts
- */
-
-/**
- * User Card Verification Details
- */
 interface CardVerificationDetails {
     /* numbers only, no spaces or dashes */
     number: string;
@@ -185,9 +175,6 @@ interface CardVerificationDetails {
     cvv: string;
 }
 
-/**
- * User Credit Card Details
- */
 interface CardDetails {
     /* numbers only, no spaces or dashes */
     cardNumber: string;
@@ -200,23 +187,14 @@ interface CardDetails {
         /* 4 digit year */
         year: string;
     },
-    /* name on the card */
     name: string;
-    /* address country */
     country: string;
-    /* address state or province */
     district?: string;
-    /* address line 1 */
     line1: string;
-    /* address line 2 */
     line2?: string;
-    /* address city */
     city: string;
-    /* address postal code */
     postalCode: string;
-    /* phone number */
     phoneNumber: string;
-    /* email address */
     email: string;
 }
 

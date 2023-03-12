@@ -4,11 +4,7 @@ import { getRequiredParam, makeGetHandler } from "./model";
 import { getDatabaseClient } from "../helpers/singletons";
 import { EmailAddress, MemberPrivateProfile } from "../shared/member";
 
-/**
- * Arguments for the getAccount handler.
- */
 interface AccountArgs {
-    /* Member email address */
     member: EmailAddress;
 }
 
@@ -28,26 +24,12 @@ async function getAccount(request: AccountArgs): Promise<MemberPrivateProfile> {
     return await getDatabaseClient().getMemberPrivateProfile(request.member);
 }
 
-/**
- * 
- * Transform the request parameters into the arguments for the getAccount handler
- * 
- * @param params ApiAccountRequest - the request parameters
- * @returns AccountArgs - the formatted request arguments
- */
 function transformRequest(params: ApiAccountRequest): AccountArgs {
     return {
         member: getRequiredParam<ApiAccountRequest, string>(params, "memberEmail")
     };
 }
 
-/**
- * 
- * Transform the result of the getAccount handler into the response format
- * 
- * @param result MemberPrivateProfile - the result of the getAccount handler
- * @returns ApiAccountResult - the formatted response
- */
 function transformResult(result: MemberPrivateProfile): ApiAccountResult {
     return {
         email: result.email,

@@ -2,23 +2,15 @@
 
 import { createMessage, encrypt, readKey } from 'openpgp';
 
-/**
- * Interface for a Circle Encryption Public Key
- */
 interface PublicKey {
-    /* Key ID */
     keyId: string
     /* uuid Public Key (Not a web3 PublicKey) */
     publicKey: string
 }
 
-/**
- * Interface for the result of pgpEncrypt
- */
 interface Result {
     /* Encrypted message */
     encryptedMessage: string;
-    /* Key ID */
     keyId: string;
 }
 

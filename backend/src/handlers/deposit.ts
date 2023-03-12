@@ -5,9 +5,6 @@ import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 
 //TODO tests
 
-/**
- * Arguments for the deposit handler.
- */
 export interface DepositArgs {
     /* Member email address */
     emailAddress: EmailAddress;
@@ -54,13 +51,6 @@ async function deposit(request: DepositArgs): Promise<DepositResult> {
     }
 }
 
-/**
- * 
- * Transform the request parameters into the arguments for the deposit handler
- * 
- * @param body ApiDepositRequest - the request parameters
- * @returns DepositArgs - the formatted request arguments
- */
 function transformRequest(body: ApiDepositRequest): DepositArgs {
     return {
         emailAddress: getRequiredParam<ApiDepositRequest, EmailAddress>(body, "emailAddress"),
@@ -68,13 +58,6 @@ function transformRequest(body: ApiDepositRequest): DepositArgs {
     };
 }
 
-/**
- * 
- * Transform the result of the deposit handler into the response format
- * 
- * @param result DepositResult - the result of the deposit handler
- * @returns ApiDepositResult - the formatted response (void) 
- */
 function transformResult(result: DepositResult): ApiDepositResult {
     // nothing to return
     return {};

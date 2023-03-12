@@ -61,26 +61,12 @@ function circleNetworkToCarrier(network: CardNetworkEnum): CreditCardCarrier {
     }
 }
 
-/**
- * 
- * Transform the request parameters into the arguments for the getPaymentMethods handler
- * 
- * @param params ApiSavedPaymentMethodsRequest - the request parameters
- * @returns PaymentMethodArgs - the formatted request arguments
- */
 function transformRequest(params: ApiSavedPaymentMethodsRequest): PaymentMethodArgs {
     return {
         memberEmail: getRequiredParam<ApiSavedPaymentMethodsRequest, EmailAddress>(params, "memberEmail"),
     };
 }
 
-/**
- * 
- * Transform the result of the getPaymentMethods handler into the response format       
- * 
- * @param result PaymentMethodSummary[] - the result of the getPaymentMethods handler
- * @returns ApiSavedPaymentMethodsResult - the formatted response 
- */
 function transformResult(result: PaymentMethodSummary[]): ApiSavedPaymentMethodsResult {
     return result;
 }
