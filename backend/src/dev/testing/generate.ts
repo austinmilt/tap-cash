@@ -1,6 +1,10 @@
 import { Card, CvvResults } from "@circle-fin/circle-sdk";
 import { v4 as uuid } from "uuid";
 
+/**
+ * 
+ * @returns a mocked Card object
+ */
 export function generateCircleCard(): Card {
     return {
         id: uuid(),

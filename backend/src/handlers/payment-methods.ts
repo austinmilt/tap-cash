@@ -8,13 +8,24 @@ import { getRequiredParam, makeGetHandler } from "./model";
 import { getCircleClient, getDatabaseClient } from "../helpers/singletons";
 import { USE_DUMMY_CARD } from "../constants";
 
+/**
+ * Arguments for the getPaymentMethods handler.
+ */
 interface PaymentMethodArgs {
+    /* Member email address */
     memberEmail: EmailAddress;
 }
 
 //TODO this needs to have authentication
 export const handlePaymentMethods = makeGetHandler(getPaymentMethods, transformRequest, transformResult);
 
+/**
+ * 
+ * Fetch a member's saved payment methods from the Database Client
+ * (uses DUMMY_CARD if USE_DUMMY_CARD is true in .env)
+ * @param request PaymentMethodArgs - the request arguments
+ * @returns PaymentMethodSummary[] - the result of the getPaymentMethods handler
+ */
 async function getPaymentMethods(request: PaymentMethodArgs): Promise<PaymentMethodSummary[]> {
     let cards: Card[];
     if (USE_DUMMY_CARD) cards = [DUMMY_CARD];
@@ -34,7 +45,13 @@ async function getPaymentMethods(request: PaymentMethodArgs): Promise<PaymentMet
     }));
 }
 
-
+/**
+ * 
+ * Fetch the Network Carier of a Circle Card
+ * 
+ * @param network CardNetworkEnum - the network of the card
+ * @returns CreditCardCarrier - the carrier of the card
+ */
 function circleNetworkToCarrier(network: CardNetworkEnum): CreditCardCarrier {
     switch (network) {
         case "AMEX": return CreditCardCarrier.AMERICAN_EXPRESS;
@@ -44,14 +61,26 @@ function circleNetworkToCarrier(network: CardNetworkEnum): CreditCardCarrier {
     }
 }
 
-
+/**
+ * 
+ * Transform the request parameters into the arguments for the getPaymentMethods handler
+ * 
+ * @param params ApiSavedPaymentMethodsRequest - the request parameters
+ * @returns PaymentMethodArgs - the formatted request arguments
+ */
 function transformRequest(params: ApiSavedPaymentMethodsRequest): PaymentMethodArgs {
     return {
         memberEmail: getRequiredParam<ApiSavedPaymentMethodsRequest, EmailAddress>(params, "memberEmail"),
     };
 }
 
-
+/**
+ * 
+ * Transform the result of the getPaymentMethods handler into the response format       
+ * 
+ * @param result PaymentMethodSummary[] - the result of the getPaymentMethods handler
+ * @returns ApiSavedPaymentMethodsResult - the formatted response 
+ */
 function transformResult(result: PaymentMethodSummary[]): ApiSavedPaymentMethodsResult {
     return result;
 }
