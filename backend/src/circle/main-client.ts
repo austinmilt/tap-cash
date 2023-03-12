@@ -12,19 +12,30 @@ import { v4 as uuid } from "uuid";
 import { pgpEncrypt } from "./open-pgp";
 import { CircleCardId, ServerEnv } from "../types/types";
 
+/**
+ * Implemntation of the Circle client that uses the Circle SDK
+ */
 export class CircleMainClient implements CircleClient {
     private readonly sdk: Circle;
 
+    /* This is a private constructor so that we can only create initiate new instances of this client */
     private constructor(sdk: Circle) {
         this.sdk = sdk;
     }
 
-
+    /**
+     * 
+     * @returns a new instance of the CircleMainClient with the default Circle API key and environment
+     */
     public static ofDefaults(): CircleMainClient {
         return new CircleMainClient(new Circle(CIRCLE_API_KEY, CIRCLE_ENVIRONMENT));
     }
 
-
+    /**
+     * 
+     * Generates and adds a new card to the Circle account
+     * @returns CircleCardId of the card that was added
+     */
     private async addRandomCard(): Promise<CircleCardId> {
         if (SERVER_ENV === ServerEnv.PROD) {
             throw new Error("Only allowed in dev environments.");
@@ -33,7 +44,14 @@ export class CircleMainClient implements CircleClient {
     }
 
 
-    // https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
+    /**
+     * 
+     * Adds a new card to the Circle account
+     * Reference Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
+     * @param args CardDetails
+     * @returns CircleCardId of the card that was added
+     * @throws generalServerError if the card could not be added
+     */
     private async addCreditCard(args: CardDetails): Promise<CircleCardId> {
         const publicKey: PublicKey = await this.getCircleRsaKey();
         const verificationDetails: CardVerificationDetails = {
@@ -74,7 +92,14 @@ export class CircleMainClient implements CircleClient {
         return cardId;
     }
 
-
+    /**
+     * 
+     * Fetches a Card from Circle
+     * 
+     * @param id of the card to fetch
+     * @returns Card if found
+     * @throws noCardFound if the card could not be found
+     */
     public async fetchCard(id: string): Promise<Card> {
         const response = await this.sdk.cards.getCard(id);
         const card: Card | undefined = response.data.data;
@@ -85,6 +110,14 @@ export class CircleMainClient implements CircleClient {
     }
 
 
+    /**
+     * 
+     * Makes user credit card payment to Circle and then transfers the USDC to the destination ATA
+     * 
+     * @param args CircleDepositArgs
+     * @returns void
+     * @throws generalServerError if the deposit could not be made
+     */
     public async depositUsdc(args: CircleDepositArgs): Promise<void> {
         //TODO replace when going to prod
         const cardId: string = await this.addRandomCard();
@@ -149,7 +182,13 @@ export class CircleMainClient implements CircleClient {
         }
     }
 
-
+    /**
+     * 
+     * Fetches the Circle RSA public key 
+     * 
+     * @returns PublicKey (Universally unique identifier (UUID v4) of the public key used in encryption, not a web3 public key)
+     * @throws generalServerError if the key could not be fetched
+     */
     private async getCircleRsaKey(): Promise<PublicKey> {
         const publicKey = (await this.sdk.encryption.getPublicKey()).data.data;
         if (publicKey === undefined) {
@@ -160,43 +199,71 @@ export class CircleMainClient implements CircleClient {
 }
 
 
-// https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardsApi.ts
+
+/**
+ * User session metadata
+ * Ref Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardsApi.ts
+ */
 interface MetaData {
+    /* email address of the user */
     email?: string;
+    /* phone number of the user */
     phoneNumber?: string;
+    /* session id of the user */
     sessionId: string;
+    /* ip address of the user */
     ipAddress: string;
 }
 
-
+/**
+ * User Card Verification Details
+ */
 interface CardVerificationDetails {
-    /**
-     * numbers only
-     */
+    /* numbers only, no spaces or dashes */
     number: string;
+    /* secure code on the back of the card */
     cvv: string;
 }
 
-
+/**
+ * User Credit Card Details
+ */
 interface CardDetails {
+    /* numbers only, no spaces or dashes */
     cardNumber: string;
+    /* secure code on the back of the card */
     cvv: string;
+    /* card expiry date */
     expiry: {
+        /* 2 digit month */
         month: string;
+        /* 4 digit year */
         year: string;
     },
+    /* name on the card */
     name: string;
+    /* address country */
     country: string;
+    /* address state or province */
     district?: string;
+    /* address line 1 */
     line1: string;
+    /* address line 2 */
     line2?: string;
+    /* address city */
     city: string;
+    /* address postal code */
     postalCode: string;
+    /* phone number */
     phoneNumber: string;
+    /* email address */
     email: string;
 }
 
-// https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardTestData.ts
+/**
+ * Example cards for testing
+ * Ref Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardTestData.ts
+ */
 const exampleCards: CardDetails[] = [
     {
         cardNumber: '4007400000000007',
