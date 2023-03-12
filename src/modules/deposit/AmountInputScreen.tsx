@@ -30,43 +30,10 @@ export function AmountInputScreen(props: Props): JSX.Element {
                 <Text text-md gray-dark>
                     deposit to your Tap account
                 </Text>
-                <View style={styles.iconWrapper}>
-                </View>
                 {/* TODO Replace dummy CC */}
-                <View >
-                    <Text text-md gray-dark>{`from: •••• •••• •••• 4567`}</Text>
-                </View>
+                <Text text-md gray-dark>{`from: •••• •••• •••• 4567`}</Text>
             </View>
             <Button secondary label="Confirm" onPress={onSubmit} />
         </Screen>
     )
 }
-
-
-
-const STYLES = StyleSheet.create({
-    text: {
-        fontSize: 53,
-        color: COLORS.grayDark,
-        fontFamily: "Jost-Bold"
-    },
-
-    leadingText: {
-        fontSize: 40,
-        color: COLORS.grayDark,
-        fontFamily: "Jost-Bold",
-        marginRight: 5,
-        alignSelf: "flex-start"
-    }
-})
-
-
-const styles = StyleSheet.create({
-    iconWrapper: {
-        width: 48,
-        height: 48,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 16,
-    }
-});

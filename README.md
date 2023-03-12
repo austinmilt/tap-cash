@@ -25,6 +25,14 @@ testing on a physical device, get your physical device connected to `abd`.
 Choose one of the options that pop up (probably pressing `a` to run on Android).
 
 
+#### Turning off Dev Mode
+The app's appearance and behavior may be different between "dev" mode and
+"release" mode. To turn off dev mode
+1. start the app
+2. press `d` in the metro terminal to open the developer menu
+3. Go to Settings > uncheck `JS Dev Mode`
+
+
 ### Building the APK (for testing)
 Follow all setup steps above.
 

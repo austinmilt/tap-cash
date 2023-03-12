@@ -37,32 +37,34 @@ export function DepositingScreen(props: Props): JSX.Element {
 
     return (
         <Screen style={{ paddingBottom: 66, paddingHorizontal: 30 }}>
-            <View center flexG gap-lg>
+            <View centerV flexG gap-lg>
                 <BigDollars>{amount}</BigDollars>
-                <TransactionStatus
-                    {...depositContext}
-                    success={!depositContext.loading && (depositContext.error == null)}
-                    defaultContent={
-                        <Text text-md gray-medium>
-                            loading
-                        </Text>
-                    }
-                    loadingContent={
-                        <Text text-md gray-dark>
-                            depositing {formatUsd(amount)} to your Tap account
-                        </Text>
-                    }
-                    errorContent={
-                        <Text text-md error>
-                            failed to deposit {formatUsd(amount)} to your Tap account
-                        </Text>
-                    }
-                    successContent={
-                        <Text text-md gray-dark>
-                            deposited {formatUsd(amount)} to your Tap account
-                        </Text>
-                    }
-                />
+                <View flexS>
+                    <TransactionStatus
+                        {...depositContext}
+                        success={!depositContext.loading && (depositContext.error == null)}
+                        defaultContent={
+                            <Text text-md gray-medium>
+                                loading
+                            </Text>
+                        }
+                        loadingContent={
+                            <Text text-md gray-dark>
+                                depositing {formatUsd(amount)} to your Tap account
+                            </Text>
+                        }
+                        errorContent={
+                            <Text text-md error>
+                                failed to deposit {formatUsd(amount)} to your Tap account
+                            </Text>
+                        }
+                        successContent={
+                            <Text text-md gray-dark>
+                                deposited {formatUsd(amount)} to your Tap account
+                            </Text>
+                        }
+                    />
+                </View>
             </View>
             <View>
                 <Button

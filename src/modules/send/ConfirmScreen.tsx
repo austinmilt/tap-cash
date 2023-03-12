@@ -53,9 +53,9 @@ export function ConfirmScreen(props: Props): JSX.Element {
                             <Text text-md gray-dark center>from your Tap account</Text>
                         )}
                         <Text text-md gray-dark center>to</Text>
-                        <RecipientProfile {...recipient} bordered padding-sm style={{ width: "100%", gap: 16 }} />
+                        <RecipientProfile {...recipient} flexS bordered padding-sm style={{ width: "100%", gap: 16 }} />
                         {needsDeposit && (
-                            <View gap-md style={{ marginTop: 24 }}>
+                            <View flexS gap-md style={{ marginTop: 24 }}>
                                 <Text text-md gray-dark>{formatUsd(finalAmount - finalDepositAmount)} from your Tap account</Text>
                                 <Text text-md gray-dark>{formatUsd(finalDepositAmount)} charged to card ending in {paymentMethod?.creditCard?.lastFourDigits}</Text>
                             </View>

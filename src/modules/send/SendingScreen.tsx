@@ -49,8 +49,8 @@ export function SendingScreen(props: Props): JSX.Element {
             <View flexG centerV gap-sm>
                 <BigDollars>{amount}</BigDollars>
                 <Text text-md gray-dark center>to</Text>
-                <RecipientProfile {...recipient} bordered padding-sm style={{ width: "100%", gap: 16 }} />
-                <View left gap-md style={{ marginTop: 24 }}>
+                <RecipientProfile {...recipient} flexS bordered padding-sm style={{ width: "100%", gap: 16 }} />
+                <View left gap-md flexS style={{ marginTop: 24 }}>
                     {(needsDeposit) && (
                         <TransactionStatus
                             {...depositAndSendContext.deposit}

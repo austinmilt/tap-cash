@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "build-apk-windows": "SET ENVFILE=.env.dev && react-native run-android --mode=release",
     "build-apk": "ENVFILE=.env.dev react-native run-android --mode=release",
-    "start-windows": "SET ENVFILE=.env.local && react-native start",
+    "start-windows": "SET ENVFILE=.env.dev && react-native start",
     "start": "ENVFILE=.env.local react-native start",
     "test": "jest"
   },
