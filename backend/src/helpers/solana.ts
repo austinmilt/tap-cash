@@ -11,10 +11,11 @@ export class Connection extends anchor.web3.Connection { };
 /**
  *
  * Gets USDC Public Key (or creates USDC Mint if one does not exist)
- *
- * @param connection
- * @param auth
- * @returns
+ * (for use in local or devnet environments)
+ * 
+ * @param connection - Solana Connection
+ * @param auth - Keypair of the Mint Authority of USDC
+ * @returns USDC Public Key or undefined if USDC Mint could not be created or found
  */
 export async function getOrCreateUsdc(connection: Connection, auth: Keypair): Promise<PublicKey | undefined> {
     const usdc = FAKE_USDC;
@@ -47,9 +48,9 @@ export async function getOrCreateUsdc(connection: Connection, auth: Keypair): Pr
  *
  * Airdrops 2 SOL if Balance is below 1 SOL
  *
- * @param workspace
- * @param lamports
- * @returns
+ * @param workspace - Workspace to use for the emulator
+ * @param lamports - Amount of lamports to airdrop (default: 2 SOL)
+ * @returns void
  */
 export async function airdropIfNeeded(workspace: WorkSpace, lamports = (anchor.web3.LAMPORTS_PER_SOL * 2)): Promise<void> {
     const { connection, program, provider } = workspace;
