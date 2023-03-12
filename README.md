@@ -28,8 +28,9 @@ Choose one of the options that pop up (probably pressing `a` to run on Android).
 ### Building the APK (for testing)
 Follow all setup steps above.
 
-1. Get the app signing password from one of the Tap devs, to use in the next step.
-2. At https://reactnative.dev/docs/signed-apk-android, follow the steps for
+1. Get the keystore file and app signing password from
+one of the Tap devs, to use in the next step.
+2. Follow the steps for
 [Setting up Gradle Variables](https://reactnative.dev/docs/signed-apk-android#setting-up-gradle-variables),
 using the password above for `MYAPP_UPLOAD_STORE_PASSWORD` and `MYAPP_UPLOAD_KEY_PASSWORD`. Do NOT save the variables in `android/gradle.properties` as the secret will be committed to git.
 3. In a terminal the repo root directory, run the command for generating the APK
