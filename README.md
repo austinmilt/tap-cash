@@ -28,7 +28,7 @@ Choose one of the options that pop up (probably pressing `a` to run on Android).
 ### Building the APK (for testing)
 Follow all setup steps above.
 
-1. Get the keystore file and app signing password from
+1. Get the keystore file, app signing password and .env files from
 one of the Tap devs, to use in the next step.
 2. Follow the steps for
 [Setting up Gradle Variables](https://reactnative.dev/docs/signed-apk-android#setting-up-gradle-variables),
