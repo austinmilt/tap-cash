@@ -12,7 +12,7 @@ In a terminal in the project directory run `npm install`
 ### Set up Environment
 Set your environment `JAVA_HOME` to the location of the JRE, e.g. `"C:\Program Files\Android\Android Studio\jre"`
 
-On Windows, set
+Get environment files from a Tap dev.
 
 
 ### Starting the App
