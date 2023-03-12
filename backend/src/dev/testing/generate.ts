@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 
 /**
  * 
- * @returns a mocked Card object
+ * @returns a Circle Card with randomly generated attributes
  */
 export function generateCircleCard(): Card {
     return {

@@ -3,7 +3,7 @@ import { EmailAddress } from "../shared/member";
 import { CircleCardId } from "../types/types";
 
 /**
- * This is a wrapper around the Circle SDK. It is used to make it easier to mock
+ * Tap-specific Circle client for interacting with the Circle API.
  */
 export interface CircleClient {
     depositUsdc(args: CircleDepositArgs): Promise<void>;

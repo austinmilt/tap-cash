@@ -44,14 +44,7 @@ export class CircleMainClient implements CircleClient {
     }
 
 
-    /**
-     * 
-     * Adds a new card to the Circle account
-     * Reference Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
-     * @param args CardDetails
-     * @returns CircleCardId of the card that was added
-     * @throws generalServerError if the card could not be added
-     */
+    // Reference Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
     private async addCreditCard(args: CardDetails): Promise<CircleCardId> {
         const publicKey: PublicKey = await this.getCircleRsaKey();
         const verificationDetails: CardVerificationDetails = {
@@ -92,14 +85,6 @@ export class CircleMainClient implements CircleClient {
         return cardId;
     }
 
-    /**
-     * 
-     * Fetches a Card from Circle
-     * 
-     * @param id of the card to fetch
-     * @returns Card if found
-     * @throws noCardFound if the card could not be found
-     */
     public async fetchCard(id: string): Promise<Card> {
         const response = await this.sdk.cards.getCard(id);
         const card: Card | undefined = response.data.data;
@@ -110,14 +95,6 @@ export class CircleMainClient implements CircleClient {
     }
 
 
-    /**
-     * 
-     * Makes user credit card payment to Circle and then transfers the USDC to the destination ATA
-     * 
-     * @param args CircleDepositArgs
-     * @returns void
-     * @throws generalServerError if the deposit could not be made
-     */
     public async depositUsdc(args: CircleDepositArgs): Promise<void> {
         //TODO replace when going to prod
         const cardId: string = await this.addRandomCard();
@@ -182,13 +159,6 @@ export class CircleMainClient implements CircleClient {
         }
     }
 
-    /**
-     * 
-     * Fetches the Circle RSA public key 
-     * 
-     * @returns PublicKey (Universally unique identifier (UUID v4) of the public key used in encryption, not a web3 public key)
-     * @throws generalServerError if the key could not be fetched
-     */
     private async getCircleRsaKey(): Promise<PublicKey> {
         const publicKey = (await this.sdk.encryption.getPublicKey()).data.data;
         if (publicKey === undefined) {
@@ -204,16 +174,6 @@ export class CircleMainClient implements CircleClient {
  * User session metadata
  * Ref Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardsApi.ts
  */
-interface MetaData {
-    /* email address of the user */
-    email?: string;
-    /* phone number of the user */
-    phoneNumber?: string;
-    /* session id of the user */
-    sessionId: string;
-    /* ip address of the user */
-    ipAddress: string;
-}
 
 /**
  * User Card Verification Details

@@ -43,7 +43,6 @@ export class CircleEmulator implements CircleClient {
      * Simulates the deposit of USDC into a user's account by Minting Fake USDC to the destination ATA
      * 
      * @param args CircleDepositArgs - The set of arguments needed to deposit funds into a user's account
-     * @returns void
      * @throws generalServerError if the MintTo transaction fails
      */
     public async depositUsdc(args: CircleDepositArgs): Promise<void> {

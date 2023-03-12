@@ -149,20 +149,10 @@ export class FirestoreClient implements DatabaseClient {
         return member.circleCreditCards;
     }
 
-    /**
-     * 
-     * @param email - email address of member
-     * @returns MemberDocument or null if no document exists for the given email
-     */
     private async getMemberDocByEmail(email: EmailAddress): Promise<MemberDocument | null> {
         return (await this.getMemberDocSnapshotByEmail(email))?.data() ?? null;
     }
 
-    /**
-     * 
-     * @param email - email address of member
-     * @returns DocumentSnapshot or null if no document exists for the given email
-     */
     private async getMemberDocSnapshotByEmail(email: EmailAddress): Promise<QueryDocumentSnapshot<MemberDocument> | null> {
         const response: QuerySnapshot<MemberDocument> = await this.buildMemberQuery("email", "==", email)
             .limit(1)
@@ -171,13 +161,7 @@ export class FirestoreClient implements DatabaseClient {
         return response.docs[0];
     }
 
-    /**
-     * 
-     * @param field - field to query
-     * @param operation - operation to perform
-     * @param value 
-     * @returns MemberDocument Firestore Query
-     */
+    // https://cloud.google.com/firestore/docs/query-data/get-data
     private buildMemberQuery(
         field: keyof MemberDocument,
         operation: FirebaseFirestore.WhereFilterOp,

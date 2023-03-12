@@ -14,6 +14,7 @@ let dbClient: DatabaseClient;
 
 /**
  * 
+ * Lazy initializer for database singleton.
  * @returns DatabaseClient - The singleton DatabaseClient
  */
 export function getDatabaseClient(): DatabaseClient {
@@ -31,7 +32,6 @@ export function getDatabaseClient(): DatabaseClient {
 /**
  * 
  * @param newClient - The new DatabaseClient to set the singleton to
- * @returns void
  * @throws Error if the server environment is not a test environment
  */
 export function setDatabaseClient(newClient: DatabaseClient) {
@@ -44,7 +44,7 @@ export function setDatabaseClient(newClient: DatabaseClient) {
 
 let tapClient: TapCashClient;
 /**
- * 
+ * Lazy initializer for the Tap program client.
  * @returns TapCashClient - The singleton TapCashClient
  */
 export function getTapCashClient(): TapCashClient {
@@ -62,7 +62,6 @@ export function getTapCashClient(): TapCashClient {
 /**
  * 
  * @param newClient - The new TapCashClient to set the singleton to
- * @returns void
  * @throws Error if the server environment is not a test environment
  */
 export function setTapCashClient(newClient: TapCashClient) {
@@ -75,7 +74,7 @@ export function setTapCashClient(newClient: TapCashClient) {
 
 let circleClient: CircleClient;
 /**
- * 
+ * Lazy initializer for the Circle client.
  * @returns CircleClient - The singleton CircleClient
  * @throws Error if the server environment is not a test environment
  */
@@ -118,7 +117,6 @@ export function getCircleClient(): CircleClient {
 /**
  * 
  * @param newClient - The new CircleClient to set the singleton to
- * @returns void
  * @throws Error if the server environment is not a test environment
  */
 export function setCircleClient(newClient: CircleClient) {
