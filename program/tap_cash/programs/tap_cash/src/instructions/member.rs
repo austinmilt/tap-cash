@@ -5,6 +5,7 @@ use crate::{
     state::{Member, Bank},
 };
 
+/// Accounts and constraints for initializing a new member account.
 #[derive(Accounts)]
 pub struct InitializeMember<'info> {
 
@@ -43,6 +44,10 @@ pub struct InitializeMember<'info> {
     pub rent: Sysvar<'info, Rent>
 }
 
+/// Initializes a new member of a Bank.
+///
+/// This function creates a new member state account and sets its initial state to include the member version, bank key, user ID, bump value, and number of accounts. 
+/// This function should only be called once per member.
 pub fn initialize_member(
     ctx: Context<InitializeMember>
 ) -> Result<()> { 
