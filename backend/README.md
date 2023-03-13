@@ -12,7 +12,7 @@ tap's Backend has several main components required to run the tap app:
 | Web3 Auth SDK | Single sign-in with Google and non-custodial signing wallet | [Web3 Auth Developer Account](https://dashboard.web3auth.io/) |
 
 - Make sure you have the requirements for each component before proceeding.
-- Rename `.env.example.yml` to `.env.local.yml` and fill out the environment variables for the correct environment(s).
+- Copy `.env.example.yml` to `.env.local.yml` and fill out the environment variables for the correct environment(s).
     - For `FAKE_USDC` and `BANK_AUTH` you can generate a new keypair with `solana-keygen grind --starts-with USDC:1` (or `BANK:1`) to generate an easy to track public key and use the public key as the value. Make sure to update values in the front end `.env.local` as well.
 - Open the backend directory `cd backend` and run `npm install` to install the dependencies.
 

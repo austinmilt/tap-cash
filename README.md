@@ -30,13 +30,13 @@ Submission to 2023 Solana Grizzlython Submission by:
 - Circle SDK: [Credit Card on-ramp](./backend/src/circle/)
 - Google Firestore: [Database](./backend/src/db/) for storing user public info
 - Google Cloud Functions: [Serverless API backend](./backend/src/index.ts) 
-- Landing Page: [NextJs](https://tapcash.app)
+- NextJs: [Landing Page](https://tapcash.app)
 
 #### Detailed User Flow
 **New Users** 
 
 Users create an account by logging in with gmail account. 
-- Users are authenticated and receive a custodial Solana wallet via [Web3 Auth](https://web3auth.io/). 
+- Users are authenticated and receive a non-custodial Solana wallet via [Web3 Auth](https://web3auth.io/). 
 - On account initiation, the tap program ([Devnet](https://explorer.solana.com/address/TAPAPp2YoguQQDkicGyzTzkA3t4AgECvR1eL1hbx9qz?cluster=devnet): `TAPAPp2YoguQQDkicGyzTzkA3t4AgECvR1eL1hbx9qz`) initiates a new Member PDA for the [Tap "Bank"](https://explorer.solana.com/address/AU88yciXy2Rz2DJkUUFu2gpYqaPRLngd3sevSfAH8KyS/anchor-account?cluster=devnet). 
 - A user "Checking" account is created (seeded on the member PDA), and a USDC ATA owned by the member account is initiated. 
 - All initiation fees and rent are paid by the Tap Bank. 
@@ -51,7 +51,7 @@ Users create an account by logging in with gmail account.
 **Transfers**
 
 - Users can initiate a peer to peer transfer via the "Send" button on the home page. 
-- Users query other tap members via a search that looks up other members via our Google Backend.
+- Users query other tap members via a search that looks up other members by email via our Google Backend.
 - Users select a user and amount and send the transaction to our backend.
 - The program transfer function requires 3 signatures: the Program, the tap Bank authority, and the user.
 - Once the transaction is confirmed on chain, balance and transfer are updated on the user homepage.
@@ -65,3 +65,4 @@ Users create an account by logging in with gmail account.
 - Currently in-app transfers limited to other users on the platform. This is intentional for early release, but not a limitation of our future capabilities. In an effort to simplify the UX, we are activity avoiding introducing any reference to crypto, blockchain, public/secret keys, gas, Solana, etc.
 - Similarly, because tap is targetted to a non-crypto native user, we did not build in the seed vault or incorporate exporting secret keys (though these are features that can easily be added at a later date when customer's are ready for such features)
 - Current demo is limited to Android, however since we built with React Native, we should be able to add iOS in the near future
+- The user must sign in through web3auth on every launch of the app. In the future we may encrypt the user's credentials on their device to reduce start times. Because USDC transfers are gated through our backend, users that lose their device would be able to disable their account. And because we use an OAuth provider for their wallet, they can use the same Google account across devices.
