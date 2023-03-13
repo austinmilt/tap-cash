@@ -1,4 +1,4 @@
-# Tap
+# tap
 *digital cash, for everyone*. **tap** is a user-first mobile cash app designed for mainstream adoption.
 
 Submission to 2023 Solana Grizzlython Submission by: 
