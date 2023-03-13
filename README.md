@@ -56,6 +56,8 @@ Users create an account by logging in with gmail account.
 - The program transfer function requires 3 signatures: the Program, the tap Bank authority, and the user.
 - Once the transaction is confirmed on chain, balance and transfer are updated on the user homepage.
 
+![tap User Flow](./src/images/misc/tap-flow.png)
+
 #### Present Limitations/Known Issues
 - Some features currently disabled on devnet: 
     - Cash withdrawals
