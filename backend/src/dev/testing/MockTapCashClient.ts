@@ -32,7 +32,7 @@ export class MockTapCashClient implements TapCashClient {
         return this.accounts.get(userId.toBase58());
     }
 
-    public async initializeNewMember(userId: PublicKey): Promise<PublicKey | undefined> {
+    public async initializeNewMember(userId: PublicKey): Promise<PublicKey> {
         return this.initializeNewMemberWithBalance(userId, 0);
     }
 
@@ -55,7 +55,7 @@ export class MockTapCashClient implements TapCashClient {
         return ata;
     }
 
-    public async sendTokens(args: SendTokensArgs): Promise<string | undefined> {
+    public async sendTokens(args: SendTokensArgs): Promise<string> {
         const recipientId: string | undefined = this.ataToUserId.get(args.destinationAta.toBase58());
         if (recipientId == null) {
             throw new Error("Destination member account has not been initialized: " + args.destinationAta.toBase58());

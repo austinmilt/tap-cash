@@ -9,8 +9,8 @@ import { TapCash } from "../types/tap-cash";
 import { BN } from "bn.js";
 
 export interface TapCashClient {
-    initializeNewMember(userId: PublicKey): Promise<PublicKey | undefined>;
-    sendTokens(args: SendTokensArgs): Promise<string | undefined>;
+    initializeNewMember(userId: PublicKey): Promise<PublicKey>;
+    sendTokens(args: SendTokensArgs): Promise<string>;
     getRecentActivity(member: PublicKey, maxNumberTx: number): Promise<TransactionDetail[]>;
     fetchAtaIfInitialized(memberPubkey: PublicKey): Promise<PublicKey | undefined>;
 }
@@ -63,7 +63,7 @@ export class MainTapCashClient implements TapCashClient {
             tx.feePayer = this.provider.wallet.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            await this.provider.sendAndConfirm(tx,undefined, {commitment: "finalized"});
+            await this.provider.sendAndConfirm(tx, undefined, { commitment: "finalized" });
             return bankPda;
         }
         catch {
@@ -136,7 +136,7 @@ export class MainTapCashClient implements TapCashClient {
         return { accountAta, accountPda };
     }
 
-    private async createAccount(args: CreateAccountArgs): Promise<PublicKey | undefined> {
+    private async createAccount(args: CreateAccountArgs): Promise<PublicKey> {
         try {
             let { lastValidBlockHeight, blockhash } = await this.connection.getLatestBlockhash('finalized');
             const tx = await this.program.methods.initializeAccount()
@@ -158,7 +158,7 @@ export class MainTapCashClient implements TapCashClient {
 
     public async initializeNewMember(
         userId: PublicKey
-    ): Promise<PublicKey | undefined> {
+    ): Promise<PublicKey> {
         const systemProgram: PublicKey = anchor.web3.SystemProgram.programId;
         const rent: PublicKey = anchor.web3.SYSVAR_RENT_PUBKEY;
         const tokenProgram = TOKEN_PROGRAM_ID;
@@ -201,7 +201,7 @@ export class MainTapCashClient implements TapCashClient {
         return memberTokenAccount;
     }
 
-    public async sendTokens(args: SendTokensArgs): Promise<string | undefined> {
+    public async sendTokens(args: SendTokensArgs): Promise<string> {
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
         const systemProgram: PublicKey = anchor.web3.SystemProgram.programId;
         const tokenProgram = TOKEN_PROGRAM_ID;
@@ -228,16 +228,15 @@ export class MainTapCashClient implements TapCashClient {
                     associatedTokenProgram,
                     systemProgram
                 })
-                .signers([this.sdk.payer, args.fromMember ])
+                .signers([this.sdk.payer, args.fromMember])
                 .transaction();
             tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            const txId = await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember]);
-            return txId
-        }
-        catch (e) {
-            ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
+            return await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember]);
+
+        } catch (e) {
+            throw ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
         }
     }
 
@@ -313,7 +312,7 @@ export class MainTapCashClient implements TapCashClient {
             else if (otherPartyPostBalance?.owner) {
                 otherPartyAddress = getAssociatedTokenAddressSync(USDC_MINT_ADDRESS, new PublicKey(otherPartyPostBalance?.owner), true);
             }
-            else {otherPartyAddress = undefined}
+            else { otherPartyAddress = undefined }
             const bankPreBalance: TokenBalance | undefined = preTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankPostBalance: TokenBalance | undefined = postTokenBalancesWithAta.find((balance) => balance?.isBank);
             const bankChange: number = (bankPostBalance?.uiTokenAmount?.uiAmount ?? 0) - (bankPreBalance?.uiTokenAmount?.uiAmount ?? 0);
@@ -338,13 +337,13 @@ export class MainTapCashClient implements TapCashClient {
         try {
             const member = await this.sdk.program.account.member.fetchNullable(memberPda);
             if (member?.userId.toBase58() !== memberPubkey.toBase58()) return undefined;
-            const memberAccount = await this.getMemberAta({accountNumber: 1, tokenMint: USDC_MINT_ADDRESS, memberPda})
+            const memberAccount = await this.getMemberAta({ accountNumber: 1, tokenMint: USDC_MINT_ADDRESS, memberPda })
             // TODO Probably want to add one more check on ata account info
             return memberAccount.accountAta;
         }
         catch {
             return undefined;
-        }     
+        }
     }
 
 }
