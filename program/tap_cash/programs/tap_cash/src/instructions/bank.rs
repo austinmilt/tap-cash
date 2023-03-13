@@ -6,6 +6,7 @@ use crate::{
     model::error::{BankError}
 };
 
+/// Accounts and constraints for initializing a new bank.
 #[derive(Accounts)]
 pub struct InitializeBank<'info> {
     /// The Bank's creator -- should be secure (e.g., ledger)
@@ -32,6 +33,10 @@ pub struct InitializeBank<'info> {
     pub rent: Sysvar<'info, Rent>
 }
 
+/// Initializes a new Bank.
+///
+/// This function creates a new account of type Bank and sets its initial state to include the bank version,
+/// authority, fee payer, and bump value. This function should only be called once per bank authority key.
 pub fn initialize_bank(
     ctx: Context<InitializeBank>
 ) -> Result<()> { 

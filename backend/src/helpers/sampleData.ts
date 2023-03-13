@@ -1,5 +1,8 @@
 import { BusinessRecipientAddressCreationRequest, CardCreationRequest, PaymentCreationRequest, TransferCreationRequest } from "@circle-fin/circle-sdk";
 
+/**
+ * This is a sample card creation request. It is used to make mock requests to the Circle SDK
+ */
 export const samplePayment:PaymentCreationRequest = {
     idempotencyKey: 'ba943ff1-ca16-49b2-ba55-1057e70ca5c7',
     keyId: 'test',

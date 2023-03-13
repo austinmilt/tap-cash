@@ -1,13 +1,15 @@
-// https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/openpgp.ts
+// Ref Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/openpgp.ts
 
 import { createMessage, encrypt, readKey } from 'openpgp';
 
 interface PublicKey {
     keyId: string
+    /* uuid Public Key (Not a web3 PublicKey) */
     publicKey: string
 }
 
 interface Result {
+    /* Encrypted message */
     encryptedMessage: string;
     keyId: string;
 }

@@ -12,19 +12,30 @@ import { v4 as uuid } from "uuid";
 import { pgpEncrypt } from "./open-pgp";
 import { CircleCardId, ServerEnv } from "../types/types";
 
+/**
+ * Implemntation of the Circle client that uses the Circle SDK
+ */
 export class CircleMainClient implements CircleClient {
     private readonly sdk: Circle;
 
+    /* This is a private constructor so that we can only create initiate new instances of this client */
     private constructor(sdk: Circle) {
         this.sdk = sdk;
     }
 
-
+    /**
+     * 
+     * @returns a new instance of the CircleMainClient with the default Circle API key and environment
+     */
     public static ofDefaults(): CircleMainClient {
         return new CircleMainClient(new Circle(CIRCLE_API_KEY, CIRCLE_ENVIRONMENT));
     }
 
-
+    /**
+     * 
+     * Generates and adds a new card to the Circle account
+     * @returns CircleCardId of the card that was added
+     */
     private async addRandomCard(): Promise<CircleCardId> {
         if (SERVER_ENV === ServerEnv.PROD) {
             throw new Error("Only allowed in dev environments.");
@@ -33,7 +44,7 @@ export class CircleMainClient implements CircleClient {
     }
 
 
-    // https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
+    // Reference Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/pages/flow/charge/index.vue
     private async addCreditCard(args: CardDetails): Promise<CircleCardId> {
         const publicKey: PublicKey = await this.getCircleRsaKey();
         const verificationDetails: CardVerificationDetails = {
@@ -73,7 +84,6 @@ export class CircleMainClient implements CircleClient {
         }
         return cardId;
     }
-
 
     public async fetchCard(id: string): Promise<Card> {
         const response = await this.sdk.cards.getCard(id);
@@ -149,7 +159,6 @@ export class CircleMainClient implements CircleClient {
         }
     }
 
-
     private async getCircleRsaKey(): Promise<PublicKey> {
         const publicKey = (await this.sdk.encryption.getPublicKey()).data.data;
         if (publicKey === undefined) {
@@ -159,30 +168,23 @@ export class CircleMainClient implements CircleClient {
     }
 }
 
-
-// https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardsApi.ts
-interface MetaData {
-    email?: string;
-    phoneNumber?: string;
-    sessionId: string;
-    ipAddress: string;
-}
-
-
 interface CardVerificationDetails {
-    /**
-     * numbers only
-     */
+    /* numbers only, no spaces or dashes */
     number: string;
+    /* secure code on the back of the card */
     cvv: string;
 }
-
 
 interface CardDetails {
+    /* numbers only, no spaces or dashes */
     cardNumber: string;
+    /* secure code on the back of the card */
     cvv: string;
+    /* card expiry date */
     expiry: {
+        /* 2 digit month */
         month: string;
+        /* 4 digit year */
         year: string;
     },
     name: string;
@@ -196,7 +198,10 @@ interface CardDetails {
     email: string;
 }
 
-// https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardTestData.ts
+/**
+ * Example cards for testing
+ * Ref Implementation: https://github.com/circlefin/payments-sample-app/blob/78e3d1b5b3b548775e755f1b619720bcbe5a8789/lib/cardTestData.ts
+ */
 const exampleCards: CardDetails[] = [
     {
         cardNumber: '4007400000000007',

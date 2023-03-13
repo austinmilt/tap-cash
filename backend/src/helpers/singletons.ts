@@ -11,6 +11,12 @@ import { MainTapCashClient, TapCashClient } from "../program/sdk";
 import { CircleClientType, ServerEnv } from "../types/types";
 
 let dbClient: DatabaseClient;
+
+/**
+ * 
+ * Lazy initializer for database singleton.
+ * @returns DatabaseClient - The singleton DatabaseClient
+ */
 export function getDatabaseClient(): DatabaseClient {
     if (dbClient === undefined) {
         dbClient = makeSingleton<DatabaseClient>(
@@ -23,7 +29,11 @@ export function getDatabaseClient(): DatabaseClient {
     return dbClient;
 }
 
-
+/**
+ * 
+ * @param newClient - The new DatabaseClient to set the singleton to
+ * @throws Error if the server environment is not a test environment
+ */
 export function setDatabaseClient(newClient: DatabaseClient) {
     if (SERVER_ENV !== ServerEnv.TEST) {
         throw new Error("Setting the singleton only allowed in tests.");
@@ -33,6 +43,10 @@ export function setDatabaseClient(newClient: DatabaseClient) {
 
 
 let tapClient: TapCashClient;
+/**
+ * Lazy initializer for the Tap program client.
+ * @returns TapCashClient - The singleton TapCashClient
+ */
 export function getTapCashClient(): TapCashClient {
     if (tapClient === undefined) {
         tapClient = makeSingleton<TapCashClient>(
@@ -45,7 +59,11 @@ export function getTapCashClient(): TapCashClient {
     return tapClient;
 }
 
-
+/**
+ * 
+ * @param newClient - The new TapCashClient to set the singleton to
+ * @throws Error if the server environment is not a test environment
+ */
 export function setTapCashClient(newClient: TapCashClient) {
     if (SERVER_ENV !== ServerEnv.TEST) {
         throw new Error("Setting the singleton only allowed in tests.");
@@ -55,6 +73,11 @@ export function setTapCashClient(newClient: TapCashClient) {
 
 
 let circleClient: CircleClient;
+/**
+ * Lazy initializer for the Circle client.
+ * @returns CircleClient - The singleton CircleClient
+ * @throws Error if the server environment is not a test environment
+ */
 export function getCircleClient(): CircleClient {
     if (circleClient === undefined) {
         const makeMocked = () => {
@@ -91,7 +114,11 @@ export function getCircleClient(): CircleClient {
     return circleClient;
 }
 
-
+/**
+ * 
+ * @param newClient - The new CircleClient to set the singleton to
+ * @throws Error if the server environment is not a test environment
+ */
 export function setCircleClient(newClient: CircleClient) {
     if (SERVER_ENV !== ServerEnv.TEST) {
         throw new Error("Setting the singleton only allowed in tests.");
@@ -99,7 +126,17 @@ export function setCircleClient(newClient: CircleClient) {
     circleClient = newClient;
 }
 
-
+/**
+ * 
+ * Makes a singleton based on the server environment
+ * 
+ * @T - The type of the singleton
+ * @param makeTest - The function to call if the server environment is a test environment
+ * @param makeLocal - The function to call if the server environment is a local environment
+ * @param makeDev - The function to call if the server environment is a dev environment
+ * @param makeProd - The function to call if the server environment is a prod environment
+ * @returns the singleton
+ */
 function makeSingleton<T>(
     makeTest: () => T,
     makeLocal: () => T,
