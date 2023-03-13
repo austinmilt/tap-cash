@@ -36,7 +36,7 @@ export class SolanaWallet {
 
     public async getUsdcBalance(ataAddress: PublicKey): Promise<number | null> {
         const result: anchor.web3.RpcResponseAndContext<anchor.web3.TokenAmount> = (
-            await this.connection.getTokenAccountBalance(ataAddress)
+            await this.connection.getTokenAccountBalance(ataAddress, "confirmed")
         );
         if (result.value.uiAmount == null) {
             console.warn("User may not have a USDC account.");
