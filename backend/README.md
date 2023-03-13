@@ -1,5 +1,22 @@
-# backend based in Google Cloud functions
+# tap Backend 
+
+tap's Backend has several main components required to run the tap app:
+
+| Protocol | Description | Requirements |
+| -------- | ----------- | ------------ |
+| [tap On-Chain Program](./program/tap_cash/) | Solana program that manages user accounts and multi-sign USDC wallets | [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools)  & [Anchor CLI](https://www.anchor-lang.com/docs/cli)  |
+| Google Cloud | Google Cloud Functions based backend that handles user authentication, credit card onramp, and
+  other backend services |   |
+| Google Firestore | Database for storing user public info |   |
+| Circle SDK | Circle SDK for credit card onramp |   |
+| Web3 Auth SDK | Single sign-in with Google and non-custodial signing wallet |   |
+
+
+
+## backend based in Google Cloud functions
 based on https://github.com/GoogleCloudPlatform/functions-framework-nodejs/blob/master/docs/typescript.md
+
+
 
 ## Getting Started
 Install Google Cloud CLI https://cloud.google.com/sdk/docs/install. When asked if you want to set up your account,
