@@ -233,7 +233,7 @@ export class MainTapCashClient implements TapCashClient {
             tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            return await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember]);
+            return await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember], {commitment: 'confirmed'});
 
         } catch (e) {
             throw ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
@@ -242,10 +242,10 @@ export class MainTapCashClient implements TapCashClient {
 
     public async getRecentActivity(memberUsdcAddress: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         try {
-            const signatures = await this.connection.getSignaturesForAddress(memberUsdcAddress);
+            const signatures = await this.connection.getSignaturesForAddress(memberUsdcAddress, {limit: maxNumberTx}, 'confirmed');
             const txDetail = await this.connection.getTransactions(
                 signatures.map(sig => sig.signature),
-                { commitment: 'finalized', maxSupportedTransactionVersion: 1 }
+                { commitment: 'confirmed', maxSupportedTransactionVersion: 1 }
             );
             return await this.getParsedMemberTransactions(txDetail, memberUsdcAddress, maxNumberTx);
         }
