@@ -1,7 +1,7 @@
 import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ApiError, SolanaQueryType, SolanaTxType } from "../shared/error";
-import { RPC_URL, USDC_DECIMALS, USDC_MINT_ADDRESS } from "../constants";
+import { CIRCLE_CLIENT_TYPE, RPC_URL, USDC_DECIMALS, USDC_MINT_ADDRESS } from "../constants";
 import { BANK_AUTH, BANK_SEED, BANK_USDC_WALLET, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
 import { createWorkspace, WorkSpace } from "./workspace";
 import { airdropIfNeeded, PublicKey, getOrCreateUsdc } from "../helpers/solana";
@@ -168,9 +168,6 @@ export class MainTapCashClient implements TapCashClient {
 
         if (PROGRAM_ENV !== 'mainnet') {
             await airdropIfNeeded(this.sdk);
-        }
-        if (PROGRAM_ENV === 'local') {
-            await getOrCreateUsdc(this.connection, BANK_AUTH);
         }
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
