@@ -6,19 +6,22 @@ import { View } from "../components/View";
 import { Text } from "../components/Text";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Avatar, GridList } from "react-native-ui-lib";
+import { Avatar, GridList, SkeletonView } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
 import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
 import { BigDollars } from "../components/BigDollars";
+import LinearGradient from 'react-native-linear-gradient';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import { ShimmerBars } from "../components/ShimmerBars";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
     const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
-    const { submit: fetchRecentActivity, data: recentActivity } = useRecentActivity();
+    const { submit: fetchRecentActivity, data: recentActivity, loading } = useRecentActivity();
     const [displayWelcome, setDisplayWelcome] = useState(true);
 
     // update home data each time the user returns to the screen
@@ -56,7 +59,15 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 </View>
             </View>
             <View padding-md flexG gap-lg centerV style={{ width: "90%" }}>
-                <BigDollars>{usdcBalance ?? 0}</BigDollars>
+                <ShimmerPlaceHolder
+                    style={styles.center}
+                    LinearGradient={LinearGradient}
+                    visible={!loading}
+                    width={200}
+                    height={75}
+                >
+                    <BigDollars>{usdcBalance ?? 0}</BigDollars>
+                </ShimmerPlaceHolder>
                 <Button
                     primary
                     text-lg
@@ -65,42 +76,22 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
-            {recentActivity?.length ?
-                <View style={styles.history} >
-                    <Text text-lg gray-dark>Recent Activity</Text>
-                    <GridList
-                        data={recentActivity}
-                        renderItem={({ item }) => (
-                            <Activity item={item} />
-                        )}
-                        itemSpacing={0}
-                        listPadding={0}
-                        numColumns={1}
-                    />
-                </View>
-                :
-                (displayWelcome && <View style={styles.welcome}>
-                    <TouchableWithoutFeedback onPress={() => setDisplayWelcome(false)}>
-                        <Text style={styles.closeButton}>✖</Text>
-                    </TouchableWithoutFeedback>
-                    <View centerH padding-lg gap-md style={{ width: "100%" }}>
-                        {/* TODO Add Icon */}
-                        <View style={styles.welcomeIcon}></View>
-                        <Text text-lg gray-dark>Welcome to Tap!</Text>
-                        <View style={{ width: "80%" }}>
-                            <Text text-md gray-medium center padding-sm>
-                                Deposit cash
-                                to start sending money to friends.
-                            </Text>
-                        </View>
-                        <TouchableOpacity onPress={() => navigation.navigate(
-                            TopNavScreen.PROFILE,
-                            { screen: ProfileNavScreen.ADD_FUNDS }
-                        )}>
-                            <Text text-lg primary-medium>Add funds</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>)}
+            <View style={styles.history} >
+                <Text text-lg gray-dark>Recent Activity</Text>
+                {!loading && <GridList
+                    data={recentActivity}
+                    renderItem={({ item }) => (
+                        <Activity item={item} />
+                    )}
+                    itemSpacing={0}
+                    listPadding={0}
+                    numColumns={1}
+                />}
+                <ShimmerBars
+                    loading={loading}
+                    numBars={4}
+                />
+            </View>
         </Screen>
     )
 }
@@ -149,7 +140,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.whiteish,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        padding: 20
+        padding: 20,
     },
     welcome: {
         position: "relative",
@@ -186,5 +177,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 5
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center'      
     }
 });
