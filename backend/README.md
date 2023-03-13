@@ -11,9 +11,9 @@ tap's Backend has several main components required to run the tap app:
 | Circle SDK | Circle SDK for credit card onramp | [Circle Developer Sandbox Account](https://app-sandbox.circle.com/signup) |
 | Web3 Auth SDK | Single sign-in with Google and non-custodial signing wallet | [Web3 Auth Developer Account](https://dashboard.web3auth.io/) |
 
-Make sure you have the requirements for each component before proceeding.
-
-Rename `.env.example.yml` to `.env.local.yml` and fill out the environment variables for the correct environment(s).
+- Make sure you have the requirements for each component before proceeding.
+- Rename `.env.example.yml` to `.env.local.yml` and fill out the environment variables for the correct environment(s).
+- Open the backend directory `cd backend` and run `npm install` to install the dependencies.
 
 ## tap On-Chain Program
 #### Set Up
