@@ -1,10 +1,10 @@
 import * as anchor from "@project-serum/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ApiError, SolanaQueryType, SolanaTxType } from "../shared/error";
-import { CIRCLE_CLIENT_TYPE, RPC_URL, USDC_DECIMALS, USDC_MINT_ADDRESS } from "../constants";
+import { RPC_URL, USDC_DECIMALS, USDC_MINT_ADDRESS } from "../constants";
 import { BANK_AUTH, BANK_SEED, BANK_USDC_WALLET, CHECKING_SEED, MEMBER_SEED, PROGRAM_ENV } from "./constants";
 import { createWorkspace, WorkSpace } from "./workspace";
-import { airdropIfNeeded, PublicKey, getOrCreateUsdc } from "../helpers/solana";
+import { airdropIfNeeded, PublicKey } from "../helpers/solana";
 import { TapCash } from "../types/tap-cash";
 import { BN } from "bn.js";
 
