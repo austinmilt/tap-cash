@@ -9,7 +9,7 @@ Submission to 2023 Solana Grizzlython Submission by:
 #### Resources
 - [Pitch Deck](https://docs.google.com/presentation/d/1_u_i_yqSlY2ZjhBJsdlTOUyJ7z1OH891Pro1LJQSPpA/edit#slide=id.g2196631c208_1_103) 
 - [Android APK Download](https://todo)
-- [Technical README for Building Locally](./README-DEV.md)
+- [tap app Local Development](#tap-app-local-development)
 - [tap HomePage](https://tapcash.app)
 - [tap Twitter](https://twitter.com/tapcashapp)
 
@@ -65,3 +65,40 @@ Users create an account by logging in with gmail account.
 - Currently in-app transfers limited to other users on the platform. This is intentional for early release, but not a limitation of our future capabilities. In an effort to simplify the UX, we are activity avoiding introducing any reference to crypto, blockchain, public/secret keys, gas, Solana, etc.
 - Similarly, because tap is targetted to a non-crypto native user, we did not build in the seed vault or incorporate exporting secret keys (though these are features that can easily be added at a later date when customer's are ready for such features)
 - Current demo is limited to Android, however since we built with React Native, we should be able to add iOS in the near future
+
+
+***
+
+
+# tap app Local Development
+
+To deploy tap locally, you will need to set up the following:
+- tap Solana Program (detailed setup and delpoyment instructions [here](./backend/README.md)))
+- Backend (detailed setup and delpoyment instructions [here](./backend/README.md))
+- Frontend (detailed setup and delpoyment instructions below 
+
+## Front End Set Up
+
+### Install Dependencies
+Follow these directions https://reactnative.dev/docs/environment-setup but skip Creating a new application.
+
+In a terminal in the project directory run `npm install`
+
+
+### Set up Environment
+- Set your environment `JAVA_HOME` to the location of the JRE, e.g. `"C:\Program Files\Android\Android Studio\jre"`
+- Rename `.env.example` to `.env.local`
+- Set environment variables, `WEB3_AUTH_CLIENT_ID` and 
+- Set `USDC_MINT_ADDRESS` to the address of the same USDC token mint as `FAKE_USDC_ADDRESS` and `USDC_MINT_ADDRESS` in the [./backend/.env.example.yaml](./backend/.env.example.yaml).
+
+
+### Starting the App
+You must have run the setup steps already.
+
+1. [Start the backend and local validator](./backend/README.md) ([./backend](./backend)).
+2. In one terminal, run `emulator -avd Pixel_6_Pro_API_33`. Replace `Pixel_6_Pro_API_33` with whatever AVD you are testing with. Alternatively, you can: 
+    - Run a device emulator from Android Studio or
+    - If you're testing on a physical device, get your physical device connected to `adb`.
+3. In a second terminal, start Metro: `npm start-windows` or `npm start`. Choose one of the options that pop up (probably pressing `a` to run on Android).
+
+The app will start on your emulator or device, and you should see the blue `tap` splash screen.
