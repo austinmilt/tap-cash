@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { TopNavScreen, TopRouteParams } from "../common/navigation";
 import { AppLogo } from "../components/AppLogo";
 import { Button } from "../components/Button";
@@ -12,46 +12,29 @@ import { Loading } from "../components/Loading";
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.AUTHENTICATE>;
 
 export function AuthenticateScreen({ navigation }: Props): JSX.Element {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<Error | undefined>();
-    const { logIn, loggedIn } = useUserProfile();
+    const userContext = useUserProfile();
 
-    const afterLogIn = useCallback(() => navigation.navigate(TopNavScreen.HOME), [navigation]);
-
-    const logInSync = useCallback(() => {
-        setLoading(true);
-        //TODO error handling
-        logIn()
-            .then(afterLogIn)
-            .catch(setError)
-            .finally(() => setLoading(false));
-
-    }, [setLoading, logIn, afterLogIn]);
+    useEffect(() => {
+        if (userContext.profileReady) {
+            navigation.navigate(TopNavScreen.HOME);
+        }
+    }, [userContext.profileReady]);
 
     return (
         <Screen>
-            {loading && <Loading />}
-            {!loading && (
+            {userContext.loading && <Loading />}
+            {!userContext.loading && (
                 <View flex center>
                     <View center height="80%">
                         <AppLogo primary />
                     </View>
                     <View flexS centerH bottom gap-md padding-lg>
-                        {loggedIn ? (
-                            <Button
-                                label="G Continue with Google"
-                                primary
-                                onPress={afterLogIn}
-                                disabled={loading}
-                            />
-                        ) : (
-                            <Button
-                                label="G Continue with Google"
-                                primary
-                                onPress={logInSync}
-                                disabled={loading}
-                            />
-                        )}
+                        <Button
+                            label="G Continue with Google"
+                            primary
+                            onPress={userContext.logIn}
+                            disabled={userContext.loading}
+                        />
                         <Text text-sm>
                             By continuing, you accept our
                             Terms of use and Privacy Policy
@@ -59,8 +42,8 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
                     </View>
                 </View>
             )}
-            {(error !== undefined) && (
-                <Text error>{error.message}</Text>
+            {(userContext.error !== undefined) && (
+                <Text error>{userContext.error.message}</Text>
             )}
         </Screen>
     )

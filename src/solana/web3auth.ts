@@ -1,8 +1,9 @@
-import Web3Auth, { LOGIN_PROVIDER, MFA_LEVELS, MfaLevelType, State } from "@web3auth/react-native-sdk";
+import Web3Auth, { LOGIN_PROVIDER, MFA_LEVELS, State } from "@web3auth/react-native-sdk";
 import * as WebBrowser from '@toruslabs/react-native-web-browser';
 import { SolanaWallet } from "../solana/solana";
 import { Buffer } from "buffer";
 import { SOLANA_RPC_URL, WEB3_AUTH_CLIENT_ID, WEB3_AUTH_NETWORK } from "../common/constants";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 global.Buffer = global.Buffer || Buffer
 
@@ -10,43 +11,72 @@ global.Buffer = global.Buffer || Buffer
 const scheme = 'tapcash';
 const resolvedRedirectUrl = `${scheme}://openlogin/`;
 
-interface LogInResult {
-    user: State;
-    wallet: SolanaWallet;
+interface Context {
+    logIn: () => Promise<void>;
     logOut: () => Promise<void>;
+    user: State | undefined;
+    wallet: SolanaWallet | undefined;
+    loading: boolean;
+    error: Error | undefined;
 }
 
-const web3auth: Web3Auth = new Web3Auth(WebBrowser, {
-    clientId: WEB3_AUTH_CLIENT_ID,
-    network: WEB3_AUTH_NETWORK,
-    whiteLabel: {
-        name: "Tap",
-        defaultLanguage: "en",
-    }
-});
 
-export async function logIn(): Promise<LogInResult> {
+export function useWeb3Auth(): Context {
+    const [user, setUser] = useState<Context['user']>();
+    const [wallet, setWallet] = useState<Context['wallet']>();
+    const [loading, setLoading] = useState<Context['loading']>(false);
+    const [error, setError] = useState<Context['error']>();
+    const [logOut, setLogOut] = useState<Context['logOut']>(() => new Promise(() => { }));
+    const web3Auth = useRef<Web3Auth>();
 
-    let info: State | undefined;
-    try {
-        info = await web3auth.login({
-            redirectUrl: resolvedRedirectUrl,
-            mfaLevel: MFA_LEVELS.DEFAULT as MfaLevelType,
-            loginProvider: LOGIN_PROVIDER.GOOGLE,
+    useEffect(() => {
+        // dont know why I'm using a ref, just following the web3auth example
+        // https://github.com/Web3Auth/web3auth-react-native-sdk/blob/master/example/App.tsx
+        const newAuth: Web3Auth = new Web3Auth(WebBrowser, {
+            clientId: WEB3_AUTH_CLIENT_ID,
+            network: WEB3_AUTH_NETWORK,
+            whiteLabel: {
+                name: "Tap",
+                defaultLanguage: "en",
+            }
         });
-    } catch (e) {
-        //TODO temporary
-        throw new Error(JSON.stringify({ "OH NO": "bro", ...info, url: resolvedRedirectUrl }));
-    }
+        web3Auth.current = newAuth;
+        setLogOut(() => () => newAuth.logout({ redirectUrl: resolvedRedirectUrl }))
+    }, []);
 
-    if (info?.ed25519PrivKey === undefined) {
-        throw new Error("Missing required ed25519 private key for login.");
-    }
-    const wallet: SolanaWallet = SolanaWallet.of(info.ed25519PrivKey, SOLANA_RPC_URL);
+    const logIn: Context['logIn'] = useCallback(async () => {
+        if (web3Auth.current !== undefined) {
+            setLoading(true);
+            try {
+                const info: State = await web3Auth.current.login({
+                    redirectUrl: resolvedRedirectUrl,
+                    mfaLevel: MFA_LEVELS.NONE,
+                    loginProvider: LOGIN_PROVIDER.GOOGLE
+                });
+
+                if (info?.ed25519PrivKey === undefined) {
+                    setError(new Error("Missing required ed25519 private key for login."));
+                    return;
+                }
+
+                setWallet(SolanaWallet.of(info.ed25519PrivKey, SOLANA_RPC_URL));
+                setUser(info);
+
+            } catch (e) {
+                setError(e as Error);
+
+            } finally {
+                setLoading(false);
+            }
+        }
+    }, [web3Auth.current]);
 
     return {
-        user: info,
+        user: user,
+        loading: loading,
         wallet: wallet,
-        logOut: () => web3auth.logout({ redirectUrl: resolvedRedirectUrl })
-    };
+        error: error,
+        logIn: logIn,
+        logOut: logOut
+    }
 }
