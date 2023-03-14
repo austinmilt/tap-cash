@@ -10,5 +10,9 @@ export const IMAGES = {
         visaSquare: require("./payments/visa-square.png"),
         unknownMini: require("./payments/unknown-square.png"),
         unknownSquare: require("./payments/unknown-square.png")
+    }, 
+    loaders: {
+        loaderSmall: require("./loaders/loader-sm.gif"),
+        loaderLarge: require("./loaders/loader-lg.gif")
     }
 }
