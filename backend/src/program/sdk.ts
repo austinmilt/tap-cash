@@ -257,8 +257,6 @@ export class MainTapCashClient implements TapCashClient {
 
         if (PROGRAM_ENV !== 'mainnet') {
             await airdropIfNeeded(this.sdk);
-            // NOTE: No longer needed w/ circle added
-            //await getOrCreateUsdc(this.connection, BANK_AUTH);
         }
         const bank = await this.getOrInitBank();
         if (!bank) throw ApiError.solanaTxError(SolanaTxType.INITIALIZE_BANK);
