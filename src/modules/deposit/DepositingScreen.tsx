@@ -77,18 +77,3 @@ export function DepositingScreen(props: Props): JSX.Element {
         </Screen >
     )
 }
-
-
-// const STYLES = StyleSheet.create({
-//     main: {
-//         display: "flex",
-//         flexDirection: "column",
-//         justifyContent: "center",
-//         alignItems: "center",
-//         gap: 30,
-
-//         borderColor: "red",
-//         borderWidth: 1,
-//         borderStyle: "solid"
-//     },
-// })

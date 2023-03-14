@@ -30,7 +30,7 @@ export function useWeb3Auth(): Context {
     const web3Auth = useRef<Web3Auth>();
 
     useEffect(() => {
-        // dont know why I'm using a ref, just following the web3auth example
+        // using a ref seems overly complicated, but following the web3auth example
         // https://github.com/Web3Auth/web3auth-react-native-sdk/blob/master/example/App.tsx
         const newAuth: Web3Auth = new Web3Auth(WebBrowser, {
             clientId: WEB3_AUTH_CLIENT_ID,
