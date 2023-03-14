@@ -8,7 +8,7 @@ import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Avatar, GridList } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
-import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Platform, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, BackHandler } from 'react-native';
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
@@ -43,6 +43,31 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
         return unsubscribe;
     }, [navigation, loggedIn, email, fetchRecentActivity, syncUsdcBalance]);
 
+    useEffect(() => {
+        const backAction = () => {
+          return true;
+        };
+      
+        // Disable swipe back navigation and back button for Android
+        if (Platform.OS === 'android') {
+          navigation.setOptions({
+            gestureEnabled: false,
+            headerLeft: () => null,
+          });
+          BackHandler.addEventListener('hardwareBackPress', backAction);
+        }
+      
+        return () => {
+          // Remove the event listener and restore swipe back navigation and back button when the screen is unmounted
+          if (Platform.OS === 'android') {
+            BackHandler.removeEventListener('hardwareBackPress', backAction);
+            navigation.setOptions({
+              gestureEnabled: true,
+              headerLeft: undefined,
+            });
+          }
+        };
+      }, [navigation]);
     /**
      * If the user's activity has finished loading and has no recent activity and no balance, 
      * then display the welcome screen.
