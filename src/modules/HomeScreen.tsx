@@ -1,4 +1,4 @@
-import { TopNavScreen, TopRouteParams } from "../common/navigation";
+import { TopNavScreen, TopRouteParams, ProfileNavScreen } from "../common/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
@@ -6,9 +6,9 @@ import { View } from "../components/View";
 import { Text } from "../components/Text";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Avatar, GridList } from "react-native-ui-lib";
+import { Avatar, GridList, Image } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Platform, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, BackHandler } from 'react-native';
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
@@ -16,6 +16,7 @@ import { BigDollars } from "../components/BigDollars";
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import { ShimmerBars } from "../components/ShimmerBars";
+import { IMAGES } from "../images/images";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
@@ -23,6 +24,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
     const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
     const { submit: fetchRecentActivity, data: recentActivity, loading: recentActivityLoading } = useRecentActivity();
     const [loadingUsdcBalance, setLoadingUsdcBalance] = useState<boolean>(true);
+    const [displayWelcome, setDisplayWelcome] = useState(false);
 
     // update home data each time the user returns to the screen
     // https://reactnavigation.org/docs/navigation-lifecycle
@@ -41,6 +43,40 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
 
         return unsubscribe;
     }, [navigation, loggedIn, email, fetchRecentActivity, syncUsdcBalance]);
+
+    useEffect(() => {
+        const backAction = () => {
+            return true;
+        };
+
+        // Disable swipe back navigation and back button for Android
+        if (Platform.OS === 'android') {
+            navigation.setOptions({
+                gestureEnabled: false,
+                headerLeft: () => null,
+            });
+            BackHandler.addEventListener('hardwareBackPress', backAction);
+        }
+
+        return () => {
+            // Remove the event listener and restore swipe back navigation and back button when the screen is unmounted
+            if (Platform.OS === 'android') {
+                BackHandler.removeEventListener('hardwareBackPress', backAction);
+                navigation.setOptions({
+                    gestureEnabled: true,
+                    headerLeft: undefined,
+                });
+            }
+        };
+    }, [navigation]);
+    /**
+     * If the user's activity has finished loading and has no recent activity and no balance, 
+     * then display the welcome screen.
+     */
+    useEffect(() => {
+        if (recentActivityLoading) setDisplayWelcome(false);
+        else if (recentActivity && (recentActivity.length == 0) && !usdcBalance) setDisplayWelcome(true);
+    }, [recentActivityLoading, recentActivity, usdcBalance]);
 
     return (
         <Screen gap-lg center style={styles.home}>
@@ -81,7 +117,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
-            <View style={styles.history} >
+            {!displayWelcome && <View style={styles.history} >
                 <Text text-lg gray-dark>Recent Activity</Text>
                 {!recentActivityLoading && <GridList
                     data={recentActivity}
@@ -96,7 +132,31 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     loading={recentActivityLoading}
                     numBars={4}
                 />
-            </View>
+            </View>}
+            {displayWelcome && <View style={styles.welcome}>
+                <TouchableWithoutFeedback onPress={() => setDisplayWelcome(false)}>
+                    <Text style={styles.closeButton}>X</Text>
+                </TouchableWithoutFeedback>
+                <View center padding-lg gap-sm>
+                    <View style={styles.welcomeIcon}>
+                        <Image
+                            source={IMAGES.icons.wallet}
+                            resizeMode="contain"
+                        />
+                    </View>
+                    <Text text-lg gray-dark>Welcome to Tap!</Text>
+                    <Text text-md gray-medium center padding-sm>
+                        Deposit cash
+                        to start sending money to friends.
+                    </Text>
+                    <TouchableOpacity onPress={() => navigation.navigate(
+                        TopNavScreen.PROFILE,
+                        { screen: ProfileNavScreen.ADD_FUNDS }
+                    )}>
+                        <Text text-lg primary-medium>Add funds</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>}
         </Screen>
     )
 }
