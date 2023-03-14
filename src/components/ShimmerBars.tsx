@@ -20,7 +20,9 @@ export function ShimmerBars({ loading, numBars }: Props): JSX.Element {
             }}
             LinearGradient={LinearGradient}
             width={width}
+            height={50}
             visible={!loading}
+            shimmerColors={['#C4D2F0', '#EFF3FA', '#E5EAF6']}
         />
     );
 
@@ -30,10 +32,10 @@ export function ShimmerBars({ loading, numBars }: Props): JSX.Element {
         <View style={{
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 10
+            marginTop: 20
         }}>
             {bars.map((bar, index) => (
-                <View key={index} style={{ marginVertical: 1 }}>
+                <View key={index}>
                     {bar}
                 </View>
             ))}

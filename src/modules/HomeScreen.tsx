@@ -59,15 +59,18 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 </View>
             </View>
             <View padding-md flexG gap-lg centerV style={{ width: "90%" }}>
+                <View centerH>
                 <ShimmerPlaceHolder
                     style={styles.center}
                     LinearGradient={LinearGradient}
                     visible={!loading}
                     width={200}
                     height={75}
+                    shimmerColors={['#C4D2F0', '#EFF3FA', '#E5EAF6']}
                 >
                     <BigDollars>{usdcBalance ?? 0}</BigDollars>
                 </ShimmerPlaceHolder>
+                </View>
                 <Button
                     primary
                     text-lg
@@ -180,6 +183,7 @@ const styles = StyleSheet.create({
     },
     center: {
         justifyContent: 'center',
-        alignItems: 'center'      
+        alignItems: 'center',
+        textAlignVertical: "center",
     }
 });
