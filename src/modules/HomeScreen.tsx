@@ -1,5 +1,5 @@
 import { TopNavScreen, TopRouteParams, ProfileNavScreen } from "../common/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
 import { View } from "../components/View";
@@ -25,6 +25,12 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
     const { submit: fetchRecentActivity, data: recentActivity, loading: recentActivityLoading } = useRecentActivity();
     const [loadingUsdcBalance, setLoadingUsdcBalance] = useState<boolean>(true);
     const [displayWelcome, setDisplayWelcome] = useState(false);
+
+    const firstName: string | undefined = useMemo(() => {
+        if (name === undefined) return undefined;
+        const split: string[] = name.split(" ", 2);
+        return split.length > 0 ? split[0] : name;
+    }, [name]);
 
     // update home data each time the user returns to the screen
     // https://reactnavigation.org/docs/navigation-lifecycle
@@ -70,7 +76,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
         };
     }, [navigation]);
     /**
-     * If the user's activity has finished loading and has no recent activity and no balance, 
+     * If the user's activity has finished loading and has no recent activity and no balance,
      * then display the welcome screen.
      */
     useEffect(() => {
@@ -86,7 +92,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 </View>
                 <View style={styles.user} gap-sm>
                     <Text gray-dark text-md>
-                        Hello, {name}
+                        Hello, {firstName}
                     </Text>
                     <TouchableOpacity onPress={() => navigation.navigate(TopNavScreen.PROFILE)}>
                         <Avatar
