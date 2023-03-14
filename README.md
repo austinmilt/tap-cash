@@ -15,7 +15,7 @@ Submission to 2023 Solana Grizzlython Submission by:
 
 #### Summary of Submission Features
 - SSO with Gmail
-- Multi-sig custodial “checking” account
+- Multi-sig “semi-custodial” cash account
 - Credit Card onramp
 - Feeless peer-to-peer transfers
 - Parsed Solana Transactions Activity Feed
