@@ -14,6 +14,7 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.AUTHENTICATE>;
 export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     const userContext = useUserProfile();
     const [startedLogin, setStartedLogin] = useState<boolean>(false);
+    const [showLoading, setShowLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (userContext.profileReady) {
@@ -22,6 +23,11 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     }, [userContext.profileReady]);
 
     const onContinue = useCallback(() => {
+        // A bit of a hack to make the loader only show
+        // when returning from web3auth. It would be better
+        // to be able to distinguish between before and after
+        // successful login but we dont have that yet.
+        setTimeout(() => setShowLoading(true), 750);
         setStartedLogin(true);
         userContext.logIn();
     }, [userContext.logIn, setStartedLogin]);
@@ -31,12 +37,13 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     useEffect(() => {
         if (!userContext.loggedIn) {
             setStartedLogin(false);
+            setShowLoading(false);
         }
     }, [userContext.loggedIn]);
 
     return (
         <Screen>
-            {startedLogin && <Loading />}
+            {showLoading && <Loading />}
             {!startedLogin && (
                 <View flex center>
                     <View center height="80%">
