@@ -12,24 +12,24 @@ import { BN } from "bn.js";
  * A client for interacting with the TapCash program.
  */
 export interface TapCashClient {
-    /** 
-     * 
+    /**
+     *
      *  Initializes a new member with the given userId.
      *  @param userId - Public key of the new user's signer wallet.
-     *  @returns PDA address of the new member's USDC associated token account, or `undefined` if initialization fails.
+     *  @returns PDA address of the new member's USDC associated token account.
      * */
-    initializeNewMember(userId: PublicKey): Promise<PublicKey | undefined>;
+    initializeNewMember(userId: PublicKey): Promise<PublicKey>;
 
     /**
-     * 
+     *
      *  Sends tokens to a specified recipient.
-     *  @param args - SendTokensArgs 
-     *  @returns The transaction ID of the token transfer, or undefined if the transfer fails.
+     *  @param args - SendTokensArgs
+     *  @returns The transaction ID of the token transfer
      * */
-    sendTokens(args: SendTokensArgs): Promise<string | undefined>;
+    sendTokens(args: SendTokensArgs): Promise<string>;
 
     /**
-     * 
+     *
      * @param member - Public key of the member's USDC account to query.
      * @param maxNumberTx - Maximum number of transactions to return.
      * @returns An array of TransactionDetail objects.
@@ -37,7 +37,7 @@ export interface TapCashClient {
     getRecentActivity(member: PublicKey, maxNumberTx: number): Promise<TransactionDetail[]>;
 
     /**
-     * 
+     *
      * @param memberPubkey - Public key of Member Web3 Auth Account
      * @returns Public key of Member's USDC Associated Token Account, or undefined if not initialized.
      */
@@ -60,7 +60,7 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     *      * 
+     *      *
      * @returns A new instance of the TapCashClient with default settings (using variables defined in .env).
      */
     public static ofDefaults(): MainTapCashClient {
@@ -68,16 +68,16 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * @param sdk - A WorkSpace object containing the connection, program, and provider.
-     * @returns A new instance of the TapCashClient with the given WorkSpace. 
+     * @returns A new instance of the TapCashClient with the given WorkSpace.
      */
     public static withSdk(sdk: WorkSpace) {
         return new MainTapCashClient(sdk);
     }
 
     /**
-     * 
+     *
      * Fetches the program's bank PDA, and initializes it if it doesn't exist.
      * Seeded by BANK_SEED and the sdk provider wallet.
      * @returns The public key of the program's bank's PDA.
@@ -119,7 +119,7 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Fetches the user's PDA address (does not initialize it if it doesn't exist).
      * @param userId Public key of user's web3 auth wallet
      * @returns the member's PDA address
@@ -136,7 +136,7 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Initializes a new member of a specified bank.
      * @param args - CreateMemberArgs
      * @returns { memberPda: PublicKey, txId: string } - The member's PDA address and the transaction ID of the initialization.
@@ -179,7 +179,7 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Fetches the user's account PDA address based on member PDA, mint, and account no (does not initialize it if it doesn't exist).
      * @param args - GetMemberAccountArgs
      * @returns the member's account PDA address
@@ -198,9 +198,9 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Fetches the user's account Associated Token Address where tokens are stored (does not initialize it if it doesn't exist).
-     * @param args - GetMemberAccountArgs 
+     * @param args - GetMemberAccountArgs
      * @returns { accountAta: PublicKey, accountPda: PublicKey } - The member's account ATA address and the member's account PDA address.
      */
     private async getMemberAta(args: GetMemberAccountArgs): Promise<{ accountAta: PublicKey, accountPda: PublicKey }> {
@@ -210,9 +210,9 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Initializes a new account PDA for an existing member.
-     * @param args 
+     * @param args
      * @returns the member's account PDA address as a public key.
      * @throw solanaTxError if the account cannot be initialized.
      */
@@ -237,11 +237,11 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * New Member Workflow: creates a new member PDA, initializes a new account PDA, and initializes a new account ATA.
      * (assumes that the new account is a USDC account and that the account is the first account for the member)
      * For development environments, airdrops SOL to the sdk provider if needed.
-     * 
+     *
      * @param userId (public key of user's web3 auth wallet)
      * @returns Public key of the member's new USDC associated token account.
      */
@@ -289,19 +289,19 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Transfers tokens from one member's account to another member's account.
      * Assumes:
-     *  - that the sender and receiver are both USDC accounts, 
+     *  - that the sender and receiver are both USDC accounts,
      *  - that the sender has enough tokens to send,
      *  - that the sender and receiver are both members of the bank,
      *  - that the sender and receiver are both initialized as the 1st account for their respective members.
-     * 
+     *
      * @param args - SendTokensArgs
      * @returns the transaction signature if successful, undefined if not.
      * @throws solanaTxError if the transaction fails.
      */
-    public async sendTokens(args: SendTokensArgs): Promise<string | undefined> {
+    public async sendTokens(args: SendTokensArgs): Promise<string> {
         const decimalAmount = args.amount * (10 ** USDC_DECIMALS);
         const systemProgram: PublicKey = anchor.web3.SystemProgram.programId;
         const tokenProgram = TOKEN_PROGRAM_ID;
@@ -333,29 +333,28 @@ export class MainTapCashClient implements TapCashClient {
             tx.feePayer = this.provider.publicKey;
             tx.recentBlockhash = blockhash;
             tx.lastValidBlockHeight = lastValidBlockHeight;
-            const txId = await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember]);
-            return txId;
-        }
-        catch (e) {
-            ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
+            return await this.provider.sendAndConfirm(tx, [this.sdk.payer, args.fromMember], { commitment: 'confirmed' });
+
+        } catch (e) {
+            throw ApiError.solanaTxError(SolanaTxType.TRANSFER_TOKEN);
         }
     }
 
     /**
-     * 
+     *
      * Fetches the recent transaction activity for a users's USDC address
-     * 
-     * @param memberUsdcAddress 
-     * @param maxNumberTx 
+     *
+     * @param memberUsdcAddress
+     * @param maxNumberTx
      * @returns an array of TransactionDetails (parsed results used for classifying transactions)
      * @throws solanaQueryError if the query fails
      */
     public async getRecentActivity(memberUsdcAddress: PublicKey, maxNumberTx = 10): Promise<TransactionDetail[]> {
         try {
-            const signatures = await this.connection.getSignaturesForAddress(memberUsdcAddress);
+            const signatures = await this.connection.getSignaturesForAddress(memberUsdcAddress, { limit: maxNumberTx }, 'confirmed');
             const txDetail = await this.connection.getTransactions(
                 signatures.map(sig => sig.signature),
-                { commitment: 'finalized', maxSupportedTransactionVersion: 1 }
+                { commitment: 'confirmed', maxSupportedTransactionVersion: 1 }
             );
             return await this.getParsedMemberTransactions(txDetail, memberUsdcAddress, maxNumberTx);
         }
@@ -365,13 +364,13 @@ export class MainTapCashClient implements TapCashClient {
     }
 
     /**
-     * 
+     *
      * Fetches the transaction details for an array of TransactionResponses (signatures) and parses them into TransactionDetails
      * Checks if transaciton involves a current member or the bank
-     * Assumes: 
+     * Assumes:
      *  - that the member is a member of the bank
-     *  - that the mint is USDC 
-     * 
+     *  - that the mint is USDC
+     *
      * @param responses - array of VersionedTransactionResponses
      * @param member - the PublicKey of the member's USDC address
      * @param maxNumberTx - the maximum number of transactions to return
@@ -461,7 +460,7 @@ export class MainTapCashClient implements TapCashClient {
      * Assumes
      *  - user has only one account
      *  - token mint is USDC
-     * 
+     *
      * @param memberPubkey  Public key of user's web3 auth wallet
      * @returns Public key of member's USDC ata account or undefined if not initialized
      */

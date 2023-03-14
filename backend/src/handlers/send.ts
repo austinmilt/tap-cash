@@ -25,7 +25,6 @@ export const handleSend = makePostHandler(send, transformRequest, transformResul
 
 async function send(request: SendArgs): Promise<SendResult> {
     const { usdcAddress } = await getDatabaseClient().getMemberPrivateProfile(request.recipientEmailAddress);
-    // TODO  add decryption in index.ts
     const solanaTransactionId = await getTapCashClient().sendTokens({
         fromMember: request.privateKey,
         destinationAta: usdcAddress,

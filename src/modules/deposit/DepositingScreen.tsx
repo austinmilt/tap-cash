@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { useUserProfile } from "../../components/profile-provider";
 import { Screen } from "../../components/Screen";
 import { formatUsd } from "../../common/number";
-import { StyleSheet } from "react-native";
 import { TransactionStatus } from "../../components/TransactionStatus";
 import { BigDollars } from "../../components/BigDollars";
 
@@ -37,10 +36,10 @@ export function DepositingScreen(props: Props): JSX.Element {
     }, []);
 
     return (
-        <Screen spread padding-md>
-            <View flexG center gap-sm>
+        <Screen style={{ paddingBottom: 66, paddingHorizontal: 30 }}>
+            <View centerV flexG gap-lg>
                 <BigDollars>{amount}</BigDollars>
-                <View>
+                <View flexS>
                     <TransactionStatus
                         {...depositContext}
                         success={!depositContext.loading && (depositContext.error == null)}
@@ -67,19 +66,14 @@ export function DepositingScreen(props: Props): JSX.Element {
                     />
                 </View>
             </View>
-            <Button
-                tertiary
-                label="Home"
-                disabled={depositContext.loading}
-                onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
-            />
-        </Screen>
+            <View>
+                <Button
+                    tertiary
+                    label="Home"
+                    disabled={depositContext.loading}
+                    onPress={() => props.navigation.getParent()?.navigate(TopNavScreen.HOME)}
+                />
+            </View>
+        </Screen >
     )
 }
-
-
-const STYLES = StyleSheet.create({
-    amount: {
-        fontSize: 53,
-    },
-})

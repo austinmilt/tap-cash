@@ -6,7 +6,9 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start-windows": "SET ENVFILE=.env.local && react-native start",
+    "build-apk-windows": "SET ENVFILE=.env.dev && react-native run-android --mode=release",
+    "build-apk": "ENVFILE=.env.dev react-native run-android --mode=release",
+    "start-windows": "SET ENVFILE=.env.dev && react-native start",
     "start": "ENVFILE=.env.local react-native start",
     "test": "jest"
   },
@@ -23,9 +25,11 @@
     "react-native-config": "^1.5.0",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-get-random-values": "^1.8.0",
+    "react-native-linear-gradient": "^2.6.2",
     "react-native-reanimated": "^2.14.4",
     "react-native-safe-area-context": "^4.4.1",
     "react-native-screens": "^3.18.2",
+    "react-native-shimmer-placeholder": "^2.0.9",
     "react-native-ui-lib": "^6.29.1"
   },
   "devDependencies": {

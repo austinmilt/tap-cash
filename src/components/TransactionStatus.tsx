@@ -2,6 +2,8 @@ import { Badge } from "react-native-ui-lib";
 import { View } from "./View";
 import { useMemo } from "react";
 import { COLORS } from "../common/styles";
+import { IMAGES } from "../images/images";
+import { Image } from "react-native-ui-lib";
 
 interface TransactionStatusProps {
     loading: boolean;
@@ -50,9 +52,15 @@ export function TransactionStatus(props: TransactionStatusProps): JSX.Element {
 
     return (
         <View row gap-sm center>
-            {renderBadge && (
+            {(renderBadge && props.loading) && (<Image
+                source={IMAGES.loaders.loaderSmall}
+                resizeMode="contain"
+            />)}
+            {(renderBadge && !props.loading) && (
                 <Badge
                     backgroundColor={badgeColor}
+                    padding={10}
+                    size={20}
                     label={badgeLabel}
                     labelStyle={{ color: badgeLabelColor }}
                 />

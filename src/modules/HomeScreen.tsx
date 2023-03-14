@@ -1,4 +1,4 @@
-import { ProfileNavScreen, TopNavScreen, TopRouteParams } from "../common/navigation";
+import { TopNavScreen, TopRouteParams, ProfileNavScreen } from "../common/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
@@ -6,20 +6,25 @@ import { View } from "../components/View";
 import { Text } from "../components/Text";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Avatar, GridList } from "react-native-ui-lib";
+import { Avatar, GridList, Image } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
-import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Platform, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, BackHandler } from 'react-native';
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
 import { BigDollars } from "../components/BigDollars";
+import LinearGradient from 'react-native-linear-gradient';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
+import { ShimmerBars } from "../components/ShimmerBars";
+import { IMAGES } from "../images/images";
 
 type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
     const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
-    const { submit: fetchRecentActivity, data: recentActivity } = useRecentActivity();
-    const [displayWelcome, setDisplayWelcome] = useState(true);
+    const { submit: fetchRecentActivity, data: recentActivity, loading: recentActivityLoading } = useRecentActivity();
+    const [loadingUsdcBalance, setLoadingUsdcBalance] = useState<boolean>(true);
+    const [displayWelcome, setDisplayWelcome] = useState(false);
 
     // update home data each time the user returns to the screen
     // https://reactnavigation.org/docs/navigation-lifecycle
@@ -30,15 +35,51 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     memberEmail: email,
                     limit: 10
                 });
-                syncUsdcBalance();
+                setLoadingUsdcBalance(true);
+                syncUsdcBalance()
+                    .finally(() => setLoadingUsdcBalance(false));
             }
         });
 
         return unsubscribe;
     }, [navigation, loggedIn, email, fetchRecentActivity, syncUsdcBalance]);
 
+    useEffect(() => {
+        const backAction = () => {
+            return true;
+        };
+
+        // Disable swipe back navigation and back button for Android
+        if (Platform.OS === 'android') {
+            navigation.setOptions({
+                gestureEnabled: false,
+                headerLeft: () => null,
+            });
+            BackHandler.addEventListener('hardwareBackPress', backAction);
+        }
+
+        return () => {
+            // Remove the event listener and restore swipe back navigation and back button when the screen is unmounted
+            if (Platform.OS === 'android') {
+                BackHandler.removeEventListener('hardwareBackPress', backAction);
+                navigation.setOptions({
+                    gestureEnabled: true,
+                    headerLeft: undefined,
+                });
+            }
+        };
+    }, [navigation]);
+    /**
+     * If the user's activity has finished loading and has no recent activity and no balance, 
+     * then display the welcome screen.
+     */
+    useEffect(() => {
+        if (recentActivityLoading) setDisplayWelcome(false);
+        else if (recentActivity && (recentActivity.length == 0) && !usdcBalance) setDisplayWelcome(true);
+    }, [recentActivityLoading, recentActivity, usdcBalance]);
+
     return (
-        <Screen gap-lg style={styles.home}>
+        <Screen gap-lg center style={styles.home}>
             <View style={styles.header}>
                 <View style={styles.logo}>
                     <AppLogo primary fontSize={48} />
@@ -55,10 +96,19 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View>
-                <BigDollars>{usdcBalance ?? 0}</BigDollars>
-            </View>
-            <View style={styles.buttonContainer}>
+            <View padding-md flexG gap-lg centerV style={{ width: "90%" }}>
+                <View centerH>
+                    <ShimmerPlaceHolder
+                        style={styles.center}
+                        LinearGradient={LinearGradient}
+                        visible={!loadingUsdcBalance}
+                        width={200}
+                        height={75}
+                        shimmerColors={['#C4D2F0', '#EFF3FA', '#E5EAF6']}
+                    >
+                        <BigDollars>{usdcBalance ?? 0}</BigDollars>
+                    </ShimmerPlaceHolder>
+                </View>
                 <Button
                     primary
                     text-lg
@@ -67,40 +117,46 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     onPress={() => navigation.navigate(TopNavScreen.SEND)}
                 />
             </View>
-            {recentActivity?.length ?
-                <View style={styles.history} >
-                    <Text text-lg gray-dark>Recent Activity</Text>
-                    <GridList
-                        data={recentActivity}
-                        renderItem={({ item }) => (
-                            <Activity item={item} />
-                        )}
-                        itemSpacing={0}
-                        listPadding={0}
-                        numColumns={1}
-                    />
-                </View>
-                :
-                (displayWelcome && <View style={styles.welcome}>
-                    <TouchableWithoutFeedback onPress={() => setDisplayWelcome(false)}>
-                        <Text style={styles.closeButton}>X</Text>
-                    </TouchableWithoutFeedback>
-                    <View center padding-lg gap-sm>
-                        {/* TODO Add Icon */}
-                        <View style={styles.welcomeIcon}></View>
-                        <Text text-lg gray-dark>Welcome to Tap!</Text>
-                        <Text text-md gray-medium center padding-sm>
-                            Deposit cash
-                            to start sending money to friends.
-                        </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate(
-                            TopNavScreen.PROFILE,
-                            { screen: ProfileNavScreen.ADD_FUNDS }
-                        )}>
-                            <Text text-lg primary-medium>Add funds</Text>
-                        </TouchableOpacity>
+            {!displayWelcome && <View style={styles.history} >
+                <Text text-lg gray-dark>Recent Activity</Text>
+                {!recentActivityLoading && <GridList
+                    data={recentActivity}
+                    renderItem={({ item }) => (
+                        <Activity item={item} />
+                    )}
+                    itemSpacing={0}
+                    listPadding={0}
+                    numColumns={1}
+                />}
+                <ShimmerBars
+                    loading={recentActivityLoading}
+                    numBars={4}
+                />
+            </View>}
+            {displayWelcome && <View style={styles.welcome}>
+                <TouchableWithoutFeedback onPress={() => setDisplayWelcome(false)}>
+                    <Text style={styles.closeButton}>X</Text>
+                </TouchableWithoutFeedback>
+                <View center padding-lg gap-sm>
+                    <View style={styles.welcomeIcon}>
+                        <Image
+                            source={IMAGES.icons.wallet}
+                            resizeMode="contain"
+                        />
                     </View>
-                </View>)}
+                    <Text text-lg gray-dark>Welcome to Tap!</Text>
+                    <Text text-md gray-medium center padding-sm>
+                        Deposit cash
+                        to start sending money to friends.
+                    </Text>
+                    <TouchableOpacity onPress={() => navigation.navigate(
+                        TopNavScreen.PROFILE,
+                        { screen: ProfileNavScreen.ADD_FUNDS }
+                    )}>
+                        <Text text-lg primary-medium>Add funds</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>}
         </Screen>
     )
 }
@@ -116,7 +172,6 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         width: '90%',
-        alignSelf: 'center',
     },
     button: {
         height: 55,
@@ -126,10 +181,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 30,
+        paddingHorizontal: 20,
+        paddingTop: 15
     },
     logo: {
         flex: 1,
+        paddingLeft: 18
     },
     user: {
         flex: 1,
@@ -143,34 +200,30 @@ const styles = StyleSheet.create({
         fontFamily: "Jost-ExtraBold",
     },
     history: {
-        position: 'absolute',
-        bottom: 0,
         width: '100%',
         height: "50%",
-        backgroundColor: 'white',
+        backgroundColor: COLORS.whiteish,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
-        padding: 20
+        padding: 20,
     },
     welcome: {
-        position: 'absolute',
-        bottom: "8%",
-        alignSelf: 'center',
-        width: '90%',
+        position: "relative",
+        marginBottom: "8%",
+        width: "90%",
         aspectRatio: 1,
         backgroundColor: HOME_COLORS.welcomeBox,
         borderRadius: 8,
         borderWidth: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 5
+        justifyContent: "center",
+        alignItems: "center"
     },
     closeButton: {
-        position: 'absolute',
+        position: "absolute",
         top: 10,
-        right: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
+        right: 20,
+        fontSize: 30,
+        color: COLORS.grayLight,
     },
     welcomeIcon: {
         alignSelf: 'center',
@@ -189,5 +242,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 5
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlignVertical: "center",
     }
 });

@@ -109,7 +109,7 @@ export class CircleMainClient implements CircleClient {
         const { encryptedMessage, keyId } = encryptedData;
 
         const transactionId: string = uuid();
-        const response = await this.sdk.payments.createPayment({
+        const paymentResponse = await this.sdk.payments.createPayment({
             idempotencyKey: transactionId,
             amount: {
                 amount: args.amount.toFixed(2),
@@ -130,9 +130,9 @@ export class CircleMainClient implements CircleClient {
             keyId: keyId
         });
 
-        if (response.status < 400) {
+        if (paymentResponse.status < 400) {
             try {
-                const transfer = await this.sdk.transfers.createTransfer({
+                const transferResponse = await this.sdk.transfers.createTransfer({
                     idempotencyKey: uuid(),
                     source: {
                         type: "wallet",
@@ -149,12 +149,11 @@ export class CircleMainClient implements CircleClient {
                     }
                 });
 
-                if (transfer.status >= 400) {
-                    //TODO better error
+                if (transferResponse.status >= 400) {
                     throw ApiError.generalServerError("Unable to transfer funds to user.");
                 }
             } catch (e) {
-                ApiError.generalServerError("Failed to transfer funds to user.");
+                throw ApiError.generalServerError("Unable to transfer funds to user.");
             }
         }
     }

@@ -14,47 +14,43 @@ interface Props {
 
 export function Activity({ item }: Props): JSX.Element {
     let amount: number | undefined;
-    let type: string;
     let color: string;
     let iconSource;
-    let name: string | undefined;
     let displayMessage: string;
 
     switch (item.type) {
         case MemberActivityType.DEPOSIT:
             amount = item.deposit?.amount;
-            type = 'Deposit';
             color = COLORS.grayDark;
             iconSource = IMAGES.activity.deposit;
+            displayMessage = "Deposit to your Tap";
             break;
 
         case MemberActivityType.WITHDRAW:
             amount = item.withdraw?.amount;
-            type = 'Withdraw';
             color = COLORS.grayDark;
             iconSource = IMAGES.activity.withdraw;
+            displayMessage = "Withdraw from your Tap";
             break;
 
         case MemberActivityType.RECEIVE:
             amount = item.receive?.amount;
-            type = 'Receive';
             color = COLORS.secondaryMedium;
             iconSource = IMAGES.activity.receive;
-            name = item.receive?.sender.name;
+            displayMessage = `Receive from ${truncateName(item.receive!.sender.name)}`;
             break;
 
         case MemberActivityType.SEND:
             amount = item.send?.amount;
-            type = 'Send';
             color = COLORS.primaryMedium;
             iconSource = IMAGES.activity.send;
-            name = item.send?.recipient.name;
+            displayMessage = `Send to ${truncateName(item.send!.recipient.name)}`;
             break;
 
         default:
             throw new Error("Unexpected activity type");
     }
-    displayMessage = name ? `${type} from ${truncateName(name)}` : type;
+
     return (
         <View style={activityStyles.row}>
             <Image
@@ -68,7 +64,7 @@ export function Activity({ item }: Props): JSX.Element {
                     {item.unixTimestamp ? formatDate(item.unixTimestamp) : FALLBACK_DATE_VALUE}
                 </Text>
             </View>
-            <Text style={{ color }} text-md>{formatUsd(amount || 0)}</Text>
+            <Text style={{ color }} text-md>{formatUsd(amount ?? 0)}</Text>
         </View>
     );
 };

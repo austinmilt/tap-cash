@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { PublicKey, SolanaWallet } from "../solana/solana";
-import { logIn as web3AuthLogIn } from "../solana/web3auth";
+import { useWeb3Auth } from "../solana/web3auth";
 import { getMember, saveMember, SaveMemberArgs } from "../api/client";
 import { MemberPrivateProfile } from "../shared/member";
 
@@ -11,6 +11,10 @@ export interface UserProfileContextState {
     imageUrl: string | undefined;
     loggedIn: boolean;
     usdcBalance: number | null;
+    profileReady: boolean;
+
+    loading: boolean;
+    error: Error | undefined;
 
     logIn: () => Promise<void>;
     logOut: () => Promise<void>;
@@ -31,11 +35,10 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
     const [name, setName] = useState<UserProfileContextState["name"]>();
     const [email, setEmail] = useState<UserProfileContextState["email"]>();
     const [imageUrl, setImageUrl] = useState<UserProfileContextState["imageUrl"]>();
-    const [wallet, setWallet] = useState<UserProfileContextState["wallet"]>();
     const [loggedIn, setLoggedIn] = useState<UserProfileContextState["loggedIn"]>(false);
     const [usdcBalance, setUsdcBalance] = useState<UserProfileContextState["usdcBalance"]>(null);
-    const [logOut, setLogOut] = useState<UserProfileContextState["logOut"]>(async () => { });
     const [usdcAddress, setUsdcAddress] = useState<PublicKey | undefined>();
+    const web3authContext = useWeb3Auth();
 
     const getAndUpdateAccountIfNeeded = useCallback(async (profile: SaveMemberArgs) => {
         let savedProfile: MemberPrivateProfile | undefined;
@@ -64,40 +67,33 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
     }, [setUsdcAddress, setEmail, setName, setImageUrl]);
 
     const logIn: UserProfileContextState["logIn"] = useCallback(async () => {
-        if (loggedIn) return;
-        const { user, wallet: userWallet, logOut } = await web3AuthLogIn();
+        await web3authContext.logIn();
+    }, [web3authContext.logIn]);
 
-        if (user.userInfo?.email == null) {
-            throw new Error("User login did not provide required email address.");
+    useEffect(() => {
+        if (
+            (web3authContext.user !== undefined) &&
+            (web3authContext.wallet !== undefined) &&
+            (!web3authContext.loading)
+        ) {
+            const user = web3authContext.user;
+            const wallet = web3authContext.wallet;
+            getAndUpdateAccountIfNeeded({
+                email: user.userInfo.email,
+                name: user.userInfo.name,
+                profile: user.userInfo.profileImage,
+                signerAddress: wallet.getPublicKey()
+            });
+            setLoggedIn(true);
         }
-
-        await getAndUpdateAccountIfNeeded({
-            email: user.userInfo.email,
-            name: user.userInfo.name,
-            profile: user.userInfo.profileImage,
-            signerAddress: userWallet.getPublicKey()
-        });
-
-        setWallet(userWallet);
-        setLoggedIn(userWallet !== undefined);
-
-        //TODO temporarily save user info to device so they dont have to log
-        // in every time
-
-        const wrappedLogOut = async () => {
-            if (userWallet === undefined) return;
-            await logOut();
-        }
-        setLogOut(() => wrappedLogOut);
-
-    }, [loggedIn, setWallet, getAndUpdateAccountIfNeeded, setLoggedIn, setLogOut]);
-
+    }, [web3authContext.user, web3authContext.wallet, web3authContext.loading]);
 
     const syncUsdcBalance: UserProfileContextState["syncUsdcBalance"] = useCallback(async () => {
+        const wallet = web3authContext.wallet;
         if ((wallet !== undefined) && (usdcAddress !== undefined)) {
             setUsdcBalance(await wallet.getUsdcBalance(usdcAddress));
         }
-    }, [wallet, usdcAddress, setUsdcBalance]);
+    }, [web3authContext.wallet, usdcAddress, setUsdcBalance]);
 
 
     useEffect(() => {
@@ -106,17 +102,24 @@ export function UserProfileProvider(props: { children: ReactNode }): JSX.Element
         }
     }, [loggedIn]);
 
+    const profileReady: boolean = (name !== undefined) &&
+        (email !== undefined) &&
+        (imageUrl !== undefined) &&
+        (web3authContext.wallet !== undefined);
 
     return (
         <UserProfileContext.Provider value={{
             name: name,
             email: email,
             imageUrl: imageUrl,
-            wallet: wallet,
+            wallet: web3authContext.wallet,
             usdcBalance: usdcBalance,
             loggedIn: loggedIn,
+            loading: web3authContext.loading,
+            error: web3authContext.error,
+            profileReady: profileReady,
             logIn: logIn,
-            logOut: logOut,
+            logOut: web3authContext.logOut,
             syncUsdcBalance: syncUsdcBalance
         }}>
             {props.children}
