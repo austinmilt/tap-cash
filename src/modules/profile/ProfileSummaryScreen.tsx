@@ -46,7 +46,7 @@ export function ProfileOverviewScreen({ navigation, route }: Props): JSX.Element
                         <View style={styles.ccnumWrapper}>
                             <Text style={styles.disabled}>{`•••• •••• •••• 4567`}</Text>
                         </View>
-                        <Text style={styles.disabled}>▶</Text>
+
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.row} onPress={() => navigation.navigate(ProfileNavScreen.ADD_FUNDS)}>
                         <Text style={styles.action}>Add Funds</Text>
@@ -76,8 +76,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     account: {
-        paddingVertical: 30,
+        paddingTop: 30,
         paddingHorizontal: 20,
+        // I hate this, but it looks better
+        marginVertical: 0,
+        maxHeight: 180,
     },
     profile: {
         flexDirection: 'row',
@@ -123,9 +126,13 @@ const styles = StyleSheet.create({
     iconWrapper: {
         width: 48,
         height: 48,
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        marginRight: 16,
+        marginHorizontal: 5
+    },
+    ccnumWrapper: {
+        width: "100%",
+        alignItems: 'flex-start',
     },
     icon: {
         fontSize: 24,
@@ -134,14 +141,10 @@ const styles = StyleSheet.create({
     ccnum: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#000'
     },
     action: {
         fontSize: 18,
         color: '#555',
-    },
-    ccnumWrapper: {
-        flex: 1,
     },
     disabled: {
         fontSize: 18,
