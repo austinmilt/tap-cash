@@ -13,17 +13,22 @@ interface AccountArgs {
 // anything too sensitive
 export const handleAccount = makeGetHandler(getAccount, transformRequest, transformResult);
 
+/**
+ * 
+ * Fetch a member's private profile from the Database Client
+ * 
+ * @param request AccountArgs - the request arguments
+ * @returns a Member's private profile
+ */
 async function getAccount(request: AccountArgs): Promise<MemberPrivateProfile> {
     return await getDatabaseClient().getMemberPrivateProfile(request.member);
 }
-
 
 function transformRequest(params: ApiAccountRequest): AccountArgs {
     return {
         member: getRequiredParam<ApiAccountRequest, string>(params, "memberEmail")
     };
 }
-
 
 function transformResult(result: MemberPrivateProfile): ApiAccountResult {
     return {

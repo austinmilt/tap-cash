@@ -9,7 +9,7 @@ use crate::{
     state::{Member, MemberAccount, Bank}
 };
 
-
+/// Accounts and constraints for sending an SPL token from one account to another.
 #[derive(Accounts)]
 pub struct SendSpl<'info> {
 
@@ -81,6 +81,16 @@ pub struct SendSpl<'info> {
     /// Standard system program, for creating accounts
     pub system_program: Program<'info, System>,
 }
+
+/// Sends an SPL token from one account to another.
+///
+/// This function transfers the specified number of SPL tokens from the `account_ata` account to the `destination_ata` account. It uses the `SplTransfer` instruction to execute the transfer. 
+/// This function should only be called by an authorized MemberAccount PDA.
+///
+/// # Arguments
+///
+/// * `ctx` - The context for the instruction containing the accounts and parameters.
+/// * `withdraw_amount` - The number of SPL tokens to transfer.
 
 pub fn send_spl(ctx: Context<SendSpl>, withdraw_amount: u64) -> Result<()> {
     let destination = &mut ctx.accounts.destination_ata;

@@ -7,6 +7,10 @@ import { createWorkspace, WorkSpace } from "../program/workspace";
 import { CircleClient, CircleDepositArgs } from "./client";
 import { Card, CvvResults } from "@circle-fin/circle-sdk";
 
+/**
+ * This is an Emulator for the Circle SDK. It uses mocked data to simulate the Circle SDK.
+ * This is used for testing purposes.
+ */
 export class CircleEmulator implements CircleClient {
     private readonly connection: anchor.web3.Connection;
     private readonly provider: anchor.AnchorProvider;
@@ -17,15 +21,30 @@ export class CircleEmulator implements CircleClient {
         this.payer = sdk.payer;
     }
 
-
+    /**
+     * 
+     * @returns CircleEmulator with default values for the workspace
+     */
     public static ofDefaults(): CircleEmulator {
         return new CircleEmulator(createWorkspace(RPC_URL, BANK_AUTH));
     }
 
+    /**
+     * 
+     * @param sdk - Workspace to use for the emulator
+     * @returns CircleEmulator with the provided workspace
+     */
     public static withSdk(sdk: WorkSpace) {
         return new CircleEmulator(sdk);
     }
 
+    /**
+     * 
+     * Simulates the deposit of USDC into a user's account by Minting Fake USDC to the destination ATA
+     * 
+     * @param args CircleDepositArgs - The set of arguments needed to deposit funds into a user's account
+     * @throws generalServerError if the MintTo transaction fails
+     */
     public async depositUsdc(args: CircleDepositArgs): Promise<void> {
         const tokenMint: anchor.web3.PublicKey = FAKE_USDC.publicKey;
         const destination: anchor.web3.PublicKey = new anchor.web3.PublicKey(args.destinationAtaString);
@@ -45,7 +64,13 @@ export class CircleEmulator implements CircleClient {
         }
     }
 
-
+    /**
+     * 
+     * Fetches a demo card for testing from a given id 
+     * 
+     * @param id - The id of the card to fetch (not currently utilzied)
+     * @returns a predefined card object
+     */
     public async fetchCard(id: string): Promise<Card> {
         //TODO fill in with something better
         return {

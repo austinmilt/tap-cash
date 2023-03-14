@@ -3,6 +3,15 @@ import { web3 } from '@project-serum/anchor';
 
 const { LAMPORTS_PER_SOL } = web3;
 
+/**
+ * 
+ * Airdrops 100 SOL to each address in the array (for use in local environments)
+ * 
+ * @param connection Solana connection
+ * @param addresses array of addresses to request airdrops for
+ * @returns array of results
+ * @throw error if airdrop fails
+ */
 export async function requestAirdrops(connection, addresses: anchor.web3.PublicKey[]) {
     const promises = addresses.map(async (address) => {
       try {

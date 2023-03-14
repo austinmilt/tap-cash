@@ -9,7 +9,7 @@ use crate::{
     state::{Member, MemberAccount, Bank}
 };
 
-
+/// Accounts and constraints for initializing a new member account.
 #[derive(Accounts)]
 pub struct InitializeMemberAccount<'info> {
 
@@ -80,6 +80,11 @@ pub struct InitializeMemberAccount<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Initializes a new member account.
+///
+/// This function creates a new member account with an associated token account (ATA).
+/// It sets its initial state to include the account version, member key, token mint, ATA key, bump value, account number, and account type. 
+/// This function should only be called once per member account.
 pub fn init_account(
     ctx: Context<InitializeMemberAccount>
 ) -> Result<()> { 

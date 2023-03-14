@@ -15,6 +15,9 @@ import { ApiError } from "../shared/error";
 import { CircleCardId, MemberAccounts } from "../types/types";
 import { PublicKey } from "../helpers/solana";
 
+/**
+ * Implementation of Database Client using Firestore.
+ */
 export class FirestoreClient implements DatabaseClient {
     private readonly membersRef: CollectionReference<MemberDocument>;
 
@@ -22,6 +25,10 @@ export class FirestoreClient implements DatabaseClient {
         this.membersRef = members;
     }
 
+    /**
+     * 
+     * @returns a FirestoreClient with default configs from environment variables
+     */
     public static ofDefaults(): FirestoreClient {
         initializeApp();
         // `getFirestore()` pulls configs from environment variables
@@ -53,7 +60,6 @@ export class FirestoreClient implements DatabaseClient {
 
         return memberDoc.id;
     }
-
 
     public async updateMember(profile: Partial<MemberPublicProfile>): Promise<MemberId> {
         if (profile.email == null) throw ApiError.invalidParameter("profile.email");
@@ -143,11 +149,9 @@ export class FirestoreClient implements DatabaseClient {
         return member.circleCreditCards;
     }
 
-
     private async getMemberDocByEmail(email: EmailAddress): Promise<MemberDocument | null> {
         return (await this.getMemberDocSnapshotByEmail(email))?.data() ?? null;
     }
-
 
     private async getMemberDocSnapshotByEmail(email: EmailAddress): Promise<QueryDocumentSnapshot<MemberDocument> | null> {
         const response: QuerySnapshot<MemberDocument> = await this.buildMemberQuery("email", "==", email)
@@ -157,7 +161,7 @@ export class FirestoreClient implements DatabaseClient {
         return response.docs[0];
     }
 
-
+    // https://cloud.google.com/firestore/docs/query-data/get-data
     private buildMemberQuery(
         field: keyof MemberDocument,
         operation: FirebaseFirestore.WhereFilterOp,
