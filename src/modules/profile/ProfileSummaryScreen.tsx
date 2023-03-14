@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     },
     disabled: {
         fontSize: 18,
-        color: '#E2E8F0'
+        color: '#bdbdbd'
     }
 });
 
