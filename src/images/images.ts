@@ -14,5 +14,8 @@ export const IMAGES = {
     loaders: {
         loaderSmall: require("./loaders/loader-sm.gif"),
         loaderLarge: require("./loaders/loader-lg.gif")
+    },
+    icons: {
+        wallet: require("./icons/wallet.png"),
     }
 }
