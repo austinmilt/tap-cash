@@ -1,4 +1,4 @@
-import { ProfileNavScreen, TopNavScreen, TopRouteParams } from "../common/navigation";
+import { TopNavScreen, TopRouteParams } from "../common/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Screen } from "../components/Screen";
@@ -6,9 +6,9 @@ import { View } from "../components/View";
 import { Text } from "../components/Text";
 import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Avatar, GridList, SkeletonView } from "react-native-ui-lib";
+import { Avatar, GridList } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
-import { TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
@@ -21,8 +21,8 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.HOME>;
 
 export function HomeScreen({ navigation }: Props): JSX.Element {
     const { name, imageUrl, usdcBalance, email, syncUsdcBalance, loggedIn } = useUserProfile();
-    const { submit: fetchRecentActivity, data: recentActivity, loading } = useRecentActivity();
-    const [displayWelcome, setDisplayWelcome] = useState(true);
+    const { submit: fetchRecentActivity, data: recentActivity, loading: recentActivityLoading } = useRecentActivity();
+    const [loadingUsdcBalance, setLoadingUsdcBalance] = useState<boolean>(true);
 
     // update home data each time the user returns to the screen
     // https://reactnavigation.org/docs/navigation-lifecycle
@@ -33,7 +33,9 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     memberEmail: email,
                     limit: 10
                 });
-                syncUsdcBalance();
+                setLoadingUsdcBalance(true);
+                syncUsdcBalance()
+                    .finally(() => setLoadingUsdcBalance(false));
             }
         });
 
@@ -60,16 +62,16 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
             </View>
             <View padding-md flexG gap-lg centerV style={{ width: "90%" }}>
                 <View centerH>
-                <ShimmerPlaceHolder
-                    style={styles.center}
-                    LinearGradient={LinearGradient}
-                    visible={!loading}
-                    width={200}
-                    height={75}
-                    shimmerColors={['#C4D2F0', '#EFF3FA', '#E5EAF6']}
-                >
-                    <BigDollars>{usdcBalance ?? 0}</BigDollars>
-                </ShimmerPlaceHolder>
+                    <ShimmerPlaceHolder
+                        style={styles.center}
+                        LinearGradient={LinearGradient}
+                        visible={!loadingUsdcBalance}
+                        width={200}
+                        height={75}
+                        shimmerColors={['#C4D2F0', '#EFF3FA', '#E5EAF6']}
+                    >
+                        <BigDollars>{usdcBalance ?? 0}</BigDollars>
+                    </ShimmerPlaceHolder>
                 </View>
                 <Button
                     primary
@@ -81,7 +83,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
             </View>
             <View style={styles.history} >
                 <Text text-lg gray-dark>Recent Activity</Text>
-                {!loading && <GridList
+                {!recentActivityLoading && <GridList
                     data={recentActivity}
                     renderItem={({ item }) => (
                         <Activity item={item} />
@@ -91,7 +93,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                     numColumns={1}
                 />}
                 <ShimmerBars
-                    loading={loading}
+                    loading={recentActivityLoading}
                     numBars={4}
                 />
             </View>
