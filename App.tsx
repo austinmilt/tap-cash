@@ -34,6 +34,7 @@ export default function App(): JSX.Element {
           <Stack.Screen
             name={TopNavScreen.HOME}
             component={HomeScreen}
+            options={{gestureEnabled: false}}
           />
           <Stack.Screen
             name={TopNavScreen.SEND}
