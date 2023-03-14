@@ -1,4 +1,3 @@
-import { LoaderScreen } from "react-native-ui-lib";
 import { Image } from 'react-native-ui-lib';
 import { IMAGES } from "../images/images";
 import { View } from "./View";
