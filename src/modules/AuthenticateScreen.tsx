@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TopNavScreen, TopRouteParams } from "../common/navigation";
 import { AppLogo } from "../components/AppLogo";
 import { Button } from "../components/Button";
@@ -13,6 +13,7 @@ type Props = NativeStackScreenProps<TopRouteParams, TopNavScreen.AUTHENTICATE>;
 
 export function AuthenticateScreen({ navigation }: Props): JSX.Element {
     const userContext = useUserProfile();
+    const [startedLogin, setStartedLogin] = useState<boolean>(false);
 
     useEffect(() => {
         if (userContext.profileReady) {
@@ -20,10 +21,23 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
         }
     }, [userContext.profileReady]);
 
+    const onContinue = useCallback(() => {
+        setStartedLogin(true);
+        userContext.logIn();
+    }, [userContext.logIn, setStartedLogin]);
+
+    // allow the user to log in if they get logged out while on
+    // this screen
+    useEffect(() => {
+        if (!userContext.loggedIn) {
+            setStartedLogin(false);
+        }
+    }, [userContext.loggedIn]);
+
     return (
         <Screen>
-            {userContext.loading && <Loading />}
-            {!userContext.loading && (
+            {startedLogin && <Loading />}
+            {!startedLogin && (
                 <View flex center>
                     <View center height="80%">
                         <AppLogo primary />
@@ -32,12 +46,15 @@ export function AuthenticateScreen({ navigation }: Props): JSX.Element {
                         <Button
                             label="G Continue with Google"
                             primary
-                            onPress={userContext.logIn}
-                            disabled={userContext.loading}
+                            onPress={onContinue}
+                            disabled={startedLogin}
                         />
                         <Text text-sm>
-                            By continuing, you accept our
-                            Terms of use and Privacy Policy
+                            Welcome to the Tap demo, which
+                            uses fake money but displays your actual
+                            Google email, name, and profile picture
+                            to other users in the app.
+                            By continuing you agree to this use.
                         </Text>
                     </View>
                 </View>
