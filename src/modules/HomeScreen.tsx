@@ -8,7 +8,7 @@ import { useUserProfile } from "../components/profile-provider";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Avatar, GridList, Image } from "react-native-ui-lib";
 import { AppLogo } from "../components/AppLogo";
-import { Platform, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, BackHandler } from 'react-native';
+import { Platform, TouchableOpacity, StyleSheet, BackHandler } from 'react-native';
 import { COLORS } from "../common/styles";
 import { useRecentActivity } from "../api/client";
 import { Activity } from "../components/Activity";
