@@ -140,9 +140,6 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
                 />
             </View>}
             {displayWelcome && <View style={styles.welcome}>
-                <TouchableWithoutFeedback onPress={() => setDisplayWelcome(false)}>
-                    <Text style={styles.closeButton}>X</Text>
-                </TouchableWithoutFeedback>
                 <View center padding-lg gap-sm>
                     <View style={styles.welcomeIcon}>
                         <Image
@@ -223,13 +220,6 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         justifyContent: "center",
         alignItems: "center"
-    },
-    closeButton: {
-        position: "absolute",
-        top: 10,
-        right: 20,
-        fontSize: 30,
-        color: COLORS.grayLight,
     },
     welcomeIcon: {
         alignSelf: 'center',
