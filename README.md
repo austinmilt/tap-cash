@@ -8,7 +8,7 @@ Submission to 2023 Solana Grizzlython Submission by:
 
 #### Resources
 - [Pitch Deck](https://docs.google.com/presentation/d/1_u_i_yqSlY2ZjhBJsdlTOUyJ7z1OH891Pro1LJQSPpA/edit#slide=id.g2196631c208_1_103)
-- [Android APK Download](https://todo)
+- [Android APK Download](https://tapcash.app/android)
 - [tap app Local Development](#tap-app-local-development)
 - [tap HomePage](https://tapcash.app)
 - [tap Twitter](https://twitter.com/tapcashapp)
