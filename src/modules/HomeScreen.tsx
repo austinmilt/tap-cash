@@ -81,7 +81,7 @@ export function HomeScreen({ navigation }: Props): JSX.Element {
      */
     useEffect(() => {
         if (recentActivityLoading) setDisplayWelcome(false);
-        else if (recentActivity && (recentActivity.length == 0) && !usdcBalance) setDisplayWelcome(true);
+        else if (!recentActivity && !usdcBalance) setDisplayWelcome(true);
     }, [recentActivityLoading, recentActivity, usdcBalance]);
 
     return (
